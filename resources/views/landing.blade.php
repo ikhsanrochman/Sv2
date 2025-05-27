@@ -160,7 +160,7 @@
          ========================================== -->
     <section class="hero d-flex align-items-center" id="home">
         <div class="container text-center hero-content">
-            <h2 class="mb-2 fs-4">Selamat Datang di <span class="text-info">Si‑Pemdora</span></h2>
+            <h2 class="mb-2 fs-4">Halo Selamat Datang di <span class="text-info">Si‑Pemdora</span></h2>
             <h1 class="fw-bold display-5 mb-3">Sistem Pemantauan Dosis Radiasi</h1>
             <p class="mb-4 fs-6">Pantau dan laporkan paparan radiasi personel secara efisien dan akurat.</p>
             <!-- Tombol untuk login -->
