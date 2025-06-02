@@ -41,7 +41,7 @@
         @include('layouts.sidebar-super_admin')
         @include('layouts.navbar-super_admin')
         
-        <main class="content-wrapper py-4">
+        <main class="content-wrapper py-3">
             @yield('content')
         </main>
     </div>

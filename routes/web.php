@@ -36,37 +36,45 @@ Auth::routes();
 // ROUTE UNTUK HALAMAN SUPER ADMIN
 // ==========================================
 // Hanya bisa diakses oleh super admin (role 1)
-Route::middleware(['auth', 'role:1'])->group(function () {
-    Route::get('/super_admin/dashboard', function () {
+Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', function () {
         return view('super_admin.dashboard');
-    })->name('super_admin.dashboard');
-    Route::get('/super_admin/ketersediaan-sdm', [SdmController::class, 'index'])->name('super_admin.ketersediaan_sdm');
-    Route::post('/super_admin/ketersediaan_sdm', [SdmController::class, 'store'])->name('super_admin.ketersediaan_sdm.store');
-    Route::get('super_admin/ketersediaan_sdm/{id}/detail', [SdmController::class, 'detail'])->name('super_admin.ketersediaan_sdm.detail');
-    Route::get('/super-admin/kelola-akun', [KelolaAkunController::class, 'index'])->name('super_admin.kelola_akun');
-    Route::post('/super-admin/kelola-akun', [KelolaAkunController::class, 'store'])->name('super_admin.kelola_akun.store');
-    Route::get('/super-admin/perizinan-sumber-radiasi-pengion', [PerizinanSumberRadiasiPengionController::class, 'index'])->name('super_admin.perizinan_sumber_radiasi_pengion');
+    })->name('dashboard');
 
-    // New routes for Super Admin
-    Route::get('/super-admin/pemantauan-tld', [PemantauanTldController::class, 'index'])->name('super_admin.pemantauan_tld');
-    Route::get('/super-admin/pemantauan-dosis-pendose', [PemantauanDosisPendoseController::class, 'index'])->name('super_admin.pemantauan_dosis_pendose');
-    Route::get('/super-admin/pengangkutan-sumber-radioaktif', [PengangkutanSumberRadioaktifController::class, 'index'])->name('super_admin.pengangkutan_sumber_radioaktif');
-    Route::get('/pemantauan-tld', [PemantauanTldController::class, 'index'])->name('super_admin.pemantauan_tld');
-    Route::get('/pemantauan-tld/{id}', [PemantauanTldController::class, 'detail'])->name('super_admin.pemantauan_tld.detail');
-    Route::get('/pemantauan-dosis-pendose', [PemantauanDosisPendoseController::class, 'index'])->name('super_admin.pemantauan_dosis_pendose');
-    Route::get('/pemantauan-dosis-pendose/{id}', [PemantauanDosisPendoseController::class, 'detail'])->name('super_admin.pemantauan_dosis_pendose.detail');
+    // Ketersediaan SDM
+    Route::get('/ketersediaan-sdm', [SdmController::class, 'index'])->name('ketersediaan_sdm');
+    Route::post('/ketersediaan-sdm', [SdmController::class, 'store'])->name('ketersediaan_sdm.store');
+    Route::get('/ketersediaan-sdm/{id}/detail', [SdmController::class, 'detail'])->name('ketersediaan_sdm.detail');
 
-    // Perizinan Sumber Radiasi Pengion Routes
+    // Kelola Akun
+    Route::get('/kelola-akun', [KelolaAkunController::class, 'index'])->name('kelola_akun');
+    Route::post('/kelola-akun', [KelolaAkunController::class, 'store'])->name('kelola_akun.store');
+
+    // Perizinan Sumber Radiasi Pengion
     Route::get('/perizinan-sumber-radiasi-pengion', [PerizinanSumberRadiasiPengionController::class, 'index'])
-        ->name('perizinan-sumber-radiasi-pengion.index');
+        ->name('perizinan_sumber_radiasi_pengion');
     Route::get('/perizinan-sumber-radiasi-pengion/{projectId}', [PerizinanSumberRadiasiPengionController::class, 'show'])
-        ->name('perizinan-sumber-radiasi-pengion.show');
+        ->name('perizinan_sumber_radiasi_pengion.show');
 
-    // Project Routes
+    // Pemantauan TLD
+    Route::get('/pemantauan-tld', [PemantauanTldController::class, 'index'])->name('pemantauan_tld');
+    Route::get('/pemantauan-tld/{id}', [PemantauanTldController::class, 'detail'])->name('pemantauan_tld.detail');
+
+    // Pemantauan Dosis Pendose
+    Route::get('/pemantauan-dosis-pendose', [PemantauanDosisPendoseController::class, 'index'])->name('pemantauan_dosis_pendose');
+    Route::get('/pemantauan-dosis-pendose/{id}', [PemantauanDosisPendoseController::class, 'detail'])->name('pemantauan_dosis_pendose.detail');
+
+    // Pengangkutan Sumber Radioaktif
+    Route::get('/pengangkutan-sumber-radioaktif', [PengangkutanSumberRadioaktifController::class, 'index'])
+        ->name('pengangkutan_sumber_radioaktif');
+
+    // Projects
     Route::resource('projects', ProjectController::class);
 
-    Route::get('/laporan', [LaporanController::class, 'index'])->name('super_admin.laporan');
-    Route::get('/laporan/{id}', [LaporanController::class, 'show'])->name('super_admin.laporan.project_detail');
+    // Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
+    Route::get('/laporan/{id}', [LaporanController::class, 'projectDetail'])->name('laporan.project_detail');
 });
 
 // ==========================================
@@ -75,16 +83,14 @@ Route::middleware(['auth', 'role:1'])->group(function () {
 // Hanya bisa diakses oleh admin (role 2)
 // Jika user biasa mencoba akses, akan dapat pesan error
 // URL: http://example.com/admin/dashboard
-Route::middleware(['auth', 'role:2'])->group(function () {
-    Route::get('/admin/dashboard', function () {
+Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
         return view('admin.dashboard');
-    })->name('admin.dashboard');
+    })->name('dashboard');
 
-    Route::get('/admin/pengangkutan-sumber', function () {
+    Route::get('/pengangkutan-sumber', function () {
         return view('admin.pengangkutan');
-    })->name('admin.pengangkutan');
-
-    
+    })->name('pengangkutan');
 });
 
 // ==========================================
@@ -93,6 +99,8 @@ Route::middleware(['auth', 'role:2'])->group(function () {
 // Hanya bisa diakses oleh user (role 3)
 // Jika admin mencoba akses, akan dapat pesan error
 // URL: http://example.com/user/dashboard
-Route::middleware(['auth', 'role:3'])->get('/user/dashboard', function () {
-    return view('user.dashboard');
-})->name('user.dashboard');
+Route::middleware(['auth', 'role:3'])->prefix('user')->name('user.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('user.dashboard');
+    })->name('dashboard');
+});

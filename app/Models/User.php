@@ -23,6 +23,7 @@ class User extends Authenticatable
         'username',
         'password',
         'role_id',
+        'jenis_pekerja_id',
         'no_sib',
         'berlaku',
         'is_active',
@@ -61,7 +62,7 @@ class User extends Authenticatable
 
     public function jenisPekerja()
     {
-        return $this->belongsToMany(JenisPekerja::class, 'jenis_pekerja_user');
+        return $this->belongsTo(JenisPekerja::class, 'jenis_pekerja_id');
     }
 
     /**

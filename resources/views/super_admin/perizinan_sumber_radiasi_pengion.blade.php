@@ -1,7 +1,8 @@
 @extends('layouts.super_admin')
 
 @section('content')
-    <h1>Daftar Proyek</h1>
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Perizinan Sumber Radiasi Pengion</h1>
 
     @if($projects->isEmpty())
         <div class="alert alert-info">
@@ -29,7 +30,7 @@
                             <td>{{ $project->tanggal_mulai }}</td>
                             <td>{{ $project->tanggal_selesai }}</td>
                             <td>
-                                <a href="{{ route('perizinan-sumber-radiasi-pengion.show', $project->id) }}" class="btn btn-info btn-sm">Detail</a>
+                                <a href="{{ route('super_admin.perizinan_sumber_radiasi_pengion.show', $project->id) }}" class="btn btn-info btn-sm">Detail</a>
                             </td>
                         </tr>
                     @endforeach
@@ -37,4 +38,5 @@
             </table>
         </div>
     @endif
+</div>
 @endsection 

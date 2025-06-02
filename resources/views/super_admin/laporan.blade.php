@@ -29,7 +29,7 @@
                             <td>{{ $project->tanggal_mulai }}</td>
                             <td>{{ $project->tanggal_selesai }}</td>
                             <td>
-                                <a href="{{ route('super_admin.laporan.project_detail', $project->id) }}" class="btn btn-info btn-sm">Lihat Laporan</a>
+                                <a href="#" class="btn btn-info btn-sm">Lihat Laporan</a>
                             </td>
                         </tr>
                     @endforeach

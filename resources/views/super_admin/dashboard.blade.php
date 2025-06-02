@@ -1,34 +1,34 @@
 @extends('layouts.super_admin')
 
 @section('content')
-<div class="container-fluid py-4">
+<div class="container">
     <div class="row mb-4">
         <!-- Greeting Card -->
         <div class="col-lg-8 mb-4">
-    <div class="card bg-dark-blue text-white" style="background-color: #0d2c54; border-radius: 10px; overflow: hidden;">
-        <div class="row g-0">
-            <div class="col-md-8">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-secondary bg-opacity-25 rounded-pill py-2 px-3 d-flex align-items-center">
-                            <i class="bi bi-calendar-date me-2"></i>
-                            <span id="currentDateTime"></span>
+            <div class="card bg-dark-blue text-white" style="background-color: #0d2c54; border-radius: 10px; overflow: hidden;">
+                <div class="row g-0">
+                    <div class="col-md-8">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="bg-secondary bg-opacity-25 rounded-pill py-2 px-3 d-flex align-items-center">
+                                    <i class="bi bi-calendar-date me-2"></i>
+                                    <span id="currentDateTime"></span>
+                                </div>
+                            </div>
+                            <div>
+                                <h2 class="fw-bold">Good Day, {{ Auth::user()->nama}} !</h2>
+                                <p class="text-light opacity-75">Have nice <span id="currentDay"></span></p>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <h2 class="fw-bold">Good Day, {{ Auth::user()->nama}} !</h2>
-                        <p class="text-light opacity-75">Have nice <span id="currentDay"></span></p>
+                    <div class="col-md-4 p-0" style="height: 100%;">
+                        <div style="height: 100%; overflow: hidden;">
+                            <img src="{{ asset('img/orang.png') }}" alt="Workers" class="img-fluid h-100 w-100" style="object-fit: cover; object-position: center;">
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-4 p-0" style="height: 100%;">
-                <div style="height: 100%; overflow: hidden;">
-                    <img src="{{ asset('img/orang.png') }}" alt="Workers" class="img-fluid h-100 w-100" style="object-fit: cover; object-position: center;">
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
         <!-- Stats Card -->
         <div class="col-lg-4 mb-4">
@@ -195,6 +195,25 @@
     width: 160px;
     height: 160px;
     margin: 0 auto;
+}
+
+/* Tambahan style untuk konsistensi dengan landing page */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.notification-item {
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    transform: translateX(5px);
+    background-color: #e9f0ff !important;
 }
 </style>
 
