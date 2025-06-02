@@ -19,6 +19,9 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     
@@ -31,6 +34,7 @@
             margin-top: 71px;
         }
     </style>
+    @stack('styles')
 </head>
 <body>
     <div id="app">

@@ -1,7 +1,7 @@
 @extends('layouts.super_admin')
 
 @section('content')
-    <h1>Daftar Proyek</h1>
+    <h1>Detail Laporan Proyek</h1>
 
     @if($projects->isEmpty())
         <div class="alert alert-info">
@@ -10,31 +10,31 @@
     @else
         <div class="table-responsive">
             <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>No</th>
+                <thead>
+                    <tr>
+                        <th>No</th>
                         <th>Nama Proyek</th>
                         <th>Keterangan</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal Selesai</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @foreach($projects as $index => $project)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
                             <td>{{ $project->nama_proyek }}</td>
                             <td>{{ $project->keterangan }}</td>
                             <td>{{ $project->tanggal_mulai }}</td>
                             <td>{{ $project->tanggal_selesai }}</td>
-                        <td>
-                                <a href="{{ route('super_admin.ketersediaan_sdm.detail', $project->id) }}" class="btn btn-info btn-sm">Detail</a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                            <td>
+                                <a href="{{ route('super_admin.laporan.detail', $project->id) }}" class="btn btn-info btn-sm">Detail</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     @endif
-@endsection
+@endsection 

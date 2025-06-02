@@ -2,47 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;  // <--- ini yang harus ditambahkan
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use App\Models\KetersediaanSdm;
 use App\Http\Controllers\Controller;
+use App\Models\Project;
 
 class SdmController extends Controller
 {
     public function index()
 {
-    $tasks = Task::with('users')->get(); // Ini penting
-    $users = User::all();  // Jika masih diperlukan
-
-    return view('super_admin.ketersediaan_sdm', compact('tasks', 'users'));
+        $projects = Project::all();
+        return view('super_admin.ketersediaan_sdm', compact('projects'));
 }
-
 
 public function store(Request $request)
 {
     $request->validate([
-        'task_name' => 'required|string|max:255|unique:tasks,name',
-        'user_ids' => 'required|array|min:1',
-        'user_ids.*' => 'exists:users,id',
-    ]);
+            'project_id' => 'required|exists:projects,id',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after:tanggal_mulai',
+            'keterangan' => 'nullable|string',
+            'users' => 'required|array'
+        ]);
 
-    // Cek apakah task dengan nama itu sudah ada
-    $task = Task::firstOrCreate(['name' => $request->task_name]);
+        $ketersediaan_sdm = KetersediaanSdm::create([
+            'project_id' => $request->project_id,
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'keterangan' => $request->keterangan
+        ]);
 
-    // Tambahkan user ke task, tanpa menghapus user lama
-    $task->users()->syncWithoutDetaching($request->user_ids);
+        $ketersediaan_sdm->users()->attach($request->users);
 
-    return redirect()->route('super_admin.ketersediaan_sdm')->with('success', 'Tugas berhasil dibuat atau diperbarui.');
+        return redirect()->route('super_admin.ketersediaan_sdm')->with('success', 'Ketersediaan SDM berhasil ditambahkan.');
 }
+
 public function detail($id)
 {
-    $task = Task::findOrFail($id);
-    $workers = $task->users; // Pastikan relasi `users()` sudah didefinisikan di model Task
-
-    return view('super_admin.task_detail', compact('task', 'workers'));
+        $project = Project::with('ketersediaanSdm.users')->findOrFail($id);
+        return view('super_admin.ketersediaan_sdm_detail', compact('project'));
 }
-
-
-
 }

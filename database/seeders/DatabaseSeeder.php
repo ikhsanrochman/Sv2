@@ -18,5 +18,18 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        $this->call([
+            RoleSeeder::class,
+            UserSeeder::class,
+            ProjectSeeder::class,
+            KetersediaanSdmSeeder::class,
+            JenisPekerjaSeeder::class,
+            JenisPekerjaUserSeeder::class,
+            PemantauanDosisTldSeeder::class,
+            PemantauanDosisPendoseSeeder::class,
+            PerizinanSumberRadiasiPengionSeeder::class,
+            KartuDosisPengangkutanSeeder::class,
+        ]);
     }
 }

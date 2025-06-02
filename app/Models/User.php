@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -22,10 +23,10 @@ class User extends Authenticatable
         'username',
         'password',
         'role_id',
-        'keahlian',
         'no_sib',
         'berlaku',
-        'is_active'
+        'is_active',
+        'npr',
     ];
 
     /**
@@ -48,9 +49,9 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function tasks()
+    public function ketersediaanSdm()
     {
-        return $this->belongsToMany(Task::class);
+        return $this->belongsToMany(KetersediaanSdm::class, 'ketersediaan_sdm_users');
     }
 
     public function role()
@@ -60,7 +61,15 @@ class User extends Authenticatable
 
     public function jenisPekerja()
     {
-        return $this->belongsTo(JenisPekerja::class, 'keahlian', 'id');
+        return $this->belongsToMany(JenisPekerja::class, 'jenis_pekerja_user');
+    }
+
+    /**
+     * Get the pemantauan dosis tld records for the user.
+     */
+    public function pemantauanDosisTld(): HasMany
+    {
+        return $this->hasMany(PemantauanDosisTld::class);
     }
 }
 
