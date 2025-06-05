@@ -14,8 +14,15 @@ class PemantauanDosisTld extends Model
 
     protected $fillable = [
         'user_id',
-        'dosis_pertahun',
-        'tahun',
+        'project_id',
+        'tanggal_pemantauan',
+        'dosis',
+        'keterangan',
+    ];
+
+    protected $casts = [
+        'tanggal_pemantauan' => 'date:Y-m-d',
+        'dosis' => 'decimal:2',
     ];
 
     /**
@@ -24,5 +31,10 @@ class PemantauanDosisTld extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 }

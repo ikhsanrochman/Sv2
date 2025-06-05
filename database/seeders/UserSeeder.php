@@ -25,6 +25,7 @@ class UserSeeder extends Seeder
                 'username' => 'superadmin',
                 'password' => bcrypt('password'),
                 'npr' => 'NPR001',
+                'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -36,6 +37,7 @@ class UserSeeder extends Seeder
                 'username' => 'admin',
                 'password' => bcrypt('password'),
                 'npr' => 'NPR002',
+                'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -47,6 +49,7 @@ class UserSeeder extends Seeder
                 'username' => 'user',
                 'password' => bcrypt('password'),
                 'npr' => 'NPR003',
+                'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now()
             ]

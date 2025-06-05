@@ -14,9 +14,6 @@ return new class extends Migration
         Schema::create('ketersediaan_sdm', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai');
-            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }

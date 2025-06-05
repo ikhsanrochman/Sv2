@@ -48,6 +48,23 @@ class LoginController extends Controller
     }
 
     /**
+     * Validate the user login request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+            'captcha' => 'required|captcha',
+        ]);
+    }
+
+    /**
      * Menentukan field apa yang dipakai untuk login
      * Di sini kita pakai username (bukan email)
      */
@@ -71,17 +88,17 @@ class LoginController extends Controller
         // Cek apakah user adalah super admin
         if ($user->role_id == 1) {
             // Arahkan ke dashboard super admin
-            return redirect()->intended('/super_admin/dashboard');
+            return redirect()->intended(route('super_admin.dashboard'));
         }
         // Cek apakah user adalah admin
         elseif ($user->role_id == 2) {
             // Arahkan ke dashboard admin
-            return redirect()->intended('/admin/dashboard');
+            return redirect()->intended(route('admin.dashboard'));
         } 
         // Cek apakah user adalah user biasa
         elseif ($user->role_id == 3) {
             // Arahkan ke dashboard user
-            return redirect()->intended('/user/dashboard');
+            return redirect()->intended(route('user.dashboard'));
         }
 
         // Kalau role tidak dikenal, logout dan tampilkan error

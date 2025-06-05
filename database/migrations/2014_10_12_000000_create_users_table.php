@@ -16,10 +16,11 @@ return new class extends Migration
             $table->string('nama')->nullable();
             $table->foreignId('role_id')->nullable()->constrained('roles');
             $table->string('no_sib')->nullable();
+            $table->string('npr')->nullable();
             $table->date('berlaku')->nullable();
-            $table->foreignId('jenis_pekerja_id')->nullable()->constrained('jenis_pekerja');
             $table->string('username');
             $table->string('password');
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

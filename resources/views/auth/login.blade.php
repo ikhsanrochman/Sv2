@@ -219,6 +219,20 @@
                 <a href="#" class="forgot-password text-light text-decoration-underline">Forgot password?</a>
             </div>
 
+            <div class="mb-3" data-aos="fade-up" data-aos-delay="650">
+                <label for="captcha" class="form-label">Captcha</label>
+                <div class="input-group">
+                    <input type="text" name="captcha" id="captcha" class="form-control" placeholder="Masukkan kode captcha" required>
+                    <span class="input-group-text"><i class="bi bi-shield-lock-fill"></i></span>
+                </div>
+                <div class="mt-2">
+                    <img src="{{ captcha_src() }}" alt="captcha" class="captcha-img" style="border-radius: 5px;">
+                    <button type="button" class="btn btn-link text-light p-0 ms-2" onclick="refreshCaptcha()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-login w-100" data-aos="fade-up" data-aos-delay="700">Login</button>
         </form>
     </div>
@@ -234,6 +248,11 @@
             once: true,
             offset: 100
         });
+
+        // Fungsi untuk refresh captcha
+        function refreshCaptcha() {
+            document.querySelector('.captcha-img').src = '{{ captcha_src() }}?' + Math.random();
+        }
     </script>
 </body>
 </html>

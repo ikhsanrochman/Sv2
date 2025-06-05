@@ -11,6 +11,25 @@ class PerizinanSumberRadiasiPengion extends Model
 
     protected $table = 'perizinan_sumber_radiasi_pengion';
 
-    // Add other fillable/guarded properties if needed
-    // protected $fillable = [...];
+    protected $fillable = [
+        'project_id',
+        'nama',
+        'tipe',
+        'no_seri',
+        'aktivitas',
+        'tanggal_aktivitas',
+        'kv_ma',
+        'no_ktun',
+        'tanggal_berlaku',
+    ];
+
+    protected $casts = [
+        'tanggal_aktivitas' => 'date',
+        'tanggal_berlaku' => 'date',
+    ];
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 }

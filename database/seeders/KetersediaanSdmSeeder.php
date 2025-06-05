@@ -17,17 +17,11 @@ class KetersediaanSdmSeeder extends Seeder
         DB::table('ketersediaan_sdm')->insert([
             [
                 'project_id' => 1, // Project A
-                'tanggal_mulai' => now(),
-                'tanggal_selesai' => now()->addMonths(3),
-                'keterangan' => 'Project pengembangan sistem',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
                 'project_id' => 2, // Project B
-                'tanggal_mulai' => now()->addMonth(),
-                'tanggal_selesai' => now()->addMonths(4),
-                'keterangan' => 'Project maintenance',
                 'created_at' => now(),
                 'updated_at' => now()
             ]

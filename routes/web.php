@@ -12,6 +12,7 @@ use App\Http\Controllers\SuperAdmin\PemantauanDosisPendoseController;
 use App\Http\Controllers\SuperAdmin\PengangkutanSumberRadioaktifController;
 use App\Http\Controllers\SuperAdmin\ProjectController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
+use App\Http\Controllers\SuperAdmin\ProyekController;
 
 // ==========================================
 // ROUTE UNTUK HALAMAN UTAMA (LANDING PAGE)
@@ -46,20 +47,36 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     Route::get('/ketersediaan-sdm', [SdmController::class, 'index'])->name('ketersediaan_sdm');
     Route::post('/ketersediaan-sdm', [SdmController::class, 'store'])->name('ketersediaan_sdm.store');
     Route::get('/ketersediaan-sdm/{id}/detail', [SdmController::class, 'detail'])->name('ketersediaan_sdm.detail');
+    Route::post('/ketersediaan-sdm/{project_id}/add-user', [SdmController::class, 'addUser'])->name('ketersediaan_sdm.add_user');
+    Route::delete('/ketersediaan-sdm/{project_id}/remove-user/{user_id}', [SdmController::class, 'removeUser'])->name('ketersediaan_sdm.remove_user');
 
     // Kelola Akun
     Route::get('/kelola-akun', [KelolaAkunController::class, 'index'])->name('kelola_akun');
     Route::post('/kelola-akun', [KelolaAkunController::class, 'store'])->name('kelola_akun.store');
+    Route::post('/kelola-akun/toggle-status/{id}', [KelolaAkunController::class, 'toggleStatus'])->name('kelola_akun.toggle_status');
 
     // Perizinan Sumber Radiasi Pengion
     Route::get('/perizinan-sumber-radiasi-pengion', [PerizinanSumberRadiasiPengionController::class, 'index'])
         ->name('perizinan_sumber_radiasi_pengion');
-    Route::get('/perizinan-sumber-radiasi-pengion/{projectId}', [PerizinanSumberRadiasiPengionController::class, 'show'])
+    Route::get('/perizinan-sumber-radiasi-pengion/{project}', [PerizinanSumberRadiasiPengionController::class, 'show'])
         ->name('perizinan_sumber_radiasi_pengion.show');
+    Route::post('/perizinan-sumber-radiasi-pengion/{project}', [PerizinanSumberRadiasiPengionController::class, 'store'])
+        ->name('perizinan_sumber_radiasi_pengion.store');
+    Route::put('/perizinan-sumber-radiasi-pengion/{perizinan}', [PerizinanSumberRadiasiPengionController::class, 'update'])
+        ->name('perizinan_sumber_radiasi_pengion.update');
+    Route::delete('/perizinan-sumber-radiasi-pengion/{perizinan}', [PerizinanSumberRadiasiPengionController::class, 'destroy'])
+        ->name('perizinan_sumber_radiasi_pengion.destroy');
 
     // Pemantauan TLD
     Route::get('/pemantauan-tld', [PemantauanTldController::class, 'index'])->name('pemantauan_tld');
     Route::get('/pemantauan-tld/{id}', [PemantauanTldController::class, 'detail'])->name('pemantauan_tld.detail');
+    Route::post('/pemantauan-tld/{project}/store-dosis', [PemantauanTldController::class, 'storeDosis'])->name('pemantauan_tld.store_dosis');
+    Route::put('/pemantauan-tld/update-dosis/{dosis}', [PemantauanTldController::class, 'updateDosis'])->name('pemantauan_tld.update_dosis');
+    Route::delete('/pemantauan-tld/delete-dosis/{dosis}', [PemantauanTldController::class, 'deleteDosis'])->name('pemantauan_tld.delete_dosis');
+    Route::get('/pemantauan-tld/{project}/export', [PemantauanTldController::class, 'export'])->name('pemantauan_tld.export');
+    Route::post('/pemantauan-tld/{project}/import', [PemantauanTldController::class, 'import'])->name('pemantauan_tld.import');
+    Route::get('/pemantauan-tld/template', [PemantauanTldController::class, 'template'])->name('pemantauan_tld.template');
+    Route::get('/api/pemantauan-tld/{project}/dosis', [PemantauanTldController::class, 'getDosisData'])->name('api.pemantauan_tld.dosis');
 
     // Pemantauan Dosis Pendose
     Route::get('/pemantauan-dosis-pendose', [PemantauanDosisPendoseController::class, 'index'])->name('pemantauan_dosis_pendose');
@@ -75,6 +92,12 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
     Route::get('/laporan/{id}', [LaporanController::class, 'projectDetail'])->name('laporan.project_detail');
+
+    // Proyek Routes
+    Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek');
+    Route::post('/proyek', [ProyekController::class, 'store'])->name('proyek.store');
+    Route::put('/proyek/{proyek}', [ProyekController::class, 'update'])->name('proyek.update');
+    Route::delete('/proyek/{proyek}', [ProyekController::class, 'destroy'])->name('proyek.destroy');
 });
 
 // ==========================================
