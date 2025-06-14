@@ -17,23 +17,22 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Get the sidebar element
         const sidebar = document.querySelector('.sidebar');
         const breadcrumbContainer = document.getElementById('breadcrumb-container');
+        const mainContentWrapper = document.getElementById('main-content-wrapper');
         
-        // Create a MutationObserver to watch for class changes on the sidebar
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
-                    // Check if sidebar is collapsed
                     const isSidebarCollapsed = sidebar.classList.contains('collapsed');
-                    // Update breadcrumb container position
                     breadcrumbContainer.style.left = isSidebarCollapsed ? '25px' : '280px';
+                    if (mainContentWrapper) {
+                        mainContentWrapper.style.marginLeft = isSidebarCollapsed ? '25px' : '280px';
+                    }
                 }
             });
         });
 
-        // Start observing the sidebar for class changes
         observer.observe(sidebar, {
             attributes: true
         });
@@ -157,6 +156,10 @@
 <style>
     .bg-dark-blue {
         background-color: #1e3a5f;
+    }
+    .container-fluid {
+        overflow-x: auto;
+        max-width: 100vw;
     }
 
     .breadcrumb-item {

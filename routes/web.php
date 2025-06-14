@@ -15,6 +15,7 @@ use App\Http\Controllers\SuperAdmin\LaporanController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\PerizinanController;
 use App\Http\Controllers\Admin\PemantauanController;
+use App\Http\Controllers\User\UserProfileController;
 
 // ==========================================
 // ROUTE UNTUK HALAMAN UTAMA (LANDING PAGE)
@@ -178,7 +179,6 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
 // Jika admin mencoba akses, akan dapat pesan error
 // URL: http://example.com/user/dashboard
 Route::middleware(['auth', 'role:3'])->prefix('user')->name('user.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('user.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
 });

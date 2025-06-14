@@ -45,12 +45,7 @@
                 <span>Pemantauan Dosis Radiasi</span>
             </a>
         </div>
-        <div class="menu-wrap">
-            <a href="{{ route('super_admin.pengangkutan_sumber_radioaktif') }}" class="menu-item {{ Request::routeIs('super_admin.pengangkutan_sumber_radioaktif*') ? 'active' : '' }}">
-                <i class="fas fa-truck me-2"></i>
-                <span>Pengangkutan Sumber Radioaktif</span>
-            </a>
-        </div>
+        
     </div>
 
     <div class="menu-header">
@@ -232,6 +227,28 @@
 ::-webkit-scrollbar {
     width: 0px;
 }
+
+.swal2-logout-popup {
+    border-radius: 25px !important;
+    padding-bottom: 2rem !important;
+}
+.swal2-logout-yes {
+    background: #d32d2f !important;
+    color: #fff !important;
+    border-radius: 2rem !important;
+    font-size: 1.2rem !important;
+    width: 100px !important;
+    height: 50px !important;
+    margin-right: 1.5rem;
+}
+.swal2-logout-no {
+    background: #444 !important;
+    color: #fff !important;
+    border-radius: 2rem !important;
+    font-size: 1.2rem !important;
+    width: 100px !important;
+    height: 50px !important;
+}
 </style>
 
 <!-- Tambahkan Font Awesome -->
@@ -241,14 +258,18 @@
 <script>
     function showLogoutConfirmation() {
         Swal.fire({
-            title: 'Yakin ingin logout?',
-            text: "Anda akan keluar dari akun ini.",
-            icon: 'warning',
+            title: '<span style="font-size:2.5rem;font-weight:bold;color:#fff;">Sign Out</span>',
+            html: '<span style="color:#fff;font-size:1.2rem;">Apakah anda yakin?</span>',
+            background: '#0a2a47',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, logout!',
-            cancelButtonText: 'Batal'
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            customClass: {
+                popup: 'swal2-logout-popup',
+                confirmButton: 'swal2-logout-yes',
+                cancelButton: 'swal2-logout-no'
+            },
+            buttonsStyling: false
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('logout-form').submit();

@@ -27,24 +27,30 @@
     
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #ffffff;
         }
         .content-wrapper {
             margin-left: 280px;
             margin-top: 71px;
+            transition: margin-left 0.3s;
+        }
+        .content-wrapper.full-width {
+            margin-left: 0;
         }
     </style>
-    @stack('styles')
 </head>
 <body>
     <div id="app">
         @include('layouts.sidebar-super_admin')
         @include('layouts.navbar-super_admin')
         
-        <main class="content-wrapper py-3">
+        <main class="content-wrapper py-4">
             @yield('content')
         </main>
     </div>
     @stack('scripts')
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
 </body>
 </html> 
