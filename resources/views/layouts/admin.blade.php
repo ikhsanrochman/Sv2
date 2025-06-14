@@ -19,16 +19,23 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #ffffff;
         }
         .content-wrapper {
             margin-left: 280px;
             margin-top: 71px;
+            transition: margin-left 0.3s;
+        }
+        .content-wrapper.full-width {
+            margin-left: 0;
         }
     </style>
 </head>

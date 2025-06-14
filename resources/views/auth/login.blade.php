@@ -181,9 +181,34 @@
         .login-container:hover {
             box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
         }
+        
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            box-sizing: border-box;
+            z-index: 3;
+        }
+
+        .top-bar .brand-logo {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .top-bar .btn-link {
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body>
+    <div class="top-bar d-flex justify-content-between align-items-center p-4 fixed-top">
+        <div class="brand-logo fw-bold text-white fs-4" data-aos="fade-right">Si-Pemdora</div>
+        <a href="{{ route('landing') }}" class="btn btn-link text-white text-decoration-none" data-aos="fade-left">
+            <i class="bi bi-arrow-left me-2"></i> Kembali
+        </a>
+    </div>
     <div class="login-container" data-aos="fade-up" data-aos-duration="1000">
         <h4 class="text-center fw-bold mb-4" data-aos="fade-down" data-aos-delay="200">Login</h4>
 

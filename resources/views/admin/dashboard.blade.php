@@ -3,73 +3,84 @@
 @section('content')
 <div class="container-fluid py-4">
     <div class="row mb-4">
-        <!-- Greeting Card -->
-        <div class="col-lg-8 mb-4">
-    <div class="card bg-dark-blue text-white" style="background-color: #0d2c54; border-radius: 10px; overflow: hidden;">
-        <div class="row g-0">
-            <div class="col-md-8">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-secondary bg-opacity-25 rounded-pill py-2 px-3 d-flex align-items-center">
+        <!-- Greeting Card Custom -->
+        <div class="col-12">
+            <div class="card shadow-sm p-4 d-flex flex-row align-items-center justify-content-between" style="border-radius: 18px; background: #fff;">
+                <!-- Left: Profile Image -->
+                <div class="d-flex flex-column align-items-center" style="min-width: 140px;">
+                    <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; background: #f3f3f3; display: flex; align-items: center; justify-content: center;">
+                        <img src="{{ asset('img/orang.png') }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                    </div>
+                </div>
+                <!-- Center: Greeting -->
+                <div class="flex-grow-1 px-4">
+                    <div class="mb-2">
+                        <div class="d-inline-flex align-items-center bg-light px-3 py-1 rounded-pill mb-2">
                             <i class="bi bi-calendar-date me-2"></i>
                             <span id="currentDateTime"></span>
                         </div>
                     </div>
-                    <div>
-                        <h2 class="fw-bold">Good Day, {{ Auth::user()->nama}} !</h2>
-                        <p class="text-light opacity-75">Have nice <span id="currentDay"></span></p>
-                    </div>
+                    <h1 class="fw-bold mb-0" style="font-size: 2.7rem; line-height: 1.1;">Good Morning,<br>{{ Auth::user()->nama }} !</h1>
+                    <div class="mt-2 text-muted" style="font-size: 1rem;">Have nice <span id="currentDay"></span></div>
                 </div>
-            </div>
-            <div class="col-md-4 p-0" style="height: 100%;">
-                <div style="height: 100%; overflow: hidden;">
-                    <img src="{{ asset('img/orang.png') }}" alt="Workers" class="img-fluid h-100 w-100" style="object-fit: cover; object-position: center;">
+                <!-- Right: Peringatan Card -->
+                <div style="min-width: 320px;">
+                    <div class="card shadow-sm border-0" style="border-radius: 14px;">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-exclamation-triangle-fill text-danger me-2" style="font-size: 1.3rem;"></i>
+                                <span class="fw-bold" style="font-size: 1.2rem;">Peringatan</span>
+                    </div>
+                    <div>
+                                <div class="d-flex align-items-center justify-content-between mb-2" style="background: #ffb84d; border-radius: 8px; padding: 6px 12px;">
+                                    <span style="font-size: 0.98rem;">Asep Binti Jarwo</span>
+                                    <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.95rem; min-width: 70px;">1.000 µSv</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2" style="background: #ffb84d; border-radius: 8px; padding: 6px 12px;">
+                                    <span style="font-size: 0.98rem;">Amar Putra Oksi</span>
+                                    <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.95rem; min-width: 70px;">3.000 µSv</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between" style="background: #ffb84d; border-radius: 8px; padding: 6px 12px;">
+                                    <span style="font-size: 0.98rem;">Fedi Putri</span>
+                                    <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.95rem; min-width: 70px;">9.999 µSv</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-        <!-- Stats Card -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow-sm" style="border-radius: 10px;">
-                <div class="card-body p-4">
-                    <div class="mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-light p-2 rounded-circle me-3" style="background-color: #e9f0ff;">
-                                <i class="bi bi-people-fill text-primary"></i>
-                            </div>
-                            <div>
-                                <div class="text-muted small">Total Pekerja Radiasi</div>
-                                <div class="fw-bold">1,260</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-light p-2 rounded-circle me-3" style="background-color: #e9f0ff;">
-                                <i class="bi bi-clipboard-data text-primary"></i>
-                            </div>
-                            <div>
-                                <div class="text-muted small">Data Dosis Bulan Ini</div>
-                                <div class="fw-bold">10</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <div class="d-flex align-items-center">
-                            <div class="bg-light p-2 rounded-circle me-3" style="background-color: #e9f0ff;">
-                                <i class="bi bi-bell text-primary"></i>
-                            </div>
-                            <div>
-                                <div class="text-muted small">Data Kesehatan Terbaru</div>
-                                <div class="fw-bold">54</div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="row mb-3">
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="d-flex align-items-center justify-content-center" style="background: #0d2c54; color: #fff; border-radius: 15px; min-height: 70px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <i class="bi bi-person" style="font-size: 2rem;"></i>
+                <span class="fw-bold ms-3" style="font-size: 1.1rem;">Daftar Pekerja</span>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="d-flex align-items-center justify-content-center" style="background: #0d2c54; color: #fff; border-radius: 15px; min-height: 70px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <i class="bi bi-radioactive" style="font-size: 2rem;"></i>
+                <span class="fw-bold ms-3" style="font-size: 1.1rem;">Daftar Sumber</span>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="d-flex flex-column align-items-center justify-content-center" style="background: #fff; color: #0d2c54; border-radius: 15px; min-height: 70px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="d-flex align-items-center mb-1">
+                    <i class="bi bi-radioactive" style="font-size: 1.5rem;"></i>
+                    <span class="fw-bold ms-2" style="font-size: 1rem;">Data Dosis Bulan Ini</span>
                 </div>
+                <span class="fw-bold" style="font-size: 1.2rem;">10</span>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="d-flex flex-column align-items-center justify-content-center" style="background: #fff; color: #0d2c54; border-radius: 15px; min-height: 70px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div class="d-flex align-items-center mb-1">
+                    <i class="bi bi-people-fill" style="font-size: 1.5rem;"></i>
+                    <span class="fw-bold ms-2" style="font-size: 1rem;">Total Pekerja Radiasi</span>
+                </div>
+                <span class="fw-bold" style="font-size: 1.2rem;">10.000</span>
             </div>
         </div>
     </div>
@@ -77,7 +88,7 @@
     <div class="row mb-4">
         <!-- Chart Card -->
         <div class="col-lg-8 mb-4">
-            <div class="card shadow-sm" style="border-radius: 10px;">
+            <div class="card text-white" style="background-color: #0d2c54; border-radius: 10px;">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-4">Grafik Tren Dosis</h5>
                     <div style="height: 300px;">
@@ -115,40 +126,7 @@
         </div>
     </div>
 
-    <div class="row">
-        <!-- Notifications Card -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow-sm" style="border-radius: 10px;">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4">Notifikasi Terbaru</h5>
-                    <div class="notification-item bg-light p-3 rounded d-flex align-items-center mb-2" style="background-color: #f6f9ff;">
-                        <div class="bg-primary text-white p-2 rounded me-3">
-                            <i class="bi bi-bell"></i>
-                        </div>
-                        <div class="small">Data pemeriksaan dosis TLD telah diinput</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Statistics Card -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow-sm" style="border-radius: 10px;">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4">Statistik Kunjungan</h5>
-                    <div class="text-center position-relative" style="height: 150px;">
-                        <div class="donut-chart">
-                            <canvas id="visitChart" width="200" height="200"></canvas>
-                            <div class="donut-label position-absolute top-50 start-50 translate-middle text-center">
-                                <h3 class="mb-0 text-primary">100%</h3>
-                                <small class="text-muted">Total</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>
 
 <!-- Bootstrap CSS dan Icons -->
@@ -200,32 +178,19 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Update clock and date
     function updateDateTime() {
         const now = new Date();
-        
-        // Format date: Month DD YYYY, HH:MM AM/PM
+        // Format date: Month DD
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const month = months[now.getMonth()];
         const date = now.getDate();
         const year = now.getFullYear();
-        
-        let hours = now.getHours();
-        const ampm = hours >= 12 ? 'Pm' : 'Am';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        
-        const dateTimeStr = `${month} ${date} ${year}, ${hours}:${minutes} ${ampm}`;
-        document.getElementById('currentDateTime').textContent = dateTimeStr;
-        
-        // Update day
+        document.getElementById('currentDateTime').textContent = `${month} ${date}, ${year}`;
+        // Day for greeting
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const day = days[now.getDay()];
         document.getElementById('currentDay').textContent = day;
     }
-    
-    // Run immediately and then update every second
     updateDateTime();
     setInterval(updateDateTime, 1000);
     

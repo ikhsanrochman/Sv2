@@ -10,9 +10,11 @@ use App\Http\Controllers\SuperAdmin\PerizinanSumberRadiasiPengionController;
 use App\Http\Controllers\SuperAdmin\PemantauanTldController;
 use App\Http\Controllers\SuperAdmin\PemantauanDosisPendoseController;
 use App\Http\Controllers\SuperAdmin\PengangkutanSumberRadioaktifController;
-use App\Http\Controllers\SuperAdmin\ProjectController;
+use App\Http\Controllers\SuperAdmin\ProjectController as SuperAdminProjectController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
-use App\Http\Controllers\SuperAdmin\ProyekController;
+use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\PerizinanController;
+use App\Http\Controllers\Admin\PemantauanController;
 
 // ==========================================
 // ROUTE UNTUK HALAMAN UTAMA (LANDING PAGE)
@@ -21,7 +23,7 @@ use App\Http\Controllers\SuperAdmin\ProyekController;
 // mereka akan melihat halaman landing.blade.php
 Route::get('/', function () {
     return view('landing');
-});
+})->name('landing');
 
 // ==========================================
 // ROUTE UNTUK SISTEM LOGIN/REGISTER
@@ -44,11 +46,14 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     })->name('dashboard');
 
     // Ketersediaan SDM
-    Route::get('/ketersediaan-sdm', [SdmController::class, 'index'])->name('ketersediaan_sdm');
-    Route::post('/ketersediaan-sdm', [SdmController::class, 'store'])->name('ketersediaan_sdm.store');
-    Route::get('/ketersediaan-sdm/{id}/detail', [SdmController::class, 'detail'])->name('ketersediaan_sdm.detail');
-    Route::post('/ketersediaan-sdm/{project_id}/add-user', [SdmController::class, 'addUser'])->name('ketersediaan_sdm.add_user');
-    Route::delete('/ketersediaan-sdm/{project_id}/remove-user/{user_id}', [SdmController::class, 'removeUser'])->name('ketersediaan_sdm.remove_user');
+    Route::get('/ketersediaan-sdm', [App\Http\Controllers\SuperAdmin\SdmController::class, 'index'])->name('ketersediaan_sdm');
+    Route::get('/ketersediaan-sdm/search', [App\Http\Controllers\SuperAdmin\SdmController::class, 'search'])->name('ketersediaan_sdm.search');
+    Route::get('/ketersediaan-sdm/{project_id}/create', [App\Http\Controllers\SuperAdmin\SdmController::class, 'create'])->name('ketersediaan_sdm.create');
+    Route::post('/ketersediaan-sdm', [App\Http\Controllers\SuperAdmin\SdmController::class, 'store'])->name('ketersediaan_sdm.store');
+    Route::get('/ketersediaan-sdm/{id}', [App\Http\Controllers\SuperAdmin\SdmController::class, 'detail'])->name('ketersediaan_sdm.detail');
+    Route::get('/ketersediaan-sdm/{id}/edit', [App\Http\Controllers\SuperAdmin\SdmController::class, 'edit'])->name('ketersediaan_sdm.edit');
+    Route::put('/ketersediaan-sdm/{id}', [App\Http\Controllers\SuperAdmin\SdmController::class, 'update'])->name('ketersediaan_sdm.update');
+    Route::delete('/ketersediaan-sdm/{id}', [App\Http\Controllers\SuperAdmin\SdmController::class, 'destroy'])->name('ketersediaan_sdm.destroy');
 
     // Kelola Akun
     Route::get('/kelola-akun', [KelolaAkunController::class, 'index'])->name('kelola_akun');
@@ -67,16 +72,17 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     Route::delete('/perizinan-sumber-radiasi-pengion/{perizinan}', [PerizinanSumberRadiasiPengionController::class, 'destroy'])
         ->name('perizinan_sumber_radiasi_pengion.destroy');
 
-    // Pemantauan TLD
-    Route::get('/pemantauan-tld', [PemantauanTldController::class, 'index'])->name('pemantauan_tld');
-    Route::get('/pemantauan-tld/{id}', [PemantauanTldController::class, 'detail'])->name('pemantauan_tld.detail');
-    Route::post('/pemantauan-tld/{project}/store-dosis', [PemantauanTldController::class, 'storeDosis'])->name('pemantauan_tld.store_dosis');
-    Route::put('/pemantauan-tld/update-dosis/{dosis}', [PemantauanTldController::class, 'updateDosis'])->name('pemantauan_tld.update_dosis');
-    Route::delete('/pemantauan-tld/delete-dosis/{dosis}', [PemantauanTldController::class, 'deleteDosis'])->name('pemantauan_tld.delete_dosis');
-    Route::get('/pemantauan-tld/{project}/export', [PemantauanTldController::class, 'export'])->name('pemantauan_tld.export');
-    Route::post('/pemantauan-tld/{project}/import', [PemantauanTldController::class, 'import'])->name('pemantauan_tld.import');
-    Route::get('/pemantauan-tld/template', [PemantauanTldController::class, 'template'])->name('pemantauan_tld.template');
-    Route::get('/api/pemantauan-tld/{project}/dosis', [PemantauanTldController::class, 'getDosisData'])->name('api.pemantauan_tld.dosis');
+    // Pemantauan routes
+    Route::get('/pemantauan', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'index'])->name('pemantauan.index');
+    Route::get('/pemantauan/search', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'search'])->name('pemantauan.search');
+    Route::get('/pemantauan/{project}/tld', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tld'])->name('pemantauan.tld');
+    Route::get('/pemantauan/{project}/pendos', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendos'])->name('pemantauan.pendos');
+    Route::get('/pemantauan/{projectId}/tld/{userId}/detail', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldDetail'])->name('pemantauan.tld.detail');
+    Route::get('/pemantauan/{projectId}/tld/{userId}/tambah', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldCreate'])->name('pemantauan.tld.create');
+    Route::post('/pemantauan/{projectId}/tld/{userId}/store', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldStore'])->name('pemantauan.tld.store');
+    Route::get('/pemantauan/{projectId}/tld/{userId}/edit/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldEdit'])->name('pemantauan.tld.edit');
+    Route::put('/pemantauan/{projectId}/tld/{userId}/update/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldUpdate'])->name('pemantauan.tld.update');
+    Route::delete('/pemantauan/{projectId}/tld/{userId}/destroy/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldDestroy'])->name('pemantauan.tld.destroy');
 
     // Pemantauan Dosis Pendose
     Route::get('/pemantauan-dosis-pendose', [PemantauanDosisPendoseController::class, 'index'])->name('pemantauan_dosis_pendose');
@@ -87,17 +93,32 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
         ->name('pengangkutan_sumber_radioaktif');
 
     // Projects
-    Route::resource('projects', ProjectController::class);
+    Route::resource('projects', SuperAdminProjectController::class);
+    Route::get('/projects/search', [SuperAdminProjectController::class, 'search'])->name('projects.search');
+
+    // Perizinan
+    Route::get('/perizinan', [App\Http\Controllers\SuperAdmin\PerizinanController::class, 'index'])->name('perizinan.index');
+    Route::get('/perizinan/search', [App\Http\Controllers\SuperAdmin\PerizinanController::class, 'search'])->name('perizinan.search');
+    Route::get('/perizinan/{project_id}/create', [App\Http\Controllers\SuperAdmin\PerizinanController::class, 'create'])->name('perizinan.create');
+    Route::post('/perizinan', [App\Http\Controllers\SuperAdmin\PerizinanController::class, 'store'])->name('perizinan.store');
+    Route::get('/perizinan/{id}', [App\Http\Controllers\SuperAdmin\PerizinanController::class, 'detail'])->name('perizinan.detail');
+    Route::get('/perizinan/{id}/edit', [App\Http\Controllers\SuperAdmin\PerizinanController::class, 'edit'])->name('perizinan.edit');
+    Route::put('/perizinan/{id}', [App\Http\Controllers\SuperAdmin\PerizinanController::class, 'update'])->name('perizinan.update');
+    Route::delete('/perizinan/{id}', [App\Http\Controllers\SuperAdmin\PerizinanController::class, 'destroy'])->name('perizinan.destroy');
+
+    // Ketersediaan SDM
+    Route::prefix('sdm')->name('sdm.')->group(function () {
+        Route::get('/', [App\Http\Controllers\SuperAdmin\SdmController::class, 'index'])->name('index');
+        Route::get('/search', [App\Http\Controllers\SuperAdmin\SdmController::class, 'search'])->name('search');
+        Route::get('/{project_id}/create', [App\Http\Controllers\SuperAdmin\SdmController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\SuperAdmin\SdmController::class, 'store'])->name('store');
+        Route::get('/{id}', [App\Http\Controllers\SuperAdmin\SdmController::class, 'detail'])->name('detail');
+        Route::delete('/{project_id}/user/{user_id}', [App\Http\Controllers\SuperAdmin\SdmController::class, 'destroy'])->name('destroy');
+    });
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
     Route::get('/laporan/{id}', [LaporanController::class, 'projectDetail'])->name('laporan.project_detail');
-
-    // Proyek Routes
-    Route::get('/proyek', [ProyekController::class, 'index'])->name('proyek');
-    Route::post('/proyek', [ProyekController::class, 'store'])->name('proyek.store');
-    Route::put('/proyek/{proyek}', [ProyekController::class, 'update'])->name('proyek.update');
-    Route::delete('/proyek/{proyek}', [ProyekController::class, 'destroy'])->name('proyek.destroy');
 });
 
 // ==========================================
@@ -111,9 +132,43 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
         return view('admin.dashboard');
     })->name('dashboard');
 
+    // Pemantauan routes
+    Route::get('/pemantauan', [PemantauanController::class, 'index'])->name('pemantauan.index');
+    Route::get('/pemantauan/search', [PemantauanController::class, 'search'])->name('pemantauan.search');
+    Route::get('/pemantauan/{project}/tld', [PemantauanController::class, 'tld'])->name('pemantauan.tld');
+    Route::get('/pemantauan/{project}/pendos', [PemantauanController::class, 'pendos'])->name('pemantauan.pendos');
+    Route::get('/pemantauan/{projectId}/tld/{userId}/detail', [PemantauanController::class, 'tldDetail'])->name('pemantauan.tld.detail');
+    Route::get('/pemantauan/{projectId}/tld/{userId}/tambah', [PemantauanController::class, 'tldCreate'])->name('pemantauan.tld.create');
+    Route::post('/pemantauan/{projectId}/tld/{userId}/store', [PemantauanController::class, 'tldStore'])->name('pemantauan.tld.store');
+    Route::get('/pemantauan/{projectId}/tld/{userId}/edit/{dosisId}', [PemantauanController::class, 'tldEdit'])->name('pemantauan.tld.edit');
+    Route::put('/pemantauan/{projectId}/tld/{userId}/update/{dosisId}', [PemantauanController::class, 'tldUpdate'])->name('pemantauan.tld.update');
+    Route::delete('/pemantauan/{projectId}/tld/{userId}/destroy/{dosisId}', [PemantauanController::class, 'tldDestroy'])->name('pemantauan.tld.destroy');
+
+    // SDM Management routes
+    Route::get('/sdm', [App\Http\Controllers\Admin\SdmController::class, 'index'])->name('sdm.index');
+    Route::get('/sdm/{id}/detail', [App\Http\Controllers\Admin\SdmController::class, 'detail'])->name('sdm.detail');
+    Route::get('/sdm/{id}/create', [App\Http\Controllers\Admin\SdmController::class, 'create'])->name('sdm.create');
+    Route::post('/sdm/{id}/store', [App\Http\Controllers\Admin\SdmController::class, 'store'])->name('sdm.store');
+    Route::delete('/sdm/{project}/user/{id}', [App\Http\Controllers\Admin\SdmController::class, 'removeUser'])->name('sdm.destroy');
+    Route::get('/sdm/search-users', [App\Http\Controllers\Admin\SdmController::class, 'searchUsers'])->name('sdm.search-users');
+
     Route::get('/pengangkutan-sumber', function () {
         return view('admin.pengangkutan');
     })->name('pengangkutan');
+
+    // Update perizinan route to use controller
+    Route::get('/perizinan', [PerizinanController::class, 'index'])->name('perizinan.index');
+    Route::get('/perizinan/search', [PerizinanController::class, 'search'])->name('perizinan.search');
+    Route::get('/perizinan/{project_id}/create', [PerizinanController::class, 'create'])->name('perizinan.create');
+    Route::post('/perizinan', [PerizinanController::class, 'store'])->name('perizinan.store');
+    Route::get('/perizinan/{id}', [PerizinanController::class, 'detail'])->name('perizinan.detail');
+    Route::get('/perizinan/{id}/edit', [PerizinanController::class, 'edit'])->name('perizinan.edit');
+    Route::put('/perizinan/{id}', [PerizinanController::class, 'update'])->name('perizinan.update');
+    Route::delete('/perizinan/{id}', [PerizinanController::class, 'destroy'])->name('perizinan.destroy');
+
+    // Projects
+    Route::resource('projects', ProjectController::class);
+    Route::get('/projects/search', [ProjectController::class, 'search'])->name('projects.search');
 });
 
 // ==========================================

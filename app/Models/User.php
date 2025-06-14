@@ -72,5 +72,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(PemantauanDosisTld::class);
     }
+
+    /**
+     * Get the pemantauan dosis pendose records for the user.
+     */
+    public function pemantauanDosisPendose()
+    {
+        return $this->hasMany(PemantauanDosisPendose::class);
+    }
 }
 
