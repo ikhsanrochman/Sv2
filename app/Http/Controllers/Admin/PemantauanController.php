@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\PemantauanDosisTld;
 use App\Models\PemantauanDosisPendose;
+use App\Models\PemantauanDosisPendos;
 use Illuminate\Support\Facades\DB;
 
 class PemantauanController extends Controller
@@ -60,31 +61,49 @@ class PemantauanController extends Controller
         return view('admin.pemantauan.tld.tld', compact('project', 'dosisTlds', 'projectUsersJson'));
     }
 
-    public function pendos($id)
+    public function pendos(Project $project)
     {
-        $project = Project::with(['ketersediaanSdm.users' => function($query) {
-            $query->with('pemantauanDosisPendose');
-        }])->findOrFail($id);
-        
-        $users = $project->ketersediaanSdm->flatMap->users->unique('id');
+        $users = $project->users()->with(['pemantauanDosisPendose' => function($query) {
+            $query->orderBy('tanggal_pengukuran', 'asc');
+        }])->get();
 
-        // Prepare user data as JSON string in the controller
-        $projectUsersJson = $users->map(function($user) {
+        // Pre-process the data for easier JS access
+        $projectUsers = $users->map(function($user) {
+            // Group dosis by year and sum them
+            $dosisByYear = $user->pemantauanDosisPendose->groupBy(function($dosis) {
+                return substr($dosis->tanggal_pengukuran, 0, 4);
+            })->map(function($doses) {
+                return $doses->sum('hasil_pengukuran');
+            });
+
             return [
                 'id' => $user->id,
                 'nama' => $user->nama,
                 'npr' => $user->npr,
-                'pemantauanDosisPendos' => $user->pemantauanDosisPendose->map(function($dosis) {
+                'pemantauanDosisPendos' => $dosisByYear->map(function($total, $year) {
                     return [
-                        'tanggal_pemantauan' => $dosis->tanggal_pengukuran,
-                        'dosis' => $dosis->hasil_pengukuran,
-                        'year' => substr($dosis->tanggal_pengukuran, 0, 4)
+                        'year' => $year,
+                        'dosis' => $total
                     ];
-                })->toArray()
+                })->values()->toArray()
             ];
-        })->toJson();
+        });
 
-        return view('admin.pemantauan.pendos.pendos', compact('project', 'projectUsersJson'));
+        // Calculate total dosis for each year
+        $yearlyTotals = [];
+        foreach ($users as $user) {
+            foreach ($user->pemantauanDosisPendose as $dosis) {
+                $year = substr($dosis->tanggal_pengukuran, 0, 4);
+                if (!isset($yearlyTotals[$year])) {
+                    $yearlyTotals[$year] = 0;
+                }
+                $yearlyTotals[$year] += $dosis->hasil_pengukuran;
+            }
+        }
+
+        $projectUsersJson = json_encode($projectUsers);
+
+        return view('admin.pemantauan.pendos.pendos', compact('project', 'projectUsersJson', 'yearlyTotals'));
     }
 
     public function tldDetail($projectId, $userId)
@@ -96,18 +115,17 @@ class PemantauanController extends Controller
         return view('admin.pemantauan.tld.detail', compact('project', 'user', 'dosisTlds'));
     }
 
-    public function tldCreate($projectId, $userId)
+    public function tldCreate($projectId)
     {
         $project = Project::with('ketersediaanSdm.users')->findOrFail($projectId);
-        $user = $project->ketersediaanSdm->flatMap->users->where('id', $userId)->firstOrFail();
-
-        return view('admin.pemantauan.tld.create', compact('project', 'user'));
+        return view('admin.pemantauan.tld.create', compact('project'));
     }
 
-    public function tldStore(Request $request, $projectId, $userId)
+    public function tldStore(Request $request, $projectId)
     {
         try {
             $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
                 'tanggal_pemantauan' => 'required|date',
                 'dosis' => 'required|numeric|min:0',
             ]);
@@ -115,7 +133,7 @@ class PemantauanController extends Controller
             // Check for duplicate entry
             $existingDosis = PemantauanDosisTld::where([
                 'project_id' => $projectId,
-                'user_id' => $userId,
+                'user_id' => $validated['user_id'],
                 'tanggal_pemantauan' => $validated['tanggal_pemantauan']
             ])->first();
 
@@ -127,21 +145,33 @@ class PemantauanController extends Controller
 
             DB::beginTransaction();
 
-            $dosis = PemantauanDosisTld::create([
-                'user_id' => $userId,
-                'project_id' => $projectId,
-                'tanggal_pemantauan' => $validated['tanggal_pemantauan'],
-                'dosis' => $validated['dosis'],
-            ]);
+            try {
+                $dosis = PemantauanDosisTld::create([
+                    'user_id' => $validated['user_id'],
+                    'project_id' => $projectId,
+                    'tanggal_pemantauan' => $validated['tanggal_pemantauan'],
+                    'dosis' => $validated['dosis'],
+                ]);
 
-            DB::commit();
+                DB::commit();
 
-            return redirect()
-                ->route('admin.pemantauan.tld.detail', ['projectId' => $projectId, 'userId' => $userId])
-                ->with('success', 'Data dosis berhasil ditambahkan');
+                return redirect()
+                    ->route('admin.pemantauan.tld.detail', ['projectId' => $projectId, 'userId' => $validated['user_id']])
+                    ->with('success', 'Data dosis berhasil ditambahkan');
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Error creating TLD record: ' . $e->getMessage());
+                \Log::error('Request data: ' . json_encode($request->all()));
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
+            }
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Validation error: ' . $e->getMessage());
+            \Log::error('Request data: ' . json_encode($request->all()));
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -219,5 +249,78 @@ class PemantauanController extends Controller
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    public function pendosCreate($projectId)
+    {
+        $project = Project::findOrFail($projectId);
+        return view('admin.pemantauan.pendos.create', compact('project'));
+    }
+
+    public function pendosStore(Request $request, $projectId)
+    {
+        try {
+            $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'tanggal_pemantauan' => 'required|date',
+                'dosis' => 'required|numeric|min:0',
+            ]);
+
+            // Check for duplicate entry
+            $existingDosis = PemantauanDosisPendose::where([
+                'project_id' => $projectId,
+                'user_id' => $validated['user_id'],
+                'tanggal_pengukuran' => $validated['tanggal_pemantauan']
+            ])->first();
+
+            if ($existingDosis) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Data dosis untuk tanggal ini sudah ada. Silakan pilih tanggal lain atau edit data yang sudah ada.');
+            }
+
+            DB::beginTransaction();
+
+            try {
+                $dosis = PemantauanDosisPendose::create([
+                    'user_id' => $validated['user_id'],
+                    'project_id' => $projectId,
+                    'tanggal_pengukuran' => $validated['tanggal_pemantauan'],
+                    'hasil_pengukuran' => $validated['dosis'],
+                    'jenis_alat_pemantauan' => 'Pendos', // Adding default value
+                ]);
+
+                DB::commit();
+
+                return redirect()
+                    ->route('admin.pemantauan.pendos', ['project' => $projectId])
+                    ->with('success', 'Data dosis berhasil ditambahkan');
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Error creating Pendos record: ' . $e->getMessage());
+                \Log::error('Request data: ' . json_encode($request->all()));
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
+            }
+        } catch (\Exception $e) {
+            \Log::error('Validation error in Pendos store: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan validasi: ' . $e->getMessage());
+        }
+    }
+
+    public function pendosDetail(Project $project, $userId)
+    {
+        $user = $project->users()->findOrFail($userId);
+        
+        $dosisData = $user->pemantauanDosisPendose()
+            ->where('project_id', $project->id)
+            ->orderBy('tanggal_pengukuran', 'desc')
+            ->get();
+
+        return view('admin.pemantauan.pendos.detail', compact('project', 'user', 'dosisData'));
     }
 }

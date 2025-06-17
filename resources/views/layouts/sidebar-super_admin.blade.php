@@ -45,7 +45,6 @@
                 <span>Pemantauan Dosis Radiasi</span>
             </a>
         </div>
-        
     </div>
 
     <div class="menu-header">
@@ -63,6 +62,14 @@
             <a href="{{ route('super_admin.laporan') }}" class="menu-item {{ Request::routeIs('super_admin.laporan*') ? 'active' : '' }}">
                 <i class="fas fa-chart-bar me-2"></i>
                 <span>Laporan</span>
+            </a>
+        </div>
+        <div class="menu-wrap">
+            <a href="{{ route('super_admin.documents.index') }}" class="menu-item {{ Request::routeIs('super_admin.documents*') ? 'active' : '' }}">
+                <div class="menu-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <span>Dokumen</span>
             </a>
         </div>
         <div class="menu-wrap">
@@ -298,6 +305,7 @@
                 e.stopPropagation();
                 sidebar.classList.toggle('collapsed');
                 contentWrapper.classList.toggle('full-width');
+                document.body.classList.toggle('sidebar-collapsed');
             });
         }
 
@@ -308,6 +316,7 @@
                 if (!sidebar.classList.contains('collapsed')) {
                     sidebar.classList.add('collapsed');
                     contentWrapper.classList.add('full-width');
+                    document.body.classList.add('sidebar-collapsed');
                 }
             });
         }

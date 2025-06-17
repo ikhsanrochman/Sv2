@@ -70,9 +70,9 @@
                     </div>
                 </div>
                 <div class="col text-end">
-                    <button class="btn btn-primary btn-sm">
+                    <a href="{{ route('admin.pemantauan.pendos.create', $project->id) }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus me-2"></i>Tambah data
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -196,8 +196,9 @@
         let currentStartYear = parseInt(pendosTableContainer.dataset.startYear);
         const numberOfYears = parseInt(pendosTableContainer.dataset.numberOfYears);
 
-        // Pass the users data, pre-processed for easier JS access
+        // Pass the users data and yearly totals
         const projectUsers = JSON.parse('{!! $projectUsersJson !!}');
+        const yearlyTotals = @json($yearlyTotals);
 
         function renderTableYears() {
             // Clear existing year headers
@@ -275,16 +276,7 @@
                     window.location.href = `/admin/pemantauan/${projectId}/pendos/${user.id}/detail`;
                 });
                 
-                let tambahButton = document.createElement('button');
-                tambahButton.className = 'btn btn-primary btn-sm';
-                tambahButton.innerHTML = '<i class="fas fa-plus me-1"></i>Tambah';
-                tambahButton.addEventListener('click', function() {
-                    const projectId = {{ $project->id }};
-                    window.location.href = `/admin/pemantauan/${projectId}/pendos/${user.id}/tambah`;
-                });
-                
                 buttonGroup.appendChild(detailButton);
-                buttonGroup.appendChild(tambahButton);
                 tdDetail.appendChild(buttonGroup);
                 row.appendChild(tdDetail);
 

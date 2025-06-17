@@ -6,16 +6,13 @@ use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\SdmController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SuperAdmin\KelolaAkunController;
-use App\Http\Controllers\SuperAdmin\PerizinanSumberRadiasiPengionController;
-use App\Http\Controllers\SuperAdmin\PemantauanTldController;
-use App\Http\Controllers\SuperAdmin\PemantauanDosisPendoseController;
-use App\Http\Controllers\SuperAdmin\PengangkutanSumberRadioaktifController;
 use App\Http\Controllers\SuperAdmin\ProjectController as SuperAdminProjectController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\PerizinanController;
 use App\Http\Controllers\Admin\PemantauanController;
 use App\Http\Controllers\User\UserProfileController;
+use Illuminate\Support\Facades\Storage;
 
 // ==========================================
 // ROUTE UNTUK HALAMAN UTAMA (LANDING PAGE)
@@ -25,6 +22,22 @@ use App\Http\Controllers\User\UserProfileController;
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
+
+// Temporary debug route
+Route::get('/debug-file', function () {
+    $filePath = 'documents/0VITjpfnq9vcegx5KHjD80Mw2XJlwOy88LUBgorG.pdf';
+    $exists = Storage::disk('public')->exists($filePath);
+    $fullPath = Storage::disk('public')->path($filePath);
+    
+    return response()->json([
+        'file_path' => $filePath,
+        'exists' => $exists,
+        'full_path' => $fullPath,
+        'file_exists_php' => file_exists($fullPath),
+        'storage_path' => storage_path('app/public'),
+        'public_path' => public_path('storage')
+    ]);
+});
 
 // ==========================================
 // ROUTE UNTUK SISTEM LOGIN/REGISTER
@@ -58,20 +71,9 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
 
     // Kelola Akun
     Route::get('/kelola-akun', [KelolaAkunController::class, 'index'])->name('kelola_akun');
+    Route::get('/kelola-akun/create', [KelolaAkunController::class, 'create'])->name('kelola_akun.create');
     Route::post('/kelola-akun', [KelolaAkunController::class, 'store'])->name('kelola_akun.store');
     Route::post('/kelola-akun/toggle-status/{id}', [KelolaAkunController::class, 'toggleStatus'])->name('kelola_akun.toggle_status');
-
-    // Perizinan Sumber Radiasi Pengion
-    Route::get('/perizinan-sumber-radiasi-pengion', [PerizinanSumberRadiasiPengionController::class, 'index'])
-        ->name('perizinan_sumber_radiasi_pengion');
-    Route::get('/perizinan-sumber-radiasi-pengion/{project}', [PerizinanSumberRadiasiPengionController::class, 'show'])
-        ->name('perizinan_sumber_radiasi_pengion.show');
-    Route::post('/perizinan-sumber-radiasi-pengion/{project}', [PerizinanSumberRadiasiPengionController::class, 'store'])
-        ->name('perizinan_sumber_radiasi_pengion.store');
-    Route::put('/perizinan-sumber-radiasi-pengion/{perizinan}', [PerizinanSumberRadiasiPengionController::class, 'update'])
-        ->name('perizinan_sumber_radiasi_pengion.update');
-    Route::delete('/perizinan-sumber-radiasi-pengion/{perizinan}', [PerizinanSumberRadiasiPengionController::class, 'destroy'])
-        ->name('perizinan_sumber_radiasi_pengion.destroy');
 
     // Pemantauan routes
     Route::get('/pemantauan', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'index'])->name('pemantauan.index');
@@ -79,18 +81,18 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     Route::get('/pemantauan/{project}/tld', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tld'])->name('pemantauan.tld');
     Route::get('/pemantauan/{project}/pendos', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendos'])->name('pemantauan.pendos');
     Route::get('/pemantauan/{projectId}/tld/{userId}/detail', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldDetail'])->name('pemantauan.tld.detail');
-    Route::get('/pemantauan/{projectId}/tld/{userId}/tambah', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldCreate'])->name('pemantauan.tld.create');
-    Route::post('/pemantauan/{projectId}/tld/{userId}/store', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldStore'])->name('pemantauan.tld.store');
+    Route::get('/pemantauan/{projectId}/tld/create', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldCreate'])->name('pemantauan.tld.create');
+    Route::post('/pemantauan/{projectId}/tld/store', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldStore'])->name('pemantauan.tld.store');
     Route::get('/pemantauan/{projectId}/tld/{userId}/edit/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldEdit'])->name('pemantauan.tld.edit');
     Route::put('/pemantauan/{projectId}/tld/{userId}/update/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldUpdate'])->name('pemantauan.tld.update');
     Route::delete('/pemantauan/{projectId}/tld/{userId}/destroy/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldDestroy'])->name('pemantauan.tld.destroy');
 
     // Pemantauan Dosis Pendose
-    Route::get('/pemantauan-dosis-pendose', [PemantauanDosisPendoseController::class, 'index'])->name('pemantauan_dosis_pendose');
-    Route::get('/pemantauan-dosis-pendose/{id}', [PemantauanDosisPendoseController::class, 'detail'])->name('pemantauan_dosis_pendose.detail');
+    Route::get('/pemantauan-dosis-pendose', [App\Http\Controllers\SuperAdmin\PemantauanDosisPendoseController::class, 'index'])->name('pemantauan_dosis_pendose');
+    Route::get('/pemantauan-dosis-pendose/{id}', [App\Http\Controllers\SuperAdmin\PemantauanDosisPendoseController::class, 'detail'])->name('pemantauan_dosis_pendose.detail');
 
     // Pengangkutan Sumber Radioaktif
-    Route::get('/pengangkutan-sumber-radioaktif', [PengangkutanSumberRadioaktifController::class, 'index'])
+    Route::get('/pengangkutan-sumber-radioaktif', [App\Http\Controllers\SuperAdmin\PengangkutanSumberRadioaktifController::class, 'index'])
         ->name('pengangkutan_sumber_radioaktif');
 
     // Projects
@@ -112,7 +114,7 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
         Route::get('/', [App\Http\Controllers\SuperAdmin\SdmController::class, 'index'])->name('index');
         Route::get('/search', [App\Http\Controllers\SuperAdmin\SdmController::class, 'search'])->name('search');
         Route::get('/{project_id}/create', [App\Http\Controllers\SuperAdmin\SdmController::class, 'create'])->name('create');
-        Route::post('/', [App\Http\Controllers\SuperAdmin\SdmController::class, 'store'])->name('store');
+        Route::post('/{project_id}', [App\Http\Controllers\SuperAdmin\SdmController::class, 'store'])->name('store');
         Route::get('/{id}', [App\Http\Controllers\SuperAdmin\SdmController::class, 'detail'])->name('detail');
         Route::delete('/{project_id}/user/{user_id}', [App\Http\Controllers\SuperAdmin\SdmController::class, 'destroy'])->name('destroy');
     });
@@ -120,6 +122,13 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
     Route::get('/laporan/{id}', [LaporanController::class, 'projectDetail'])->name('laporan.project_detail');
+
+    // Dokumen
+    Route::resource('documents', App\Http\Controllers\SuperAdmin\DocumentController::class);
+    Route::get('documents/{document}/download', [App\Http\Controllers\SuperAdmin\DocumentController::class, 'download'])->name('documents.download');
+
+    // Document Categories for AJAX
+    Route::post('document_categories', [App\Http\Controllers\SuperAdmin\DocumentCategoryController::class, 'store'])->name('document_categories.store');
 });
 
 // ==========================================
@@ -138,9 +147,9 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
     Route::get('/pemantauan/search', [PemantauanController::class, 'search'])->name('pemantauan.search');
     Route::get('/pemantauan/{project}/tld', [PemantauanController::class, 'tld'])->name('pemantauan.tld');
     Route::get('/pemantauan/{project}/pendos', [PemantauanController::class, 'pendos'])->name('pemantauan.pendos');
+    Route::get('/pemantauan/{projectId}/tld/create', [PemantauanController::class, 'tldCreate'])->name('pemantauan.tld.create');
+    Route::post('/pemantauan/{projectId}/tld/store', [PemantauanController::class, 'tldStore'])->name('pemantauan.tld.store');
     Route::get('/pemantauan/{projectId}/tld/{userId}/detail', [PemantauanController::class, 'tldDetail'])->name('pemantauan.tld.detail');
-    Route::get('/pemantauan/{projectId}/tld/{userId}/tambah', [PemantauanController::class, 'tldCreate'])->name('pemantauan.tld.create');
-    Route::post('/pemantauan/{projectId}/tld/{userId}/store', [PemantauanController::class, 'tldStore'])->name('pemantauan.tld.store');
     Route::get('/pemantauan/{projectId}/tld/{userId}/edit/{dosisId}', [PemantauanController::class, 'tldEdit'])->name('pemantauan.tld.edit');
     Route::put('/pemantauan/{projectId}/tld/{userId}/update/{dosisId}', [PemantauanController::class, 'tldUpdate'])->name('pemantauan.tld.update');
     Route::delete('/pemantauan/{projectId}/tld/{userId}/destroy/{dosisId}', [PemantauanController::class, 'tldDestroy'])->name('pemantauan.tld.destroy');
@@ -170,6 +179,13 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
     // Projects
     Route::resource('projects', ProjectController::class);
     Route::get('/projects/search', [ProjectController::class, 'search'])->name('projects.search');
+
+    // Pendos routes
+    Route::get('/pemantauan/{project}/pendos', [PemantauanController::class, 'pendos'])->name('pemantauan.pendos');
+    Route::get('/pemantauan/{projectId}/pendos/create', [PemantauanController::class, 'pendosCreate'])->name('pemantauan.pendos.create');
+    Route::post('/pemantauan/{projectId}/pendos/store', [PemantauanController::class, 'pendosStore'])->name('pemantauan.pendos.store');
+    Route::get('/pemantauan/{project}/pendos', [PemantauanController::class, 'pendos'])->name('pemantauan.pendos');
+    Route::get('/pemantauan/{project}/pendos/{userId}/detail', [PemantauanController::class, 'pendosDetail'])->name('pemantauan.pendos.detail');
 });
 
 // ==========================================

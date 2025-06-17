@@ -96,18 +96,19 @@ class PemantauanController extends Controller
         return view('super_admin.pemantauan.tld.detail', compact('project', 'user', 'dosisTlds'));
     }
 
-    public function tldCreate($projectId, $userId)
+    public function tldCreate($projectId)
     {
         $project = Project::with('ketersediaanSdm.users')->findOrFail($projectId);
-        $user = $project->ketersediaanSdm->flatMap->users->where('id', $userId)->firstOrFail();
+        $usersInProject = $project->ketersediaanSdm->flatMap->users;
 
-        return view('super_admin.pemantauan.tld.create', compact('project', 'user'));
+        return view('super_admin.pemantauan.tld.create', compact('project', 'usersInProject'));
     }
 
-    public function tldStore(Request $request, $projectId, $userId)
+    public function tldStore(Request $request, $projectId)
     {
         try {
             $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
                 'tanggal_pemantauan' => 'required|date',
                 'dosis' => 'required|numeric|min:0',
             ]);
@@ -115,7 +116,7 @@ class PemantauanController extends Controller
             // Check for duplicate entry
             $existingDosis = PemantauanDosisTld::where([
                 'project_id' => $projectId,
-                'user_id' => $userId,
+                'user_id' => $validated['user_id'],
                 'tanggal_pemantauan' => $validated['tanggal_pemantauan']
             ])->first();
 
@@ -128,7 +129,7 @@ class PemantauanController extends Controller
             DB::beginTransaction();
 
             $dosis = PemantauanDosisTld::create([
-                'user_id' => $userId,
+                'user_id' => $validated['user_id'],
                 'project_id' => $projectId,
                 'tanggal_pemantauan' => $validated['tanggal_pemantauan'],
                 'dosis' => $validated['dosis'],
@@ -137,7 +138,7 @@ class PemantauanController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('super_admin.pemantauan.tld.detail', ['projectId' => $projectId, 'userId' => $userId])
+                ->route('super_admin.pemantauan.tld.detail', ['projectId' => $projectId, 'userId' => $validated['user_id']])
                 ->with('success', 'Data dosis berhasil ditambahkan');
 
         } catch (\Exception $e) {
@@ -212,6 +213,140 @@ class PemantauanController extends Controller
 
             return redirect()
                 ->route('super_admin.pemantauan.tld.detail', ['projectId' => $projectId, 'userId' => $userId])
+                ->with('success', 'Data dosis berhasil dihapus');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function pendosDetail($projectId, $userId)
+    {
+        $project = Project::with('ketersediaanSdm.users')->findOrFail($projectId);
+        $user = $project->ketersediaanSdm->flatMap->users->where('id', $userId)->firstOrFail();
+        $dosisPendos = $user->pemantauanDosisPendose;
+
+        return view('super_admin.pemantauan.pendos.detail', compact('project', 'user', 'dosisPendos'));
+    }
+
+    public function pendosCreate($projectId)
+    {
+        $project = Project::with('ketersediaanSdm.users')->findOrFail($projectId);
+        return view('super_admin.pemantauan.pendos.create', compact('project'));
+    }
+
+    public function pendosStore(Request $request, $projectId)
+    {
+        try {
+            $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'tanggal_pemantauan' => 'required|date',
+                'dosis' => 'required|numeric|min:0',
+            ]);
+
+            // Check for duplicate entry
+            $existingDosis = PemantauanDosisPendose::where([
+                'project_id' => $projectId,
+                'user_id' => $validated['user_id'],
+                'tanggal_pengukuran' => $validated['tanggal_pemantauan']
+            ])->first();
+
+            if ($existingDosis) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Data dosis untuk tanggal ini sudah ada. Silakan pilih tanggal lain atau edit data yang sudah ada.');
+            }
+
+            DB::beginTransaction();
+
+            $dosis = PemantauanDosisPendose::create([
+                'user_id' => $validated['user_id'],
+                'project_id' => $projectId,
+                'tanggal_pengukuran' => $validated['tanggal_pemantauan'],
+                'hasil_pengukuran' => $validated['dosis'],
+                'jenis_alat_pemantauan' => 'Pendos',
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('super_admin.pemantauan.pendos', ['project' => $projectId])
+                ->with('success', 'Data dosis berhasil ditambahkan');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function pendosEdit($projectId, $userId, $dosisId)
+    {
+        $project = Project::with('ketersediaanSdm.users')->findOrFail($projectId);
+        $user = $project->ketersediaanSdm->flatMap->users->where('id', $userId)->firstOrFail();
+        $dosisPendos = PemantauanDosisPendose::findOrFail($dosisId);
+
+        return view('super_admin.pemantauan.pendos.edit', compact('project', 'user', 'dosisPendos'));
+    }
+
+    public function pendosUpdate(Request $request, $projectId, $userId, $dosisId)
+    {
+        try {
+            $validated = $request->validate([
+                'tanggal_pemantauan' => 'required|date',
+                'dosis' => 'required|numeric|min:0',
+            ]);
+
+            $dosisPendos = PemantauanDosisPendose::findOrFail($dosisId);
+
+            // Check for duplicate entry, excluding current record
+            $existingDosis = PemantauanDosisPendose::where([
+                'project_id' => $projectId,
+                'user_id' => $userId,
+                'tanggal_pengukuran' => $validated['tanggal_pemantauan']
+            ])->where('id', '!=', $dosisId)->first();
+
+            if ($existingDosis) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Data dosis untuk tanggal ini sudah ada. Silakan pilih tanggal lain.');
+            }
+
+            DB::beginTransaction();
+
+            $dosisPendos->update([
+                'tanggal_pengukuran' => $validated['tanggal_pemantauan'],
+                'hasil_pengukuran' => $validated['dosis'],
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('super_admin.pemantauan.pendos.detail', ['projectId' => $projectId, 'userId' => $userId])
+                ->with('success', 'Data dosis berhasil diperbarui');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function pendosDestroy($projectId, $userId, $dosisId)
+    {
+        try {
+            $dosisPendos = PemantauanDosisPendose::findOrFail($dosisId);
+
+            DB::beginTransaction();
+            $dosisPendos->delete();
+            DB::commit();
+
+            return redirect()
+                ->route('super_admin.pemantauan.pendos.detail', ['projectId' => $projectId, 'userId' => $userId])
                 ->with('success', 'Data dosis berhasil dihapus');
 
         } catch (\Exception $e) {

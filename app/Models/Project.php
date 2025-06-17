@@ -44,5 +44,10 @@ class Project extends Model
         return $this->hasMany(PerizinanSumberRadiasiPengion::class);
     }
 
+    public function pemantauanDosisTld()
+    {
+        return $this->hasMany(\App\Models\PemantauanDosisTld::class);
+    }
+
     // Tambahkan relasi pengangkutan jika ada
 }

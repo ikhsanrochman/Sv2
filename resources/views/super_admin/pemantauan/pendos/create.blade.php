@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.super_admin')
 
 @section('content')
 <!-- Breadcrumb Section -->
@@ -6,9 +6,9 @@
     <div class="d-flex justify-content-between bg-dark-blue py-2 px-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.pemantauan.index') }}" class="text-decoration-none text-white">Pemantauan</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.pemantauan.tld', $project->id) }}" class="text-decoration-none text-white">TLD</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.index') }}" class="text-decoration-none text-white">Pemantauan</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.pendos', $project->id) }}" class="text-decoration-none text-white">Pendos</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page">Tambah Data</li>
             </ol>
         </nav>
@@ -20,11 +20,24 @@
 <div class="container-fluid">
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <h6 class="fw-bold mb-4">Tambah Data Dosis Pemantauan TLD</h6>
+            <h6 class="fw-bold mb-4">Tambah Data Dosis Pemantauan Pendos</h6>
 
-            <form action="{{ route('admin.pemantauan.tld.store', ['projectId' => $project->id]) }}" method="POST">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            <form action="{{ route('super_admin.pemantauan.pendos.store', ['projectId' => $project->id]) }}" method="POST">
                 @csrf
-                
                 <!-- Pilih Karyawan -->
                 <div class="row mb-4">
                     <div class="col-md-6">
@@ -45,7 +58,7 @@
                     </div>
                 </div>
 
-                <!-- Form Data TLD -->
+                <!-- Form Data Pendos -->
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
@@ -72,7 +85,7 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2 justify-content-end mt-4">
-                    <a href="{{ route('admin.pemantauan.tld', $project->id) }}" class="btn btn-secondary">
+                    <a href="{{ route('super_admin.pemantauan.pendos', $project->id) }}" class="btn btn-secondary">
                         <i class="fas fa-times me-1"></i>Batal
                     </a>
                     <button type="submit" class="btn btn-primary">
@@ -132,7 +145,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.querySelector('.sidebar');
         const breadcrumbContainer = document.getElementById('breadcrumb-container');
-        
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
@@ -141,7 +153,6 @@
                 }
             });
         });
-
         observer.observe(sidebar, {
             attributes: true
         });

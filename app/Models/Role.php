@@ -10,7 +10,7 @@ class Role extends Model
     protected $primaryKey = 'id';
     
     protected $fillable = [
-        'nama'
+        'name'
     ];
 
     public function users()

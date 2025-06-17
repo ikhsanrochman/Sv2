@@ -7,7 +7,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-white">Home</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.projects.index') }}" class="text-decoration-none text-white">Kelola Project</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.projects.index') }}" class="text-decoration-none text-white">Kelola Project</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page">Tambah Data Project</li>
             </ol>
         </nav>
@@ -42,7 +42,7 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h2 class="fw-bold">Kelola Project</h2>
-        <a href="{{ route('admin.projects.index') }}" class="btn btn-dark-custom">
+        <a href="{{ route('super_admin.projects.index') }}" class="btn btn-dark-custom">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>
     </div>
@@ -65,7 +65,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('admin.projects.store') }}" method="POST">
+            <form action="{{ route('super_admin.projects.store') }}" method="POST">
                 @csrf
                 <div class="mb-2">
                     <label for="nama_proyek" class="form-label">Nama Project</label>

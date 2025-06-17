@@ -22,21 +22,25 @@
         <div class="card-body">
             <h6 class="fw-bold mb-4">Tambah Data Dosis Pemantauan TLD</h6>
 
-            <form action="{{ route('super_admin.pemantauan.tld.store', ['projectId' => $project->id, 'userId' => $user->id]) }}" method="POST">
+            <form action="{{ route('super_admin.pemantauan.tld.store', ['projectId' => $project->id]) }}" method="POST">
                 @csrf
                 
-                <!-- Informasi Karyawan -->
+                <!-- Pilih Karyawan -->
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label class="form-label">Nama Karyawan</label>
-                            <input type="text" class="form-control" value="{{ $user->nama }}" readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">NPR</label>
-                            <input type="text" class="form-control" value="{{ $user->npr ?? '-' }}" readonly>
+                            <label for="user_id" class="form-label">Pilih Karyawan <span class="text-danger">*</span></label>
+                            <select class="form-select @error('user_id') is-invalid @enderror" id="user_id" name="user_id" required>
+                                <option value="">Pilih Karyawan</option>
+                                @foreach($usersInProject as $user)
+                                    <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->nama }} ({{ $user->npr ?? 'No NPR' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('user_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>

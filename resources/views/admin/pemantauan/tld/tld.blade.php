@@ -69,9 +69,9 @@
                     </div>
                 </div>
                 <div class="col text-end">
-                    <button class="btn btn-primary btn-sm">
+                    <a href="{{ route('admin.pemantauan.tld.create', ['projectId' => $project->id]) }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus me-2"></i>Tambah data
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -274,16 +274,7 @@
                     window.location.href = `/admin/pemantauan/${projectId}/tld/${user.id}/detail`;
                 });
                 
-                let tambahButton = document.createElement('button');
-                tambahButton.className = 'btn btn-primary btn-sm';
-                tambahButton.innerHTML = '<i class="fas fa-plus me-1"></i>Tambah';
-                tambahButton.addEventListener('click', function() {
-                    const projectId = {{ $project->id }};
-                    window.location.href = `/admin/pemantauan/${projectId}/tld/${user.id}/tambah`;
-                });
-                
                 buttonGroup.appendChild(detailButton);
-                buttonGroup.appendChild(tambahButton);
                 tdDetail.appendChild(buttonGroup);
                 row.appendChild(tdDetail);
 

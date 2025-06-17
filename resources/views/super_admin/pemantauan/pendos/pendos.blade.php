@@ -57,7 +57,12 @@
     <!-- Data Pendos Section -->
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <h6 class="fw-bold mb-3">Data Pemantauan Pendos</h6>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h6 class="fw-bold mb-0">Data Dosis Pemantauan Pendos</h6>
+                <a href="{{ route('super_admin.pemantauan.pendos.create', ['projectId' => $project->id]) }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Tambah Data
+                </a>
+            </div>
             
             <!-- Search and Add Button -->
             <div class="row mb-3 align-items-center">
@@ -68,11 +73,6 @@
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
-                </div>
-                <div class="col text-end">
-                    <button class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus me-2"></i>Tambah data
-                    </button>
                 </div>
             </div>
 
@@ -196,8 +196,9 @@
         let currentStartYear = parseInt(pendosTableContainer.dataset.startYear);
         const numberOfYears = parseInt(pendosTableContainer.dataset.numberOfYears);
 
-        // Pass the users data, pre-processed for easier JS access
+        // Pass the users data and yearly totals
         const projectUsers = JSON.parse('{!! $projectUsersJson !!}');
+        const yearlyTotals = @json($yearlyTotals ?? []);
 
         function renderTableYears() {
             // Clear existing year headers
@@ -231,6 +232,7 @@
 
             projectUsers.forEach((user, index) => {
                 let row = document.createElement('tr');
+                row.setAttribute('data-user-id', user.id);
                 
                 let tdNo = document.createElement('td');
                 tdNo.className = 'text-center';
@@ -248,21 +250,39 @@
                 for (let year = currentStartYear; year < currentStartYear + numberOfYears; year++) {
                     let tdDosis = document.createElement('td');
                     tdDosis.className = 'text-center';
-                    tdDosis.textContent = user.dosis[year] ?? '-';
+                    
+                    // Sum up all dosis values for this year
+                    let totalDosis = 0;
+                    user.pemantauanDosisPendos.forEach(dosis => {
+                        if (parseInt(dosis.year) === year) {
+                            totalDosis += parseFloat(dosis.dosis) || 0;
+                        }
+                    });
+                    
+                    // Display the total with 2 decimal places and mSv unit
+                    tdDosis.textContent = totalDosis > 0 ? totalDosis.toFixed(2) + ' mSv' : '-';
                     row.appendChild(tdDosis);
                 }
 
-                let tdAksi = document.createElement('td');
-                tdAksi.className = 'text-center';
-                tdAksi.innerHTML = `
-                    <button class="btn btn-primary btn-sm me-1">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                `;
-                row.appendChild(tdAksi);
+                let tdDetail = document.createElement('td');
+                tdDetail.className = 'text-center';
+                let buttonGroup = document.createElement('div');
+                buttonGroup.className = 'd-flex gap-2 justify-content-center';
+                
+                let detailButton = document.createElement('button');
+                detailButton.className = 'btn btn-warning btn-sm';
+                detailButton.innerHTML = '<i class="fas fa-eye me-1"></i>Detail';
+                detailButton.addEventListener('click', function() {
+                    const projectId = {{ $project->id }};
+                    const userId = user.id;
+                    window.location.href = `{{ route('super_admin.pemantauan.pendos.detail', ['projectId' => ':projectId', 'userId' => ':userId']) }}`
+                        .replace(':projectId', projectId)
+                        .replace(':userId', userId);
+                });
+                
+                buttonGroup.appendChild(detailButton);
+                tdDetail.appendChild(buttonGroup);
+                row.appendChild(tdDetail);
 
                 pendosTableBody.appendChild(row);
             });
@@ -271,19 +291,18 @@
         // Initial render
         renderTableYears();
 
-        // Scroll buttons functionality
         scrollLeftBtn.addEventListener('click', function() {
-            if (currentStartYear > 2021) {
+            // Prevent going below a reasonable minimum year, e.g., 1900
+            if (currentStartYear > 1900) { 
                 currentStartYear--;
                 renderTableYears();
             }
         });
 
         scrollRightBtn.addEventListener('click', function() {
-            if (currentStartYear < 2025) {
-                currentStartYear++;
-                renderTableYears();
-            }
+            // Allow going forward, data will show as '-' if not available
+            currentStartYear++;
+            renderTableYears();
         });
     });
 </script>

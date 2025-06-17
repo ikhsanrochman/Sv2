@@ -18,7 +18,8 @@ class UserSeeder extends Seeder
         // Create users
         $users = [
             [
-                'nama' => 'Super Admin',
+                'nama' => 'Teguh Dimas Gandika Putra',
+                'email' => 'superadmin@sipemdora.com',
                 'role_id' => 1,
                 'no_sib' => 'SIB001',
                 'berlaku' => '2024-12-31',
@@ -30,7 +31,8 @@ class UserSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'nama' => 'Admin',
+                'nama' => 'Hery Setyo Utomo',
+                'email' => 'admin@sipemdora.com',
                 'role_id' => 2,
                 'no_sib' => 'SIB002',
                 'berlaku' => '2024-12-31',
@@ -42,7 +44,8 @@ class UserSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'nama' => 'Regular User',
+                'nama' => 'Andi Bagus Indra Kusuma',
+                'email' => 'user@sipemdora.com',
                 'role_id' => 3,
                 'no_sib' => 'SIB003',
                 'berlaku' => '2024-12-31',

@@ -25,6 +25,32 @@
         </a>
     </div>
 
+    <!-- Alert Messages -->
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    @if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
     <!-- Form Section -->
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-secondary text-white py-3">
@@ -137,40 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('berlaku').value = '';
             document.getElementById('keahlian').value = '';
         }
-    });
-
-    // Handle form submission
-    document.getElementById('addWorkerForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-
-        fetch(this.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: 'Data pekerja berhasil ditambahkan',
-                    icon: 'success'
-                }).then(() => {
-                    window.location.href = "{{ route('super_admin.sdm.detail', $project->id) }}";
-                });
-            }
-        })
-        .catch(error => {
-            Swal.fire({
-                title: 'Gagal!',
-                text: 'Terjadi kesalahan saat menambahkan data',
-                icon: 'error'
-            });
-        });
     });
 });
 </script>

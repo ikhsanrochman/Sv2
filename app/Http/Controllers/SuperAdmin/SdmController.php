@@ -46,12 +46,35 @@ class SdmController extends Controller
             'user_id' => 'required|exists:users,id'
         ]);
 
-        $ketersediaanSdm = new KetersediaanSdm();
-        $ketersediaanSdm->project_id = $project_id;
-        $ketersediaanSdm->user_id = $request->user_id;
-        $ketersediaanSdm->save();
+        try {
+            // Check if user is already assigned to this project
+            $existingAssignment = KetersediaanSdm::where('project_id', $project_id)
+                ->whereHas('users', function($query) use ($request) {
+                    $query->where('user_id', $request->user_id);
+                })
+                ->first();
 
-        return response()->json(['success' => true]);
+            if ($existingAssignment) {
+                return redirect()->back()
+                    ->with('error', 'Pekerja sudah terdaftar dalam proyek ini.')
+                    ->withInput();
+            }
+
+            // Get or create ketersediaan SDM record for this project
+            $ketersediaanSdm = KetersediaanSdm::firstOrCreate([
+                'project_id' => $project_id
+            ]);
+
+            // Attach the user to the ketersediaan SDM
+            $ketersediaanSdm->users()->attach($request->user_id);
+
+            return redirect()->route('super_admin.sdm.detail', $project_id)
+                ->with('success', 'Pekerja berhasil ditambahkan ke proyek.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menambahkan pekerja.')
+                ->withInput();
+        }
     }
 
     public function destroy($project_id, $user_id)
