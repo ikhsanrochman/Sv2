@@ -87,13 +87,17 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     Route::put('/pemantauan/{projectId}/tld/{userId}/update/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldUpdate'])->name('pemantauan.tld.update');
     Route::delete('/pemantauan/{projectId}/tld/{userId}/destroy/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldDestroy'])->name('pemantauan.tld.destroy');
 
-    // Pemantauan Dosis Pendose
-    Route::get('/pemantauan-dosis-pendose', [App\Http\Controllers\SuperAdmin\PemantauanDosisPendoseController::class, 'index'])->name('pemantauan_dosis_pendose');
-    Route::get('/pemantauan-dosis-pendose/{id}', [App\Http\Controllers\SuperAdmin\PemantauanDosisPendoseController::class, 'detail'])->name('pemantauan_dosis_pendose.detail');
+    // Pemantauan Dosis Pendose routes
+    Route::get('/pemantauan/{projectId}/pendos/{userId}/detail', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendosDetail'])->name('pemantauan.pendos.detail');
+    Route::get('/pemantauan/{projectId}/pendos/create', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendosCreate'])->name('pemantauan.pendos.create');
+    Route::post('/pemantauan/{projectId}/pendos/store', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendosStore'])->name('pemantauan.pendos.store');
+    Route::get('/pemantauan/{projectId}/pendos/{userId}/edit/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendosEdit'])->name('pemantauan.pendos.edit');
+    Route::put('/pemantauan/{projectId}/pendos/{userId}/update/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendosUpdate'])->name('pemantauan.pendos.update');
+    Route::delete('/pemantauan/{projectId}/pendos/{userId}/destroy/{dosisId}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendosDestroy'])->name('pemantauan.pendos.destroy');
 
     // Pengangkutan Sumber Radioaktif
-    Route::get('/pengangkutan-sumber-radioaktif', [App\Http\Controllers\SuperAdmin\PengangkutanSumberRadioaktifController::class, 'index'])
-        ->name('pengangkutan_sumber_radioaktif');
+    // Route::get('/pengangkutan-sumber-radioaktif', [App\Http\Controllers\SuperAdmin\PengangkutanSumberRadioaktifController::class, 'index'])
+    //     ->name('pengangkutan_sumber_radioaktif');
 
     // Projects
     Route::resource('projects', SuperAdminProjectController::class);
@@ -122,6 +126,7 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
     Route::get('/laporan/{id}', [LaporanController::class, 'projectDetail'])->name('laporan.project_detail');
+    Route::get('/laporan/{id}/download', [LaporanController::class, 'downloadProjectReport'])->name('laporan.project.download');
 
     // Dokumen
     Route::resource('documents', App\Http\Controllers\SuperAdmin\DocumentController::class);

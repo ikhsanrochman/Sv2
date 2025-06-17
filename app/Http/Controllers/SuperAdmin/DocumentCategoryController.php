@@ -12,6 +12,8 @@ class DocumentCategoryController extends Controller
     public function store(Request $request)
     {
         try {
+            \Log::info('DocumentCategory store method called', ['request' => $request->all()]);
+            
             // Validasi input
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|unique:document_categories,name',
@@ -23,6 +25,7 @@ class DocumentCategoryController extends Controller
             ]);
 
             if ($validator->fails()) {
+                \Log::warning('DocumentCategory validation failed', ['errors' => $validator->errors()]);
                 return response()->json([
                     'success' => false,
                     'message' => $validator->errors()->first(),
@@ -35,14 +38,19 @@ class DocumentCategoryController extends Controller
                 'name' => $request->name,
             ]);
 
+            \Log::info('DocumentCategory created successfully', ['category' => $category]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Kategori berhasil ditambahkan.',
                 'category' => $category
-            ], 201);
+            ], 200);
 
         } catch (\Exception $e) {
-            \Log::error('Error creating document category: ' . $e->getMessage());
+            \Log::error('Error creating document category: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request' => $request->all()
+            ]);
             
             return response()->json([
                 'success' => false,

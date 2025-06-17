@@ -49,9 +49,14 @@
                 <h2 class="fw-bold">{{ $project->nama_proyek }}</h2>
                 <p class="text-muted mb-0">Detail lengkap proyek dan semua data terkait</p>
             </div>
-            <a href="{{ route('super_admin.laporan') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Kembali
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('super_admin.laporan.project.download', $project->id) }}" class="btn btn-success">
+                    <i class="fas fa-download me-2"></i>Download Laporan
+                </a>
+                <a href="{{ route('super_admin.laporan') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Kembali
+                </a>
+            </div>
         </div>
     </div>
 

@@ -272,7 +272,7 @@
                 detailButton.innerHTML = '<i class="fas fa-eye me-1"></i>Detail';
                 detailButton.addEventListener('click', function() {
                     const projectId = {{ $project->id }};
-                    window.location.href = `/super_admin/pemantauan/${projectId}/tld/${user.id}/detail`;
+                    window.location.href = `/super-admin/pemantauan/${projectId}/tld/${user.id}/detail`;
                 });
                 
                 buttonGroup.appendChild(detailButton);
