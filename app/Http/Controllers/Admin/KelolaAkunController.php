@@ -85,4 +85,67 @@ class KelolaAkunController extends Controller
         return redirect()->route('admin.kelola_akun')
             ->with('success', "Akun berhasil {$status}!");
     }
+
+    public function edit($id)
+    {
+        $user = User::with(['role', 'jenisPekerja'])->findOrFail($id);
+        $roles = Role::where('id', 3)->get(); // Only show user role (role_id = 3)
+        $jenisPekerja = JenisPekerja::all();
+        
+        return view('admin.kelola_akun.edit', compact('user', 'roles', 'jenisPekerja'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,' . $id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'role_id' => 'required|exists:roles,id',
+            'keahlian' => 'required|array|min:1',
+            'keahlian.*' => 'exists:jenis_pekerja,id',
+            'no_sib' => 'required|string|max:255',
+            'npr' => 'required|string|max:255',
+            'berlaku' => 'required|date',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $user = User::findOrFail($id);
+        $user->update([
+            'nama' => $request->nama,
+            'username' => $request->username,
+            'email' => $request->email,
+            'role_id' => $request->role_id,
+            'npr' => $request->npr,
+            'no_sib' => $request->no_sib,
+            'berlaku' => $request->berlaku,
+        ]);
+
+        // Update password if provided
+        if ($request->filled('password')) {
+            $passwordValidator = Validator::make($request->only('password', 'password_confirmation'), [
+                'password' => 'required|string|min:8|confirmed',
+            ]);
+
+            if ($passwordValidator->fails()) {
+                return redirect()->back()
+                    ->withErrors($passwordValidator)
+                    ->withInput();
+            }
+
+            $user->password = Hash::make($request->password);
+            $user->save();
+        }
+
+        // Sync jenis pekerja
+        $user->jenisPekerja()->sync($request->keahlian);
+
+        return redirect()->route('admin.kelola_akun')
+            ->with('success', 'Akun berhasil diperbarui!');
+    }
 } 

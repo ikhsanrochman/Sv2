@@ -73,6 +73,8 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     Route::get('/kelola-akun', [KelolaAkunController::class, 'index'])->name('kelola_akun');
     Route::get('/kelola-akun/create', [KelolaAkunController::class, 'create'])->name('kelola_akun.create');
     Route::post('/kelola-akun', [KelolaAkunController::class, 'store'])->name('kelola_akun.store');
+    Route::get('/kelola-akun/{id}/edit', [KelolaAkunController::class, 'edit'])->name('kelola_akun.edit');
+    Route::put('/kelola-akun/{id}', [KelolaAkunController::class, 'update'])->name('kelola_akun.update');
     Route::post('/kelola-akun/toggle-status/{id}', [KelolaAkunController::class, 'toggleStatus'])->name('kelola_akun.toggle_status');
 
     // Profile Management
@@ -156,6 +158,8 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
     Route::get('/kelola-akun', [App\Http\Controllers\Admin\KelolaAkunController::class, 'index'])->name('kelola_akun');
     Route::get('/kelola-akun/create', [App\Http\Controllers\Admin\KelolaAkunController::class, 'create'])->name('kelola_akun.create');
     Route::post('/kelola-akun', [App\Http\Controllers\Admin\KelolaAkunController::class, 'store'])->name('kelola_akun.store');
+    Route::get('/kelola-akun/{id}/edit', [App\Http\Controllers\Admin\KelolaAkunController::class, 'edit'])->name('kelola_akun.edit');
+    Route::put('/kelola-akun/{id}', [App\Http\Controllers\Admin\KelolaAkunController::class, 'update'])->name('kelola_akun.update');
     Route::post('/kelola-akun/toggle-status/{id}', [App\Http\Controllers\Admin\KelolaAkunController::class, 'toggleStatus'])->name('kelola_akun.toggle_status');
 
     // Profile Management

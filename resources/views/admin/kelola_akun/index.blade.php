@@ -111,6 +111,9 @@
                 </td>
                 <td>
                     <div class="d-flex gap-2">
+                        <a href="{{ route('admin.kelola_akun.edit', $user->id) }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i>
+                        </a>
                         <button class="btn btn-warning btn-sm" onclick="toggleUserStatus({{ $user->id }})">
                             <i class="fas fa-power-off"></i>
                         </button>

@@ -83,4 +83,63 @@ class KelolaAkunController extends Controller
             return response()->json(['success' => false], 500);
         }
     }
+
+    public function edit($id)
+    {
+        $user = User::with(['role', 'jenisPekerja'])->findOrFail($id);
+        $roles = Role::all();
+        $jenisPekerja = JenisPekerja::all();
+        
+        return view('super_admin.kelola_akun.edit', compact('user', 'roles', 'jenisPekerja'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,' . $id,
+            'role_id' => 'required|exists:roles,id',
+            'keahlian' => 'required|array',
+            'keahlian.*' => 'exists:jenis_pekerja,id',
+            'no_sib' => 'required|string|max:255',
+            'npr' => 'required|string|max:255',
+            'berlaku' => 'required|date',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $user = User::findOrFail($id);
+            $user->update([
+                'nama' => $request->nama,
+                'username' => $request->username,
+                'role_id' => $request->role_id,
+                'no_sib' => $request->no_sib,
+                'npr' => $request->npr,
+                'berlaku' => $request->berlaku,
+            ]);
+
+            // Update password if provided
+            if ($request->filled('password')) {
+                $request->validate([
+                    'password' => 'string|min:8|confirmed',
+                ]);
+                $user->password = Hash::make($request->password);
+                $user->save();
+            }
+
+            // Sync jenis pekerja
+            $user->jenisPekerja()->sync($request->keahlian);
+
+            DB::commit();
+
+            return redirect()->route('super_admin.kelola_akun')
+                ->with('success', 'Akun berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withErrors(['error' => 'Terjadi kesalahan saat memperbarui akun.'])
+                ->withInput();
+        }
+    }
 } 
