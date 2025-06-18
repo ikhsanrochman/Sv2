@@ -17,6 +17,32 @@
 
 <div style="margin-top: 50px;"></div>
 
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('.sidebar');
+        const breadcrumbContainer = document.getElementById('breadcrumb-container');
+        const mainContentWrapper = document.getElementById('main-content-wrapper');
+        
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'class') {
+                    const isSidebarCollapsed = sidebar.classList.contains('collapsed');
+                    breadcrumbContainer.style.left = isSidebarCollapsed ? '25px' : '280px';
+                    if (mainContentWrapper) {
+                        mainContentWrapper.style.marginLeft = isSidebarCollapsed ? '25px' : '280px';
+                    }
+                }
+            });
+        });
+
+        observer.observe(sidebar, {
+            attributes: true
+        });
+    });
+</script>
+@endpush
+
 <div class="container-fluid">
     <!-- Informasi Project -->
     <div class="card border-0 shadow-sm mb-4">
@@ -42,12 +68,12 @@
                         <tr>
                             <td class="ps-0" style="width: 140px;">Tanggal Mulai</td>
                             <td class="px-3">:</td>
-                            <td>{{ $project->tanggal_mulai }}</td>
+                            <td>{{ $project->tanggal_mulai ? $project->tanggal_mulai->format('d F Y') : '-' }}</td>
                         </tr>
                         <tr>
                             <td class="ps-0">Tanggal Selesai</td>
                             <td class="px-3">:</td>
-                            <td>{{ $project->tanggal_selesai }}</td>
+                            <td>{{ $project->tanggal_selesai ? $project->tanggal_selesai->format('d F Y') : '-' }}</td>
                         </tr>
                     </table>
                 </div>
@@ -84,43 +110,47 @@
                                 </tr>
                             </table>
                         </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless mb-0">
+                                <tr>
+                                    <td class="ps-0" style="width: 140px;">Username</td>
+                                    <td class="px-3">:</td>
+                                    <td>{{ $user->username }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-0">No. SIB</td>
+                                    <td class="px-3">:</td>
+                                    <td>{{ $user->no_sib ?? '-' }}</td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Dosis Data Table -->
+            <!-- Yearly Dosis Data Table -->
+            <div class="d-flex justify-content-end align-items-center mb-3">
+                <button class="btn btn-sm btn-secondary me-2" id="prevYearBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="fw-bold me-2" id="currentYearDisplay"></span>
+                <button class="btn btn-sm btn-secondary" id="nextYearBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
             <div class="table-responsive">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover" id="yearlyDosisTable">
                     <thead class="table-dark">
                         <tr>
-                            <th class="text-center" style="width: 50px;">No</th>
-                            <th>Tanggal Pengukuran</th>
-                            <th class="text-center">Hasil Pengukuran</th>
-                            <th class="text-center" style="width: 100px;">Aksi</th>
+                            <th class="text-center align-middle" style="width: 80px;">Bulan</th>
+                            @for ($i = 1; $i <= 31; $i++)
+                                <th class="text-center">{{ $i }}</th>
+                            @endfor
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($dosisData as $index => $dosis)
-                            <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
-                                <td>{{ \Carbon\Carbon::parse($dosis->tanggal_pengukuran)->format('d F Y') }}</td>
-                                <td class="text-center">{{ $dosis->hasil_pengukuran }}</td>
-                                <td class="text-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-warning btn-sm" onclick="editDosis({{ $dosis->id }})">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteDosis({{ $dosis->id }})">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center">Tidak ada data dosis</td>
-                            </tr>
-                        @endforelse
+                        <!-- Table rows will be dynamically generated by JavaScript -->
                     </tbody>
                 </table>
             </div>
@@ -128,9 +158,34 @@
     </div>
 </div>
 
+<!-- Custom CSS -->
 <style>
-    .breadcrumb-section {
-        background-color: #1e3a5f !important;
+    .bg-dark-blue {
+        background-color: #1e3a5f;
+    }
+    
+    .container-fluid {
+        overflow-x: auto;
+        max-width: 100vw;
+    }
+
+    .breadcrumb-item {
+        padding: 0;
+        margin: 0;
+    }
+    
+    .breadcrumb-item a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+    
+    .breadcrumb-item a:hover {
+        color: #e0e0e0;
+    }
+
+    .breadcrumb {
+        margin: 0;
+        padding: 0;
     }
     
     .table-dark th {
@@ -143,6 +198,7 @@
     .table td {
         font-size: 0.875rem;
         vertical-align: middle;
+        min-width: 50px; /* Ensure cells have a minimum width */
     }
 
     .table-bordered td, .table-bordered th {
@@ -194,6 +250,28 @@
         background-color: #c82333;
         border-color: #bd2130;
     }
+
+    .card-header {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .alert {
+        border-radius: 8px;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 8px;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+    }
 </style>
 
 @push('scripts')
@@ -201,12 +279,16 @@
     document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.querySelector('.sidebar');
         const breadcrumbContainer = document.getElementById('breadcrumb-container');
+        const mainContentWrapper = document.getElementById('main-content-wrapper');
         
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
                     const isSidebarCollapsed = sidebar.classList.contains('collapsed');
                     breadcrumbContainer.style.left = isSidebarCollapsed ? '25px' : '280px';
+                    if (mainContentWrapper) {
+                        mainContentWrapper.style.marginLeft = isSidebarCollapsed ? '25px' : '280px';
+                    }
                 }
             });
         });
@@ -214,19 +296,126 @@
         observer.observe(sidebar, {
             attributes: true
         });
+
+        const dosisData = JSON.parse('{!! json_encode($dosisData) !!}');
+        const yearlyDosisTableBody = document.querySelector('#yearlyDosisTable tbody');
+        const prevYearBtn = document.getElementById('prevYearBtn');
+        const nextYearBtn = document.getElementById('nextYearBtn');
+        const currentYearDisplay = document.getElementById('currentYearDisplay');
+
+        let currentYear = new Date().getFullYear();
+
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGS', 'SEP', 'OKT', 'NOV', 'DES'];
+
+        function renderYearlyTable(year) {
+            currentYearDisplay.textContent = year; // Update the displayed year
+            yearlyDosisTableBody.innerHTML = ''; // Clear existing rows
+
+            const dosisByDate = {};
+            dosisData.forEach(dosis => {
+                const date = new Date(dosis.tanggal_pengukuran);
+                if (date.getFullYear() === year) {
+                    const month = date.getMonth(); // 0-indexed
+                    const day = date.getDate(); // 1-indexed
+                    if (!dosisByDate[month]) {
+                        dosisByDate[month] = {};
+                    }
+                    dosisByDate[month][day] = dosis;
+                }
+            });
+
+            months.forEach((monthName, monthIndex) => {
+                const row = document.createElement('tr');
+                const monthCell = document.createElement('td');
+                monthCell.textContent = monthName;
+                row.appendChild(monthCell);
+
+                const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+
+                for (let day = 1; day <= 31; day++) {
+                    const dayCell = document.createElement('td');
+                    dayCell.className = 'text-center';
+                    
+                    if (day <= daysInMonth) {
+                        const dosis = dosisByDate[monthIndex] && dosisByDate[monthIndex][day];
+                        if (dosis) {
+                            dayCell.innerHTML = `
+                                <span>${dosis.hasil_pengukuran ?? '-'}</span>
+                                <div class="d-flex justify-content-center gap-1 mt-1">
+                                    <button type="button" class="btn btn-warning btn-sm py-0 px-1" onclick="editDosis(${dosis.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm py-0 px-1" onclick="deleteDosis(${dosis.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            `;
+                        } else {
+                            dayCell.textContent = '-';
+                        }
+                    } else {
+                        dayCell.textContent = ''; // Empty for days not in month
+                    }
+                    row.appendChild(dayCell);
+                }
+                yearlyDosisTableBody.appendChild(row);
+            });
+        }
+
+        // Initial render for the current year
+        renderYearlyTable(currentYear);
+
+        // Event listeners for year navigation buttons
+        prevYearBtn.addEventListener('click', function() {
+            currentYear--;
+            renderYearlyTable(currentYear);
+        });
+
+        nextYearBtn.addEventListener('click', function() {
+            currentYear++;
+            renderYearlyTable(currentYear);
+        });
     });
 
     function editDosis(id) {
-        // TODO: Implement edit functionality
-        alert('Edit functionality will be implemented');
+        const projectId = {{ $project->id }};
+        const userId = {{ $user->id }};
+        window.location.href = `{{ route('admin.pemantauan.pendos.edit', ['projectId' => ':projectId', 'userId' => ':userId', 'dosisId' => ':dosisId']) }}`
+            .replace(':projectId', projectId)
+            .replace(':userId', userId)
+            .replace(':dosisId', id);
     }
 
     function deleteDosis(id) {
         if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-            // TODO: Implement delete functionality
-            alert('Delete functionality will be implemented');
+            const projectId = {{ $project->id }};
+            const userId = {{ $user->id }};
+            fetch(`{{ route('admin.pemantauan.pendos.destroy', ['projectId' => ':projectId', 'userId' => ':userId', 'dosisId' => ':dosisId']) }}`
+                .replace(':projectId', projectId)
+                .replace(':userId', userId)
+                .replace(':dosisId', id), {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Data dosis berhasil dihapus');
+                    location.reload(); // Reload page to update table
+                } else {
+                    alert('Terjadi kesalahan: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menghapus data.');
+            });
         }
     }
 </script>
 @endpush
+
 @endsection 

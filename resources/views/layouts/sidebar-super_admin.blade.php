@@ -53,6 +53,12 @@
 
     <div class="menu-section">
         <div class="menu-wrap">
+            <a href="{{ route('super_admin.profile.index') }}" class="menu-item {{ Request::routeIs('super_admin.profile.*') ? 'active' : '' }}">
+                <i class="fas fa-user-circle me-2"></i>
+                <span>Profile</span>
+            </a>
+        </div>
+        <div class="menu-wrap">
             <a href="{{ route('super_admin.kelola_akun') }}" class="menu-item {{ Request::routeIs('super_admin.kelola_akun*') ? 'active' : '' }}">
                 <i class="fas fa-user me-2"></i>
                 <span>Kelola Akun</span>

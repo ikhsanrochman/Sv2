@@ -1,4 +1,4 @@
-@extends('layouts.user')
+@extends('layouts.admin')
 
 @section('content')
 <!-- Breadcrumb Section -->
@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between bg-dark-blue py-2 px-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('user.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page">Profile</li>
             </ol>
         </nav>
@@ -70,7 +70,7 @@
                 <h5 class="mb-0"><i class="fas fa-user me-2"></i>Informasi Profile</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('user.profile.update') }}" method="POST">
+                <form action="{{ route('admin.profile.update') }}" method="POST">
                     @csrf
                     @method('PUT')
                     
@@ -108,6 +108,60 @@
                         </div>
                     </div>
 
+                    <!-- Professional Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3"><i class="fas fa-id-card me-2"></i>Informasi Profesional</h6>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="no_sib" class="form-label fw-bold">No. SIB</label>
+                            <input type="text" class="form-control @error('no_sib') is-invalid @enderror" 
+                                   id="no_sib" name="no_sib" value="{{ old('no_sib', $user->no_sib) }}" 
+                                   placeholder="Masukkan nomor SIB">
+                            @error('no_sib')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="npr" class="form-label fw-bold">NPR</label>
+                            <input type="text" class="form-control @error('npr') is-invalid @enderror" 
+                                   id="npr" name="npr" value="{{ old('npr', $user->npr) }}" 
+                                   placeholder="Masukkan nomor NPR">
+                            @error('npr')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="berlaku" class="form-label fw-bold">Tanggal Berlaku</label>
+                            <input type="date" class="form-control @error('berlaku') is-invalid @enderror" 
+                                   id="berlaku" name="berlaku" value="{{ old('berlaku', $user->berlaku) }}">
+                            @error('berlaku')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Expertise -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3"><i class="fas fa-user-tag me-2"></i>Keahlian</h6>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="keahlian" class="form-label fw-bold">Bidang Keahlian</label>
+                            <select class="form-select @error('keahlian') is-invalid @enderror" id="keahlian" name="keahlian[]" multiple>
+                                @foreach($jenisPekerja as $jp)
+                                    <option value="{{ $jp->id }}" {{ in_array($jp->id, old('keahlian', $user->jenisPekerja->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                        {{ $jp->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">Tekan Ctrl (atau Cmd di Mac) untuk memilih multiple bidang</small>
+                            @error('keahlian')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
                     <!-- Form Actions -->
                     <div class="row">
                         <div class="col-12">
@@ -131,7 +185,7 @@
                 <h5 class="mb-0"><i class="fas fa-lock me-2"></i>Ubah Password</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('user.profile.update_password') }}" method="POST">
+                <form action="{{ route('admin.profile.update_password') }}" method="POST">
                     @csrf
                     @method('PUT')
                     

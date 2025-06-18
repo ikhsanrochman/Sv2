@@ -323,4 +323,86 @@ class PemantauanController extends Controller
 
         return view('admin.pemantauan.pendos.detail', compact('project', 'user', 'dosisData'));
     }
+
+    public function pendosEdit($projectId, $userId, $dosisId)
+    {
+        $project = Project::findOrFail($projectId);
+        $user = $project->users()->findOrFail($userId);
+        $dosisPendos = PemantauanDosisPendose::findOrFail($dosisId);
+
+        return view('admin.pemantauan.pendos.edit', compact('project', 'user', 'dosisPendos'));
+    }
+
+    public function pendosUpdate(Request $request, $projectId, $userId, $dosisId)
+    {
+        try {
+            $validated = $request->validate([
+                'tanggal_pengukuran' => 'required|date',
+                'hasil_pengukuran' => 'required|numeric|min:0',
+            ]);
+
+            $dosisPendos = PemantauanDosisPendose::findOrFail($dosisId);
+
+            // Check for duplicate entry, excluding current record
+            $existingDosis = PemantauanDosisPendose::where([
+                'project_id' => $projectId,
+                'user_id' => $userId,
+                'tanggal_pengukuran' => $validated['tanggal_pengukuran']
+            ])->where('id', '!=', $dosisId)->first();
+
+            if ($existingDosis) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Data dosis untuk tanggal ini sudah ada. Silakan pilih tanggal lain.');
+            }
+
+            DB::beginTransaction();
+
+            $dosisPendos->update([
+                'tanggal_pengukuran' => $validated['tanggal_pengukuran'],
+                'hasil_pengukuran' => $validated['hasil_pengukuran'],
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.pemantauan.pendos.detail', ['project' => $projectId, 'userId' => $userId])
+                ->with('success', 'Data dosis berhasil diperbarui');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function pendosDestroy($projectId, $userId, $dosisId)
+    {
+        try {
+            $dosisPendos = PemantauanDosisPendose::findOrFail($dosisId);
+
+            DB::beginTransaction();
+            $dosisPendos->delete();
+            DB::commit();
+
+            if (request()->ajax()) {
+                return response()->json(['success' => true]);
+            }
+
+            return redirect()
+                ->route('admin.pemantauan.pendos.detail', ['project' => $projectId, 'userId' => $userId])
+                ->with('success', 'Data dosis berhasil dihapus');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            if (request()->ajax()) {
+                return response()->json(['success' => false, 'error' => $e->getMessage()]);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
 }

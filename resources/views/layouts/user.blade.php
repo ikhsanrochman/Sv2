@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Si-Pemdora - Admin</title>
+    <title>Si-Pemdora - User</title>
     
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">

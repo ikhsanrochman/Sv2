@@ -55,15 +55,29 @@
 
     <div class="menu-section">
         <div class="menu-wrap">
-            <a href="#" class="menu-item">
-                <i class="fas fa-user me-2"></i>
+            <a href="{{ route('admin.profile.index') }}" class="menu-item {{ Request::routeIs('admin.profile.*') ? 'active' : '' }}">
+                <i class="fas fa-user-circle me-2"></i>
                 <span>Profile</span>
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="#" class="menu-item">
+            <a href="{{ route('admin.kelola_akun') }}" class="menu-item {{ Request::routeIs('admin.kelola_akun*') ? 'active' : '' }}">
+                <i class="fas fa-user me-2"></i>
+                <span>Kelola Akun</span>
+            </a>
+        </div>
+        <div class="menu-wrap">
+            <a href="{{ route('admin.laporan') }}" class="menu-item {{ Request::routeIs('admin.laporan.*') ? 'active' : '' }}">
                 <i class="fas fa-chart-bar me-2"></i>
                 <span>Laporan</span>
+            </a>
+        </div>
+        <div class="menu-wrap">
+            <a href="{{ route('admin.documents.index') }}" class="menu-item {{ Request::routeIs('admin.documents.*') ? 'active' : '' }}">
+                <div class="menu-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <span>Dokumen</span>
             </a>
         </div>
         <div class="menu-wrap">

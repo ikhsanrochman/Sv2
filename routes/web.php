@@ -75,6 +75,11 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     Route::post('/kelola-akun', [KelolaAkunController::class, 'store'])->name('kelola_akun.store');
     Route::post('/kelola-akun/toggle-status/{id}', [KelolaAkunController::class, 'toggleStatus'])->name('kelola_akun.toggle_status');
 
+    // Profile Management
+    Route::get('/profile', [App\Http\Controllers\SuperAdmin\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [App\Http\Controllers\SuperAdmin\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\SuperAdmin\ProfileController::class, 'updatePassword'])->name('profile.update_password');
+
     // Pemantauan routes
     Route::get('/pemantauan', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'index'])->name('pemantauan.index');
     Route::get('/pemantauan/search', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'search'])->name('pemantauan.search');
@@ -147,6 +152,17 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
         return view('admin.dashboard');
     })->name('dashboard');
 
+    // Kelola Akun
+    Route::get('/kelola-akun', [App\Http\Controllers\Admin\KelolaAkunController::class, 'index'])->name('kelola_akun');
+    Route::get('/kelola-akun/create', [App\Http\Controllers\Admin\KelolaAkunController::class, 'create'])->name('kelola_akun.create');
+    Route::post('/kelola-akun', [App\Http\Controllers\Admin\KelolaAkunController::class, 'store'])->name('kelola_akun.store');
+    Route::post('/kelola-akun/toggle-status/{id}', [App\Http\Controllers\Admin\KelolaAkunController::class, 'toggleStatus'])->name('kelola_akun.toggle_status');
+
+    // Profile Management
+    Route::get('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('profile.update_password');
+
     // Pemantauan routes
     Route::get('/pemantauan', [PemantauanController::class, 'index'])->name('pemantauan.index');
     Route::get('/pemantauan/search', [PemantauanController::class, 'search'])->name('pemantauan.search');
@@ -185,12 +201,26 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
     Route::resource('projects', ProjectController::class);
     Route::get('/projects/search', [ProjectController::class, 'search'])->name('projects.search');
 
+    // Laporan
+    Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('laporan');
+    Route::get('/laporan/{id}', [App\Http\Controllers\Admin\LaporanController::class, 'projectDetail'])->name('laporan.project_detail');
+    Route::get('/laporan/{id}/download', [App\Http\Controllers\Admin\LaporanController::class, 'downloadProjectReport'])->name('laporan.project.download');
+
+    // Dokumen
+    Route::resource('documents', App\Http\Controllers\Admin\DocumentController::class);
+    Route::get('documents/{document}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('documents.download');
+
+    // Document Categories for AJAX
+    Route::post('document_categories', [App\Http\Controllers\SuperAdmin\DocumentCategoryController::class, 'store'])->name('document_categories.store');
+
     // Pendos routes
     Route::get('/pemantauan/{project}/pendos', [PemantauanController::class, 'pendos'])->name('pemantauan.pendos');
     Route::get('/pemantauan/{projectId}/pendos/create', [PemantauanController::class, 'pendosCreate'])->name('pemantauan.pendos.create');
     Route::post('/pemantauan/{projectId}/pendos/store', [PemantauanController::class, 'pendosStore'])->name('pemantauan.pendos.store');
-    Route::get('/pemantauan/{project}/pendos', [PemantauanController::class, 'pendos'])->name('pemantauan.pendos');
     Route::get('/pemantauan/{project}/pendos/{userId}/detail', [PemantauanController::class, 'pendosDetail'])->name('pemantauan.pendos.detail');
+    Route::get('/pemantauan/{projectId}/pendos/{userId}/edit/{dosisId}', [PemantauanController::class, 'pendosEdit'])->name('pemantauan.pendos.edit');
+    Route::put('/pemantauan/{projectId}/pendos/{userId}/update/{dosisId}', [PemantauanController::class, 'pendosUpdate'])->name('pemantauan.pendos.update');
+    Route::delete('/pemantauan/{projectId}/pendos/{userId}/destroy/{dosisId}', [PemantauanController::class, 'pendosDestroy'])->name('pemantauan.pendos.destroy');
 });
 
 // ==========================================
@@ -202,4 +232,6 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
 Route::middleware(['auth', 'role:3'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.update_password');
 });

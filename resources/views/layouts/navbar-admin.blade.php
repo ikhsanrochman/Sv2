@@ -9,10 +9,7 @@
                     {{ Auth::user()->nama}}
                 </div>
                 <div>
-                    <a href="#" class="text-decoration-none text-dark" onclick="event.preventDefault(); showLogoutConfirmation();">
-                        <i class="fas fa-sign-out-alt me-1"></i>
-                        Logout
-                    </a>
+                    
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                         @csrf
                     </form>

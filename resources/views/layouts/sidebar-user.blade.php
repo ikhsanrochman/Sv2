@@ -25,27 +25,16 @@
 
     <div class="menu-section">
         <div class="menu-wrap">
-            <a href="{{ route('user.profile.index') }}" class="menu-item {{ Request::routeIs('user.profile.index') ? 'active' : '' }}">
+            <a href="{{ route('user.profile.index') }}" class="menu-item {{ Request::routeIs('user.profile.*') ? 'active' : '' }}">
                 <i class="fas fa-user me-2"></i>
                 <span>Profile</span>
             </a>
         </div>
-        <div class="menu-wrap">
-            <a href="{{ route('super_admin.laporan') }}" class="menu-item {{ Request::routeIs('super_admin.laporan*') ? 'active' : '' }}">
-                <i class="fas fa-chart-bar me-2"></i>
-                <span>Laporan</span>
-            </a>
-        </div>
-        <div class="menu-wrap">
-            <a href="#" class="menu-item">
-                <i class="fas fa-cog me-2"></i>
-                <span>Setting</span>
-            </a>
-        </div>
+       
         <div class="menu-wrap">
             <a href="#" class="menu-item" onclick="event.preventDefault(); showLogoutConfirmation();">
                 <i class="fas fa-sign-out-alt me-2"></i>
-                <span>Log out</span>
+                <span>Sign out</span>
             </a>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                 @csrf
