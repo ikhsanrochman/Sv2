@@ -58,11 +58,11 @@
         }
 
         .form-control {
-            background-color: transparent;
+            background-color: transparent !important;
             border: none;
             border-bottom: 1px solid white;
             border-radius: 0;
-            color: white;
+            color: white !important;
             transition: all 0.3s ease;
         }
 
@@ -200,6 +200,19 @@
             font-weight: 600;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
+
+        /* Hilangkan password reveal button default browser */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+        input[type="password"]::-webkit-credentials-auto-fill-button,
+        input[type="password"]::-webkit-input-password-reveal-button {
+            display: none;
+        }
+        input[type="password"]::-o-input-password-reveal-button {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -232,7 +245,9 @@
                 <label for="password" class="form-label">Password</label>
                 <div class="input-group">
                     <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
-                    <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                    <span class="input-group-text" id="togglePassword" style="cursor:pointer;">
+                        <i class="bi bi-eye" style="color:white;"></i>
+                    </span>
                 </div>
             </div>
 
@@ -241,7 +256,7 @@
                     <input type="checkbox" class="form-check-input" id="remember" name="remember">
                     <label class="form-check-label" for="remember">Remember me</label>
                 </div>
-                <a href="#" class="forgot-password text-light text-decoration-underline">Forgot password?</a>
+                <a href="{{ route('password.request') }}" class="forgot-password text-light text-decoration-underline">Forgot password?</a>
             </div>
 
             <div class="mb-3" data-aos="fade-up" data-aos-delay="650">
@@ -278,6 +293,25 @@
         function refreshCaptcha() {
             document.querySelector('.captcha-img').src = '{{ captcha_src() }}?' + Math.random();
         }
+
+        // Show/hide password
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+            const icon = togglePassword.querySelector('i');
+            togglePassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        });
     </script>
 </body>
 </html>

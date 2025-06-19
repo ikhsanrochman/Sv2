@@ -34,6 +34,7 @@ class KelolaAkunController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
+            'email' => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role_id' => 'required|exists:roles,id',
             'keahlian' => 'required|array',
@@ -49,6 +50,7 @@ class KelolaAkunController extends Controller
             $user = User::create([
                 'nama' => $request->nama,
                 'username' => $request->username,
+                'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role_id' => $request->role_id,
                 'no_sib' => $request->no_sib,
@@ -98,6 +100,7 @@ class KelolaAkunController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users,username,' . $id,
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
             'role_id' => 'required|exists:roles,id',
             'keahlian' => 'required|array',
             'keahlian.*' => 'exists:jenis_pekerja,id',
@@ -113,6 +116,7 @@ class KelolaAkunController extends Controller
             $user->update([
                 'nama' => $request->nama,
                 'username' => $request->username,
+                'email' => $request->email,
                 'role_id' => $request->role_id,
                 'no_sib' => $request->no_sib,
                 'npr' => $request->npr,

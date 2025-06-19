@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\PerizinanController;
 use App\Http\Controllers\Admin\PemantauanController;
 use App\Http\Controllers\User\UserProfileController;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 
 // ==========================================
 // ROUTE UNTUK HALAMAN UTAMA (LANDING PAGE)
@@ -56,7 +57,37 @@ Auth::routes();
 Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.')->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
-        return view('super_admin.dashboard');
+        $totalPekerja = \App\Models\User::count();
+        // Ambil data user dan dosis pendos bulan ini yang lebih dari 20
+        $peringatanPendos = \App\Models\PemantauanDosisPendose::with('user')
+            ->whereMonth('tanggal_pengukuran', now()->month)
+            ->whereYear('tanggal_pengukuran', now()->year)
+            ->where('hasil_pengukuran', '>', 20)
+            ->get();
+
+        // Kirim email notifikasi jika ada peringatan (tanpa cache, kirim setiap saat)
+        if ($peringatanPendos->count()) {
+            $adminEmails = \App\Http\Controllers\Auth\LoginController::getAdminEmails();
+            foreach ($peringatanPendos as $pendos) {
+                $userEmail = $pendos->user->email;
+                $userName = $pendos->user->nama;
+                $dosis = $pendos->hasil_pengukuran;
+                $tanggal = $pendos->tanggal_pengukuran->format('d-m-Y');
+                // Kirim ke admin/superadmin
+                Mail::raw("Peringatan: Dosis pendos atas nama $userName melebihi batas (hasil: $dosis µSv, tanggal: $tanggal)", function($msg) use ($adminEmails) {
+                    $msg->to($adminEmails)
+                        ->subject('Peringatan Dosis Pendos Melebihi Batas');
+                });
+                // Kirim ke user bersangkutan
+                if ($userEmail) {
+                    Mail::raw("Peringatan: Dosis Anda pada $tanggal tercatat $dosis µSv dan melebihi batas aman. Harap segera lapor ke admin.", function($msg) use ($userEmail) {
+                        $msg->to($userEmail)
+                            ->subject('Peringatan Dosis Anda Melebihi Batas');
+                    });
+                }
+            }
+        }
+        return view('super_admin.dashboard', compact('totalPekerja', 'peringatanPendos'));
     })->name('dashboard');
 
     // Ketersediaan SDM

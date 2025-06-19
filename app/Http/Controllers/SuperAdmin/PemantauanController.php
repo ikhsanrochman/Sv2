@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\PemantauanDosisTld;
 use App\Models\PemantauanDosisPendose;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class PemantauanController extends Controller
 {
@@ -269,6 +270,35 @@ class PemantauanController extends Controller
                 'jenis_alat_pemantauan' => 'Pendos',
             ]);
 
+            // Hitung total dosis bulan & tahun input
+            $bulan = date('m', strtotime($validated['tanggal_pemantauan']));
+            $tahun = date('Y', strtotime($validated['tanggal_pemantauan']));
+            $totalBulan = PemantauanDosisPendose::where('user_id', $validated['user_id'])
+                ->whereMonth('tanggal_pengukuran', $bulan)
+                ->whereYear('tanggal_pengukuran', $tahun)
+                ->sum('hasil_pengukuran');
+
+            // Kirim email jika total bulan ini > 20
+            if ($totalBulan > 20) {
+                $adminEmails = \App\Http\Controllers\Auth\LoginController::getAdminEmails();
+                $user = $dosis->user;
+                $userEmail = $user->email;
+                $userName = $user->nama;
+                $tanggal = $dosis->tanggal_pengukuran->format('d-m-Y');
+                // Kirim ke admin/superadmin
+                Mail::raw("Peringatan: Total dosis pendos atas nama $userName pada bulan ini melebihi batas (total: $totalBulan µSv, tanggal input terakhir: $tanggal)", function($msg) use ($adminEmails) {
+                    $msg->to($adminEmails)
+                        ->subject('Peringatan Total Dosis Pendos Bulanan Melebihi Batas');
+                });
+                // Kirim ke user bersangkutan
+                if ($userEmail) {
+                    Mail::raw("Peringatan: Total dosis Anda bulan ini per $tanggal tercatat $totalBulan µSv dan melebihi batas aman. Harap segera lapor ke admin.", function($msg) use ($userEmail) {
+                        $msg->to($userEmail)
+                            ->subject('Peringatan Total Dosis Bulanan Anda Melebihi Batas');
+                    });
+                }
+            }
+
             DB::commit();
 
             return redirect()
@@ -322,6 +352,35 @@ class PemantauanController extends Controller
                 'hasil_pengukuran' => $validated['dosis'],
             ]);
 
+            // Hitung total dosis bulan & tahun input
+            $bulan = date('m', strtotime($validated['tanggal_pemantauan']));
+            $tahun = date('Y', strtotime($validated['tanggal_pemantauan']));
+            $totalBulan = PemantauanDosisPendose::where('user_id', $userId)
+                ->whereMonth('tanggal_pengukuran', $bulan)
+                ->whereYear('tanggal_pengukuran', $tahun)
+                ->sum('hasil_pengukuran');
+
+            // Kirim email jika total bulan ini > 20
+            if ($totalBulan > 20) {
+                $adminEmails = \App\Http\Controllers\Auth\LoginController::getAdminEmails();
+                $user = $dosisPendos->user;
+                $userEmail = $user->email;
+                $userName = $user->nama;
+                $tanggal = $validated['tanggal_pemantauan'];
+                // Kirim ke admin/superadmin
+                Mail::raw("Peringatan: Total dosis pendos atas nama $userName pada bulan ini melebihi batas (total: $totalBulan µSv, tanggal input terakhir: $tanggal)", function($msg) use ($adminEmails) {
+                    $msg->to($adminEmails)
+                        ->subject('Peringatan Total Dosis Pendos Bulanan Melebihi Batas');
+                });
+                // Kirim ke user bersangkutan
+                if ($userEmail) {
+                    Mail::raw("Peringatan: Total dosis Anda bulan ini per $tanggal tercatat $totalBulan µSv dan melebihi batas aman. Harap segera lapor ke admin.", function($msg) use ($userEmail) {
+                        $msg->to($userEmail)
+                            ->subject('Peringatan Total Dosis Bulanan Anda Melebihi Batas');
+                    });
+                }
+            }
+
             DB::commit();
 
             return redirect()
@@ -345,12 +404,18 @@ class PemantauanController extends Controller
             $dosisPendos->delete();
             DB::commit();
 
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json(['success' => true]);
+            }
             return redirect()
                 ->route('super_admin.pemantauan.pendos.detail', ['projectId' => $projectId, 'userId' => $userId])
                 ->with('success', 'Data dosis berhasil dihapus');
 
         } catch (\Exception $e) {
             DB::rollBack();
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            }
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }

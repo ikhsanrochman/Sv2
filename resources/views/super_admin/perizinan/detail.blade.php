@@ -7,7 +7,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('super_admin.perizinan.index') }}" class="text-decoration-none text-white">Perizinan</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">Detail Perizinan</li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Detail Perizinan Sumber Radiasi</li>
             </ol>
         </nav>
     </div>
@@ -25,7 +25,7 @@
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
                     const isSidebarCollapsed = sidebar.classList.contains('collapsed');
-                    breadcrumbContainer.style.left = isSidebarCollapsed ? '25px' : '280px';
+                    breadcrumbContainer.style.left = isSidebarCollapsed ? '30px' : '280px';
                 }
             });
         });
@@ -40,7 +40,7 @@
 <div class="container-fluid">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Detail Perizinan :  {{ $project->nama_proyek }}</h2>
+        <h2 class="fw-bold">Detail Perizinan Sumber Radiasi :  {{ $project->nama_proyek }}</h2>
         <a href="{{ route('super_admin.perizinan.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>

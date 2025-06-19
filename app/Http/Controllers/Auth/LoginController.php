@@ -107,4 +107,36 @@ class LoginController extends Controller
             'username' => 'Anda tidak memiliki akses.'
         ]);
     }
+
+    /**
+     * Ambil semua email superadmin
+     */
+    public static function getSuperAdminEmails()
+    {
+        return \App\Models\User::where('role_id', 1)->pluck('email')->toArray();
+    }
+
+    /**
+     * Ambil semua email superadmin dan admin
+     */
+    public static function getAdminEmails()
+    {
+        return \App\Models\User::whereIn('role_id', [1,2])->pluck('email')->toArray();
+    }
+
+    /**
+     * Ambil email user berdasarkan ID
+     */
+    public static function getUserEmailById($id)
+    {
+        return \App\Models\User::where('id', $id)->value('email');
+    }
+
+    /**
+     * Ambil nama user berdasarkan ID
+     */
+    public static function getUserNameById($id)
+    {
+        return \App\Models\User::where('id', $id)->value('nama');
+    }
 }

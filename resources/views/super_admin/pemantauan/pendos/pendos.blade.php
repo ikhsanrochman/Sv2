@@ -177,7 +177,7 @@
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
                     const isSidebarCollapsed = sidebar.classList.contains('collapsed');
-                    breadcrumbContainer.style.left = isSidebarCollapsed ? '25px' : '280px';
+                    breadcrumbContainer.style.left = isSidebarCollapsed ? '30px' : '280px';
                 }
             });
         });

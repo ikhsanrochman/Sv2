@@ -78,12 +78,7 @@
                 <span>Dokumen</span>
             </a>
         </div>
-        <div class="menu-wrap">
-            <a href="#" class="menu-item">
-                <i class="fas fa-cog me-2"></i>
-                <span>Setting</span>
-            </a>
-        </div>
+        
         <div class="menu-wrap">
             <a href="#" class="menu-item" onclick="event.preventDefault(); showLogoutConfirmation();">
                 <i class="fas fa-sign-out-alt me-2"></i>

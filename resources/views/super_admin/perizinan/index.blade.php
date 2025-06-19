@@ -7,7 +7,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-white">Home</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">Kelola Project</li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Perizinan Sumber Radiasi</li>
             </ol>
         </nav>
     </div>
@@ -25,7 +25,7 @@
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
                     const isSidebarCollapsed = sidebar.classList.contains('collapsed');
-                    breadcrumbContainer.style.left = isSidebarCollapsed ? '25px' : '280px';
+                    breadcrumbContainer.style.left = isSidebarCollapsed ? '30px' : '280px';
                 }
             });
         });
@@ -40,7 +40,7 @@
 <div class="container-fluid">
     <!-- Header -->
     <div class="mb-4">
-        <h2 class="fw-bold">Kelola Project</h2>
+        <h2 class="fw-bold">Perizinan Sumber Radiasi</h2>
     </div>
 
     <!-- Daftar Project Section -->
@@ -51,9 +51,7 @@
                     <h5 class="fw-bold mb-1">Daftar Project</h5>
                     <p class="text-muted mb-0">Menampilkan Daftar Project Instansi</p>
                 </div>
-                <a href="{{ route('super_admin.projects.create') }}" class="btn btn-dark-custom">
-                    <i class="fas fa-plus me-2"></i>Tambah data
-                </a>
+                
             </div>
 
             <!-- Instructions -->

@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between bg-dark-blue py-2 px-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-white">Home / Kelola Project</a></li>
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-white">Home / Ketersediaan Sumber Daya Manusia</a></li>
             </ol>
         </nav>
     </div>
@@ -28,7 +28,7 @@
                     // Check if sidebar is collapsed
                     const isSidebarCollapsed = sidebar.classList.contains('collapsed');
                     // Update breadcrumb container position
-                    breadcrumbContainer.style.left = isSidebarCollapsed ? '25px' : '280px';
+                    breadcrumbContainer.style.left = isSidebarCollapsed ? '30px' : '280px';
                 }
             });
         });
@@ -44,7 +44,7 @@
 <div class="container-fluid">
     <!-- Header -->
     <div class="mb-4 ps-3">
-        <h2 class="fw-bold">Kelola Project</h2>
+        <h2 class="fw-bold">Kelola Data Ketersediaan Sumber Daya Manusia</h2>
     </div>
 
     <!-- Daftar Project Section -->
@@ -55,9 +55,7 @@
                     <h5 class="fw-bold mb-1">Daftar Project</h5>
                     <p class="text-muted mb-0">Menampilkan Daftar Project Instansi</p>
                 </div>
-                <a href="{{ route('super_admin.projects.create') }}" class="btn btn-dark-custom">
-                    <i class="fas fa-plus me-2"></i>Tambah data
-                </a>
+                
             </div>
 
             <!-- Instructions -->

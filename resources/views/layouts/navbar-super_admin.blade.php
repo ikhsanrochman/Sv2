@@ -5,8 +5,10 @@
             <!-- Right Side Of Navbar - Always Visible -->
             <div class="d-flex align-items-center">
                 <div style="padding-right: 40px;">
-                    <i class="bi bi-person me-1"></i>
-                    {{ Auth::user()->nama}}
+                    <a href="{{ route('super_admin.profile.index') }}" class="text-decoration-none text-dark">
+                        <i class="bi bi-person me-1"></i>
+                        {{ Auth::user()->nama }}
+                    </a>
                 </div>
             </div>
         </div>

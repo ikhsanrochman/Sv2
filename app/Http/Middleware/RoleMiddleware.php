@@ -2,8 +2,6 @@
 
 namespace App\Http\Middleware;
 
-namespace App\Http\Middleware;
-
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,21 +13,25 @@ use Illuminate\Support\Facades\Auth;
 class RoleMiddleware
 {
     /**
-     * Fungsi untuk mengecek role pengguna
-     * 
-     * @param $request    : Data request dari user
-     * @param $next      : Fungsi yang akan dijalankan selanjutnya
-     * @param $role_id   : ID role yang diizinkan (1=user, 2=admin, 3=user)
+     * Handle an incoming request.
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @param  mixed ...$roles
+     * @return mixed
      */
-    public function handle($request, Closure $next, $role_id)
+    public function handle($request, Closure $next, ...$roles)
     {
-        // Cek apakah user sudah login dan role_id nya sesuai
-        if (Auth::check() && Auth::user()->role_id == $role_id) {
-            // Kalau sesuai, boleh lanjut ke halaman yang dituju
-            return $next($request);
+        // Pastikan user sudah login
+        if (!Auth::check()) {
+            return redirect('/login');
         }
 
-        // Kalau tidak sesuai, tampilkan pesan error
-        abort(403, 'Unauthorized access.');
+        // Cek apakah role user ada di parameter middleware
+        if (!in_array(Auth::user()->role_id, $roles)) {
+            Auth::logout();
+            return redirect('/login')->withErrors(['username' => 'Anda tidak memiliki akses.']);
+        }
+
+        return $next($request);
     }
 }

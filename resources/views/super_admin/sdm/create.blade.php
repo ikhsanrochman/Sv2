@@ -6,9 +6,9 @@
     <div class="d-flex justify-content-between bg-dark-blue py-2 px-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('super_admin.perizinan.index') }}" class="text-decoration-none text-white">Perizinan</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('super_admin.sdm.detail', $project->id) }}" class="text-decoration-none text-white">Detail Perizinan</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">Tambah Pekerja Radiasi</li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.perizinan.index') }}" class="text-decoration-none text-white">Ketersediaan Sumber Daya Manusia</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.sdm.detail', $project->id) }}" class="text-decoration-none text-white">Detail ketersediaan Sumber Daya Manusia</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Tambah Ketersediaan Sumber Daya Manusia</li>
             </ol>
         </nav>
     </div>
@@ -19,7 +19,7 @@
 <div class="container-fluid">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Tambah Pekerja Radiasi</h2>
+        <h2 class="fw-bold">Tambah Ketersediaan SDM</h2>
         <a href="{{ route('super_admin.sdm.detail', $project->id) }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>
@@ -163,6 +163,23 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('berlaku').value = '';
             document.getElementById('keahlian').value = '';
         }
+    });
+
+    // Sidebar toggle functionality
+    const sidebar = document.querySelector('.sidebar');
+    const breadcrumbContainer = document.getElementById('breadcrumb-container');
+    
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'class') {
+                const isSidebarCollapsed = sidebar.classList.contains('collapsed');
+                breadcrumbContainer.style.left = isSidebarCollapsed ? '30px' : '280px';
+            }
+        });
+    });
+
+    observer.observe(sidebar, {
+        attributes: true
     });
 });
 </script>

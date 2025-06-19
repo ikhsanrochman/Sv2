@@ -26,7 +26,7 @@
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
                     const isSidebarCollapsed = sidebar.classList.contains('collapsed');
-                    breadcrumbContainer.style.left = isSidebarCollapsed ? '25px' : '280px';
+                    breadcrumbContainer.style.left = isSidebarCollapsed ? '30px' : '280px';
                 }
             });
         });
@@ -41,7 +41,7 @@
 <div class="container-fluid">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Kelola Project</h2>
+        <h2 class="fw-bold">Edit Data Project</h2>
         <a href="{{ route('super_admin.projects.index') }}" class="btn btn-dark-custom">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>
