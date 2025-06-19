@@ -138,8 +138,8 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     //     ->name('pengangkutan_sumber_radioaktif');
 
     // Projects
-    Route::resource('projects', SuperAdminProjectController::class);
     Route::get('/projects/search', [SuperAdminProjectController::class, 'search'])->name('projects.search');
+    Route::resource('projects', SuperAdminProjectController::class);
 
     // Perizinan
     Route::get('/perizinan', [App\Http\Controllers\SuperAdmin\PerizinanController::class, 'index'])->name('perizinan.index');
@@ -172,6 +172,22 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
 
     // Document Categories for AJAX
     Route::post('document_categories', [App\Http\Controllers\SuperAdmin\DocumentCategoryController::class, 'store'])->name('document_categories.store');
+
+    // Pemantauan TLD & Pendos sebagai menu terpisah
+    Route::get('/tld', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'search'])->name('tld.search');
+    Route::get('/pendos', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'search'])->name('pendos.search');
+
+    // Detail TLD & Pendos dengan URL baru
+    Route::get('/tld/{project}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tld'])->name('tld.detail');
+    Route::get('/pendos/{project}', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendos'])->name('pendos.detail');
+
+    // Detail user TLD & Pendos dengan URL baru
+    Route::get('/tld/{projectId}/{userId}/detail', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldDetail'])->name('tld.user.detail');
+    Route::get('/pendos/{projectId}/{userId}/detail', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendosDetail'])->name('pendos.user.detail');
+
+    // Create TLD & Pendos dengan URL baru
+    Route::get('/tld/{project}/create', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldCreate'])->name('tld.create');
+    Route::get('/pendos/{project}/create', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendosCreate'])->name('pendos.create');
 });
 
 // ==========================================
@@ -233,8 +249,8 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
     Route::delete('/perizinan/{id}', [PerizinanController::class, 'destroy'])->name('perizinan.destroy');
 
     // Projects
-    Route::resource('projects', ProjectController::class);
     Route::get('/projects/search', [ProjectController::class, 'search'])->name('projects.search');
+    Route::resource('projects', ProjectController::class);
 
     // Laporan
     Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('laporan');
@@ -256,6 +272,22 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
     Route::get('/pemantauan/{projectId}/pendos/{userId}/edit/{dosisId}', [PemantauanController::class, 'pendosEdit'])->name('pemantauan.pendos.edit');
     Route::put('/pemantauan/{projectId}/pendos/{userId}/update/{dosisId}', [PemantauanController::class, 'pendosUpdate'])->name('pemantauan.pendos.update');
     Route::delete('/pemantauan/{projectId}/pendos/{userId}/destroy/{dosisId}', [PemantauanController::class, 'pendosDestroy'])->name('pemantauan.pendos.destroy');
+
+    // Pemantauan TLD & Pendos sebagai menu terpisah
+    Route::get('/tld', [App\Http\Controllers\Admin\PemantauanController::class, 'search'])->name('tld.search');
+    Route::get('/pendos', [App\Http\Controllers\Admin\PemantauanController::class, 'search'])->name('pendos.search');
+
+    // Detail TLD & Pendos dengan URL baru
+    Route::get('/tld/{project}', [App\Http\Controllers\Admin\PemantauanController::class, 'tld'])->name('tld.detail');
+    Route::get('/pendos/{project}', [App\Http\Controllers\Admin\PemantauanController::class, 'pendos'])->name('pendos.detail');
+
+    // Detail user TLD & Pendos dengan URL baru
+    Route::get('/tld/{projectId}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'tldDetail'])->name('tld.user.detail');
+    Route::get('/pendos/{projectId}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosDetail'])->name('pendos.user.detail');
+
+    // Create TLD & Pendos dengan URL baru
+    Route::get('/tld/{project}/create', [App\Http\Controllers\Admin\PemantauanController::class, 'tldCreate'])->name('tld.create');
+    Route::get('/pendos/{project}/create', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosCreate'])->name('pendos.create');
 });
 
 // ==========================================

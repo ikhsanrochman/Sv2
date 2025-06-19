@@ -8,7 +8,7 @@
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('super_admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.index') }}" class="text-decoration-none text-white">Pemantauan</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.tld', $project->id) }}" class="text-decoration-none text-white">TLD</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.tld.detail', $project->id) }}" class="text-decoration-none text-white">TLD</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page">Detail Dosis TLD</li>
             </ol>
         </nav>

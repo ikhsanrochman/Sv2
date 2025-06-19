@@ -8,7 +8,7 @@
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('super_admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.index') }}" class="text-decoration-none text-white">Pemantauan</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.pendos', $project->id) }}" class="text-decoration-none text-white">Pendos</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.pendos.detail', $project->id) }}" class="text-decoration-none text-white">Pendos</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page">Tambah Data</li>
             </ol>
         </nav>
@@ -85,7 +85,7 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2 justify-content-end mt-4">
-                    <a href="{{ route('super_admin.pemantauan.pendos', $project->id) }}" class="btn btn-secondary">
+                    <a href="{{ route('super_admin.pendos.detail', $project->id) }}" class="btn btn-secondary">
                         <i class="fas fa-times me-1"></i>Batal
                     </a>
                     <button type="submit" class="btn btn-primary">

@@ -7,12 +7,16 @@
     <td>{{ $project->tanggal_selesai->format('d/m/Y') }}</td>
     <td class="text-center">
         <div class="btn-group" role="group">
-            <a href="{{ route('super_admin.pemantauan.tld', $project->id) }}" class="btn btn-primary btn-sm me-2">
-                <i class="fas fa-radiation me-1"></i> TLD
-            </a>
-            <a href="{{ route('super_admin.pemantauan.pendos', $project->id) }}" class="btn btn-success btn-sm">
-                <i class="fas fa-radiation-alt me-1"></i> Pendos
-            </a>
+            @if (Request::routeIs('super_admin.tld.search'))
+                <a href="{{ route('super_admin.tld.detail', $project->id) }}" class="btn btn-primary btn-sm me-2">
+                    <i class="fas fa-radiation me-1"></i> TLD
+                </a>
+            @elseif (Request::routeIs('super_admin.pendos.search'))
+                <a href="{{ route('super_admin.pendos.detail', $project->id) }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-radiation-alt me-1"></i> Pendos
+                </a>
+            @endif
+            
         </div>
     </td>
 </tr>

@@ -8,7 +8,7 @@
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('super_admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.index') }}" class="text-decoration-none text-white">Pemantauan</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.tld', $project->id) }}" class="text-decoration-none text-white">TLD</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.tld.detail', $project->id) }}" class="text-decoration-none text-white">TLD</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page">Tambah Data</li>
             </ol>
         </nav>
@@ -49,15 +49,28 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="tanggal_pemantauan" class="form-label">Tanggal Pencatatan <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control @error('tanggal_pemantauan') is-invalid @enderror" 
-                                id="tanggal_pemantauan" name="tanggal_pemantauan" 
-                                value="{{ old('tanggal_pemantauan', date('Y-m-d')) }}" required>
-                            @error('tanggal_pemantauan')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <label for="periode_bulan" class="form-label">Periode Bulan <span class="text-danger">*</span></label>
+                            <select class="form-select" id="periode_bulan" required>
+                                <option value="">Pilih Bulan</option>
+                                <option value="03">Maret</option>
+                                <option value="06">Juni</option>
+                                <option value="09">September</option>
+                                <option value="12">Desember</option>
+                            </select>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="periode_tahun" class="form-label">Tahun <span class="text-danger">*</span></label>
+                            <select class="form-select" id="periode_tahun" required>
+                                <!-- Tahun akan diisi oleh JS -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="tanggal_pemantauan" id="tanggal_pemantauan" value="{{ old('tanggal_pemantauan', date('Y-m-d')) }}">
+
+                <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="dosis" class="form-label">Dosis (mSv) <span class="text-danger">*</span></label>
@@ -72,7 +85,7 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2 justify-content-end mt-4">
-                    <a href="{{ route('super_admin.pemantauan.tld', $project->id) }}" class="btn btn-secondary">
+                    <a href="{{ route('super_admin.tld.detail', $project->id) }}" class="btn btn-secondary">
                         <i class="fas fa-times me-1"></i>Batal
                     </a>
                     <button type="submit" class="btn btn-primary">
@@ -144,6 +157,28 @@
 
         observer.observe(sidebar, {
             attributes: true
+        });
+
+        // Isi dropdown tahun
+        const tahunSelect = document.getElementById('periode_tahun');
+        const tahunSekarang = new Date().getFullYear();
+        for (let t = 2020; t <= tahunSekarang + 1; t++) {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            tahunSelect.appendChild(opt);
+        }
+        // Set tanggal_pemantauan saat submit
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const bulan = document.getElementById('periode_bulan').value;
+            const tahun = document.getElementById('periode_tahun').value;
+            if (!bulan || !tahun) {
+                e.preventDefault();
+                alert('Pilih periode bulan dan tahun!');
+                return false;
+            }
+            document.getElementById('tanggal_pemantauan').value = tahun + '-' + bulan + '-01';
         });
     });
 </script>

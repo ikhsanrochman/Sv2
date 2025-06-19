@@ -4,16 +4,13 @@
         <div class="d-flex justify-content-end align-items-center w-100">
             <!-- Right Side Of Navbar - Always Visible -->
             <div class="d-flex align-items-center">
-                <div style="padding-right: 20px;">
+                <a href="{{ route('admin.profile.index') }}" class="d-flex align-items-center text-decoration-none text-dark" style="padding-right: 20px;">
                     <i class="bi bi-person me-1"></i>
                     {{ Auth::user()->nama}}
-                </div>
-                <div>
-                    
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                        @csrf
-                    </form>
-                </div>
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
             </div>
         </div>
     </div>

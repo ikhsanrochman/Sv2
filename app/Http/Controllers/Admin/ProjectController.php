@@ -61,6 +61,7 @@ class ProjectController extends Controller
 
     public function search(Request $request)
     {
+        \Log::info('ProjectController@search: User ID: ' . (auth()->id() ?? 'N/A') . ', Role: ' . (auth()->user()->role_id ?? 'N/A'));
         try {
             $search = $request->search;
             $projects = Project::where(function($query) use ($search) {
@@ -77,5 +78,12 @@ class ProjectController extends Controller
             return response()->json(['error' => 'Terjadi kesalahan saat mencari data'], 500);
         }
     }
+
+    public function show(Project $project)
+    {
+        // Tidak ada halaman detail, redirect ke index
+        return redirect()->route('admin.projects.index');
+    }
+
     // Method lain bisa ditambahkan sesuai kebutuhan resource
 } 

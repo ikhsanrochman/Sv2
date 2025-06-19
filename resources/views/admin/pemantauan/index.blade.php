@@ -40,7 +40,13 @@
 <div class="container-fluid">
     <!-- Header -->
     <div class="mb-4">
-        <h2 class="fw-bold">Kelola Project</h2>
+        @if (Request::routeIs('admin.tld.search'))
+            <h2 class="fw-bold">Pemantauan Dosis TLD</h2>
+        @elseif (Request::routeIs('admin.pendos.search'))
+            <h2 class="fw-bold">Pemantauan Dosis Pendos</h2>
+        @else
+            <h2 class="fw-bold">Pemantauan Dosis</h2>
+        @endif
     </div>
 
     <!-- Daftar Project Section -->

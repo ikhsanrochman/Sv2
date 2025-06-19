@@ -40,9 +40,15 @@
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('super_admin.pemantauan.index') }}" class="menu-item {{ Request::routeIs('super_admin.pemantauan*') ? 'active' : '' }}">
+            <a href="{{ route('super_admin.tld.search') }}" class="menu-item {{ Request::is('super-admin/tld*') ? 'active' : '' }}">
                 <i class="fas fa-radiation me-2"></i>
-                <span>Pemantauan Dosis Radiasi</span>
+                <span>Pemantauan TLD</span>
+            </a>
+        </div>
+        <div class="menu-wrap">
+            <a href="{{ route('super_admin.pendos.search') }}" class="menu-item {{ Request::is('super-admin/pendos*') ? 'active' : '' }}">
+                <i class="fas fa-radiation-alt me-2"></i>
+                <span>Pemantauan Pendos</span>
             </a>
         </div>
     </div>

@@ -8,7 +8,7 @@
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('super_admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.index') }}" class="text-decoration-none text-white">Pemantauan</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('super_admin.pemantauan.pendos', $project->id) }}" class="text-decoration-none text-white">Pendos</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('super_admin.pendos.detail', $project->id) }}" class="text-decoration-none text-white">Pendos</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page">Detail</li>
             </ol>
         </nav>
@@ -86,7 +86,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h6 class="fw-bold mb-0">Data Detail Pemantauan Pendos</h6>
-                <a href="{{ route('super_admin.pemantauan.pendos', $project->id) }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('super_admin.pendos.detail', $project->id) }}" class="btn btn-secondary btn-sm">
                     <i class="fas fa-arrow-left me-2"></i>Kembali
                 </a>
             </div>

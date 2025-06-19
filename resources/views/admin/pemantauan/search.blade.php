@@ -6,12 +6,18 @@
     <td>{{ $project->tanggal_mulai->format('d/m/Y') }}</td>
     <td>{{ $project->tanggal_selesai->format('d/m/Y') }}</td>    <td class="text-center">
         <div class="btn-group" role="group">
-            <a href="{{ route('admin.pemantauan.tld', $project->id) }}" class="btn btn-primary btn-sm me-2">
-                <i class="fas fa-radiation me-1"></i> TLD
-            </a>
-            <a href="{{ route('admin.pemantauan.pendos', $project->id) }}" class="btn btn-success btn-sm">
-                <i class="fas fa-radiation-alt me-1"></i> Pendos
-            </a>
+            @if (Request::routeIs('admin.tld.search'))
+                <a href="{{ route('admin.tld.detail', $project->id) }}" class="btn btn-primary btn-sm me-2">
+                    <i class="fas fa-radiation me-1"></i> TLD
+                </a>
+            @endif
+            @if (Request::routeIs('admin.pendos.search'))
+                <a href="{{ route('admin.pendos.detail', $project->id) }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-radiation-alt me-1"></i> Pendos
+                </a>
+            @endif
+            <a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-primary btn-sm">Edit</a>
+            <button class="btn btn-danger btn-sm delete-project" data-id="{{ $project->id }}">Hapus</button>
         </div>
     </td>
 </tr>

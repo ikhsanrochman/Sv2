@@ -27,6 +27,7 @@ class RoleMiddleware
         }
 
         // Cek apakah role user ada di parameter middleware
+        \Log::info('RoleMiddleware: User ID: ' . Auth::id() . ', Role: ' . (Auth::user()->role_id ?? 'N/A') . ', Allowed: ' . json_encode($roles));
         if (!in_array(Auth::user()->role_id, $roles)) {
             Auth::logout();
             return redirect('/login')->withErrors(['username' => 'Anda tidak memiliki akses.']);

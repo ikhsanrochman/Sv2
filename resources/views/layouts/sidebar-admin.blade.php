@@ -41,12 +41,17 @@
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('admin.pemantauan.index') }}" class="menu-item {{ Request::routeIs('admin.pemantauan.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.tld.search') }}" class="menu-item {{ Request::routeIs('admin.tld.search') ? 'active' : '' }}">
                 <i class="fas fa-radiation me-2"></i>
-                <span>Pemantauan Dosis Radiasi</span>
+                <span>Pemantauan TLD</span>
             </a>
         </div>
-        
+        <div class="menu-wrap">
+            <a href="{{ route('admin.pendos.search') }}" class="menu-item {{ Request::routeIs('admin.pendos.search') ? 'active' : '' }}">
+                <i class="fas fa-radiation-alt me-2"></i>
+                <span>Pemantauan Pendos</span>
+            </a>
+        </div>
     </div>
 
     <div class="menu-header">

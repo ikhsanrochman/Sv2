@@ -59,7 +59,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h6 class="fw-bold mb-0">Data Dosis Pemantauan Pendos</h6>
-                <a href="{{ route('super_admin.pemantauan.pendos.create', ['projectId' => $project->id]) }}" class="btn btn-primary">
+                <a href="{{ route('super_admin.pendos.create', ['project' => $project->id]) }}" class="btn btn-primary">
                     <i class="fas fa-plus me-1"></i>Tambah Data
                 </a>
             </div>
@@ -275,9 +275,7 @@
                 detailButton.addEventListener('click', function() {
                     const projectId = {{ $project->id }};
                     const userId = user.id;
-                    window.location.href = `{{ route('super_admin.pemantauan.pendos.detail', ['projectId' => ':projectId', 'userId' => ':userId']) }}`
-                        .replace(':projectId', projectId)
-                        .replace(':userId', userId);
+                    window.location.href = `/super-admin/pendos/${projectId}/${userId}/detail`;
                 });
                 
                 buttonGroup.appendChild(detailButton);

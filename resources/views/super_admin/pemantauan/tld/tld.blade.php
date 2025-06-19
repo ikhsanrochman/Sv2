@@ -57,7 +57,7 @@
     <!-- Data TLD Section -->
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <h6 class="fw-bold mb-3">Data Dosis Pemantauan TLD (Thermoluminescence Dosimeter)</h6>
+            <h6 class="fw-bold mb-3">Pemantauan Dosis TLD</h6>
             
             <!-- Search and Add Button -->
             <div class="row mb-3 align-items-center">
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 <div class="col text-end">
-                    <a href="{{ route('super_admin.pemantauan.tld.create', $project->id) }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('super_admin.tld.create', $project->id) }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus me-2"></i>Tambah data
                     </a>
                 </div>
@@ -272,7 +272,7 @@
                 detailButton.innerHTML = '<i class="fas fa-eye me-1"></i>Detail';
                 detailButton.addEventListener('click', function() {
                     const projectId = {{ $project->id }};
-                    window.location.href = `/super-admin/pemantauan/${projectId}/tld/${user.id}/detail`;
+                    window.location.href = `/super-admin/tld/${projectId}/${user.id}/detail`;
                 });
                 
                 buttonGroup.appendChild(detailButton);

@@ -7,7 +7,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-white">Home</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">Kelola Project</li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Pemantauan Dosis</li>
             </ol>
         </nav>
     </div>
@@ -40,7 +40,13 @@
 <div class="container-fluid">
     <!-- Header -->
     <div class="mb-4">
-        <h2 class="fw-bold">Kelola Project</h2>
+        @if (Request::routeIs('super_admin.tld.search'))
+            <h2 class="fw-bold">Pemantauan Dosis TLD</h2>
+        @elseif (Request::routeIs('super_admin.pendos.search'))
+            <h2 class="fw-bold">Pemantauan Dosis Pendos</h2>
+        @else
+            <h2 class="fw-bold">Pemantauan Dosis</h2>
+        @endif
     </div>
 
     <!-- Daftar Project Section -->
@@ -51,9 +57,7 @@
                     <h5 class="fw-bold mb-1">Daftar Project</h5>
                     <p class="text-muted mb-0">Menampilkan Daftar Project Instansi</p>
                 </div>
-                <a href="{{ route('super_admin.projects.create') }}" class="btn btn-dark-custom">
-                    <i class="fas fa-plus me-2"></i>Tambah data
-                </a>
+                
             </div>
 
             <!-- Instructions -->

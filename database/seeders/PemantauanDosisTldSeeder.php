@@ -22,13 +22,13 @@ class PemantauanDosisTldSeeder extends Seeder
 
         foreach ($users as $user) {
             foreach ($projects as $project) {
-                // Generate data for each month in 2024
-                for ($month = 1; $month <= 12; $month++) {
+                // Generate data only for period months: March, June, September, December
+                foreach ([3, 6, 9, 12] as $month) {
                     PemantauanDosisTld::create([
                         'project_id' => $project->id,
                         'user_id' => $user->id,
                         'dosis' => rand(1, 100) / 10, // Random dose between 0.1 and 10
-                        'tanggal_pemantauan' => Carbon::create(2024, $month, 15, 0, 0, 0, 'Asia/Jakarta')->format('Y-m-d'),
+                        'tanggal_pemantauan' => Carbon::create(2024, $month, 1, 0, 0, 0, 'Asia/Jakarta')->format('Y-m-d'),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
