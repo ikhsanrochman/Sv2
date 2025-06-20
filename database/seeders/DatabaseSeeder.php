@@ -29,7 +29,6 @@ class DatabaseSeeder extends Seeder
             PemantauanDosisTldSeeder::class,
             PemantauanDosisPendoseSeeder::class,
             PerizinanSumberRadiasiPengionSeeder::class,
-            KartuDosisPengangkutanSeeder::class,
         ]);
     }
 }

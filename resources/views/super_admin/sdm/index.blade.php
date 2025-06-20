@@ -256,7 +256,7 @@
 
             searchTimer = setTimeout(function() {
                 $.ajax({
-                    url: '{{ route("super_admin.projects.search") }}',
+                    url: '{{ route("super_admin.sdm.search") }}',
                     type: 'GET',
                     data: {
                         search: searchValue
@@ -265,12 +265,8 @@
                         projectTableBody.html('<tr><td colspan="7" class="text-center">Mencari...</td></tr>');
                     },
                     success: function(response) {
-                        if (response.html) {
-                            projectTableBody.html(response.html);
-                        } else {
-                            projectTableBody.html('<tr><td colspan="7" class="text-center">Tidak ada data proyek</td></tr>');
-                        }
-                    },
+    projectTableBody.html(response);
+},
                     error: function(xhr) {
                         console.error('Error:', xhr);
                         projectTableBody.html('<tr><td colspan="7" class="text-center">Terjadi kesalahan saat mencari data</td></tr>');

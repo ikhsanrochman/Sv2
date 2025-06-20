@@ -15,8 +15,11 @@
                 <a href="{{ route('super_admin.pendos.detail', $project->id) }}" class="btn btn-success btn-sm">
                     <i class="fas fa-radiation-alt me-1"></i> Pendos
                 </a>
+            @else
+                <a href="{{ route('super_admin.pemantauan.detail', $project->id) }}" class="btn btn-info btn-sm">
+                    <i class="fas fa-info-circle me-1"></i> Detail
+                </a>
             @endif
-            
         </div>
     </td>
 </tr>

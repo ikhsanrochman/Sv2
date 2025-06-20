@@ -13,4 +13,4 @@
 <tr>
     <td colspan="7" class="text-center">Tidak ada data proyek</td>
 </tr>
-@endforelse 
+@endforelse

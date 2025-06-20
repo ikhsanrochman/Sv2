@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('no_sib')->nullable();
             $table->string('npr')->nullable();
             $table->date('berlaku')->nullable();
+            $table->string('keahlian')->nullable();
             $table->string('username');
             $table->string('password');
             $table->string('status')->default('active');
