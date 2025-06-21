@@ -32,11 +32,13 @@
         .content-wrapper {
             margin-left: 280px;
             margin-top: 71px;
-            margin-right: 30px;
+            margin-right: 0;
             transition: margin-left 0.3s;
+            padding-left: 20px;
+            padding-right: 20px;
         }
         .content-wrapper.full-width {
-            margin-left: 30px;
+            margin-left: 0;
         }
     </style>
 </head>

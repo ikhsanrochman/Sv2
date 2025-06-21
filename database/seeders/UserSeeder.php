@@ -24,10 +24,11 @@ class UserSeeder extends Seeder
                 'no_sib' => 'SIB001',
                 'berlaku' => '2024-12-31',
                 'keahlian' => 'Manajemen Proyek',
+                'foto_profil' => 'img/profile.png',
                 'username' => 'superadmin',
                 'password' => bcrypt('password'),
                 'npr' => 'NPR001',
-                'status' => 'active',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -38,10 +39,11 @@ class UserSeeder extends Seeder
                 'no_sib' => 'SIB002',
                 'berlaku' => '2024-12-31',
                 'keahlian' => 'Administrasi',
+                'foto_profil' => 'img/profile.png',
                 'username' => 'admin',
                 'password' => bcrypt('password'),
                 'npr' => 'NPR002',
-                'status' => 'active',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -52,10 +54,11 @@ class UserSeeder extends Seeder
                 'no_sib' => 'SIB003',
                 'berlaku' => '2024-12-31',
                 'keahlian' => 'Teknisi',
+                'foto_profil' => 'img/profile.png',
                 'username' => 'user',
                 'password' => bcrypt('password'),
                 'npr' => 'NPR003',
-                'status' => 'active',
+                'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ]

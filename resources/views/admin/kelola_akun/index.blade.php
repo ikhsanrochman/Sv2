@@ -65,11 +65,8 @@
 <!-- Filter dan Tambah Akun -->
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex align-items-center">
-        <form action="{{ route('admin.kelola_akun') }}" method="GET" class="d-flex align-items-center">
-            <label for="search" class="me-2 mb-0">Apply filter</label>
-            <input type="text" name="search" id="search" class="form-control me-2" placeholder="Search by name or username" style="width: 250px;" value="{{ request('search') }}">
-            <button type="submit" class="btn btn-dark">Search</button>
-        </form>
+        <label for="search" class="me-2 mb-0">Apply filter</label>
+        <input type="text" id="search" class="form-control me-2" placeholder="Search by name or username" style="width: 250px;">
     </div>
     <a href="{{ route('admin.kelola_akun.create') }}" class="btn btn-dark px-4 py-2 d-flex align-items-center" style="border-radius: 18px;">
         <span class="me-2">+</span> Tambah Akun
@@ -231,28 +228,41 @@
 @push('scripts')
 <script>
 function toggleUserStatus(userId) {
-    if (confirm('Apakah Anda yakin ingin mengubah status pengguna ini?')) {
-        fetch(`/admin/kelola-akun/toggle-status/${userId}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Terjadi kesalahan saat mengubah status pengguna.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat mengubah status pengguna.');
-        });
-    }
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Status pengguna ini akan diubah!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#38b000',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Ubah!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/kelola-akun/toggle-status/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Berhasil!', 'Status pengguna berhasil diubah.', 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Gagal!', 'Terjadi kesalahan saat mengubah status pengguna.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Gagal!', 'Terjadi kesalahan saat mengubah status pengguna.', 'error');
+            });
+        }
+    });
 }
 
 function deleteUser(userId) {
@@ -261,6 +271,41 @@ function deleteUser(userId) {
         alert('Fitur hapus pengguna belum diimplementasikan.');
     }
 }
+
+$(document).ready(function() {
+    // Search functionality
+    $('#search').on('keyup', function() {
+        const searchValue = $(this).val().toLowerCase();
+        let found = false;
+        const userTableBody = $('table tbody');
+
+        userTableBody.find('tr').each(function() {
+            const row = $(this);
+            // This is to avoid matching the "no data" message row
+            if (row.find('td[colspan]').length > 0) {
+                return;
+            }
+            const rowText = row.text().toLowerCase();
+
+            if (rowText.includes(searchValue)) {
+                row.show();
+                found = true;
+            } else {
+                row.hide();
+            }
+        });
+
+        // Handle "no results" message
+        const noResultsRow = userTableBody.find('.no-results');
+        if (!found && searchValue !== "") {
+            if (noResultsRow.length === 0) {
+                userTableBody.append('<tr class="no-results"><td colspan="7" class="text-center">Tidak ada data yang cocok.</td></tr>');
+            }
+        } else {
+            noResultsRow.remove();
+        }
+    });
+});
 </script>
 @endpush
 

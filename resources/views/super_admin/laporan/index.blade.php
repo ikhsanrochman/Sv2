@@ -36,6 +36,20 @@
         observer.observe(sidebar, {
             attributes: true
         });
+
+        // Client-side search for project table
+        const searchInput = document.getElementById('search-project');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('table tbody tr');
+                rows.forEach(row => {
+                    // Gabungkan semua kolom yang ingin dicari
+                    const text = Array.from(row.querySelectorAll('td')).map(td => td.textContent.toLowerCase()).join(' ');
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+        }
     });
 </script>
 @endpush
@@ -66,95 +80,7 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Proyek Aktif</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $activeProjects }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-play-circle fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Total Perizinan</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalPerizinan }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Total SDM</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalSdm }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Additional Statistics -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-danger shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                Pemantauan TLD</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalTld }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-radiation fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-secondary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
-                                Pemantauan Pendose</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalPendose }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-microchip fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+        
     <!-- Projects Table -->
     <div class="card border-0 shadow-sm">
         <div class="card-body">
@@ -182,6 +108,10 @@
             </div>
 
             <!-- Table -->
+            <div class="d-flex justify-content-end mb-3">
+                <input type="text" id="search-project" class="form-control" style="width: 300px;" placeholder="Cari proyek, keterangan, tanggal, atau jumlah...">
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-dark">
@@ -212,7 +142,9 @@
                                 <span class="badge bg-info">{{ $project->perizinanSumberRadiasiPengion->count() }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge bg-warning">{{ $project->ketersediaanSdm->count() }}</span>
+                                <span class="badge bg-warning">
+                                    {{ $project->ketersediaanSdm->flatMap->users->count() }}
+                                </span>
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-danger">{{ $project->pemantauanDosisTld->count() }}</span>

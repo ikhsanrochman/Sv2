@@ -43,7 +43,7 @@
 
 <div class="container-fluid">
     <!-- Header -->
-    <div class="mb-4 ps-3">
+    <div class="mb-4">
         <h2 class="fw-bold">Kelola Project</h2>
     </div>
 
@@ -99,7 +99,7 @@
                                 <i class="fas fa-search"></i>
                             </span>
                         </div>
-                        <span class="ms-2 align-self-center">to table</span>
+                        <span class="ms-2 align-self-center"></span>
                     </div>
                 </div>
             </div>
@@ -133,7 +133,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center">Tidak ada data proyek</td>
+                            <td colspan="6" class="text-center">Tidak ada data proyek</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -250,37 +250,37 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        let searchTimer;
-        const searchInput = $('#search');
-        const projectTableBody = $('#projectTableBody');
+        // Search functionality
+        $('#search').on('keyup', function() {
+            const searchValue = $(this).val().toLowerCase();
+            let found = false;
+            const projectTableBody = $('#projectTableBody');
 
-        searchInput.on('keyup', function() {
-            clearTimeout(searchTimer);
-            const searchValue = $(this).val();
+            projectTableBody.find('tr').each(function() {
+                const row = $(this);
+                // This is to avoid matching the "no data" message row
+                if (row.find('td[colspan]').length > 0) {
+                    return;
+                }
+                const rowText = row.text().toLowerCase();
 
-            searchTimer = setTimeout(function() {
-                $.ajax({
-                    url: '{{ route("admin.projects.search") }}',
-                    type: 'GET',
-                    data: {
-                        search: searchValue
-                    },
-                    beforeSend: function() {
-                        projectTableBody.html('<tr><td colspan="7" class="text-center">Mencari...</td></tr>');
-                    },
-                    success: function(response) {
-                        if (response.html) {
-                            projectTableBody.html(response.html);
-                        } else {
-                            projectTableBody.html('<tr><td colspan="7" class="text-center">Tidak ada data proyek</td></tr>');
-                        }
-                    },
-                    error: function(xhr) {
-                        console.error('Error:', xhr);
-                        projectTableBody.html('<tr><td colspan="7" class="text-center">Terjadi kesalahan saat mencari data</td></tr>');
-                    }
-                });
-            }, 500);
+                if (rowText.includes(searchValue)) {
+                    row.show();
+                    found = true;
+                } else {
+                    row.hide();
+                }
+            });
+
+            // Handle "no results" message
+            const noResultsRow = projectTableBody.find('.no-results');
+            if (!found && searchValue !== "") {
+                if (noResultsRow.length === 0) {
+                    projectTableBody.append('<tr class="no-results"><td colspan="6" class="text-center">Tidak ada data yang cocok.</td></tr>');
+                }
+            } else {
+                noResultsRow.remove();
+            }
         });
 
         // Delete confirmation with SweetAlert2

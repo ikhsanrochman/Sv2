@@ -37,6 +37,60 @@
         observer.observe(sidebar, {
             attributes: true
         });
+
+        // Bidang selection with tags
+        const selector = document.getElementById('jenis_pekerja_selector');
+        const hiddenSelect = document.getElementById('jenis_pekerja_hidden');
+        const container = document.getElementById('selected_bidang_container');
+        function addBidangTag(id, name) {
+            if (!id || container.querySelector(`.bidang-tag[data-id=\"${id}\"]`)) {
+                return;
+            }
+            const tag = document.createElement('div');
+            tag.className = 'bidang-tag';
+            tag.dataset.id = id;
+            tag.innerHTML = `<span>${name}</span><button type=\"button\" class=\"btn-close-tag\">&times;</button>`;
+            container.appendChild(tag);
+            const optionInSelector = selector.querySelector(`option[value=\"${id}\"]`);
+            if (optionInSelector) optionInSelector.style.display = 'none';
+            if (!hiddenSelect.querySelector(`option[value=\"${id}\"]`)) {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = name;
+                option.selected = true;
+                hiddenSelect.appendChild(option);
+            }
+            selector.value = '';
+        }
+        function removeBidangTag(tagElement) {
+            const id = tagElement.dataset.id;
+            const optionToRemove = hiddenSelect.querySelector(`option[value=\"${id}\"]`);
+            if (optionToRemove) optionToRemove.remove();
+            const optionInSelector = selector.querySelector(`option[value=\"${id}\"]`);
+            if (optionInSelector) optionInSelector.style.display = 'block';
+            tagElement.remove();
+        }
+        if (selector) {
+            selector.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (!selectedOption.value) return;
+                addBidangTag(selectedOption.value, selectedOption.dataset.name);
+            });
+        }
+        if (container) {
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-close-tag')) {
+                    removeBidangTag(e.target.parentElement);
+                }
+            });
+        }
+        if (hiddenSelect) {
+            Array.from(hiddenSelect.options).forEach(option => {
+                if (option.selected) {
+                    addBidangTag(option.value, option.textContent);
+                }
+            });
+        }
     });
 </script>
 @endpush
@@ -73,164 +127,172 @@
     <!-- Form Card -->
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Form Tambah Akun</h5>
+            <form action="{{ route('super_admin.kelola_akun.store') }}" method="POST">
+                @csrf
+                
+                <!-- Personal Information -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Informasi Pribadi</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="nama" class="form-label fw-bold">Nama Lengkap <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('nama') is-invalid @enderror" 
+                               id="nama" name="nama" value="{{ old('nama') }}" 
+                               placeholder="Masukkan nama lengkap" required>
+                        @error('nama')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="username" class="form-label fw-bold">Username <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('username') is-invalid @enderror" 
+                               id="username" name="username" value="{{ old('username') }}" 
+                               placeholder="Masukkan username" required>
+                        @error('username')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label fw-bold">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                               id="email" name="email" value="{{ old('email') }}" 
+                               placeholder="Masukkan email" required>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form action="{{ route('super_admin.kelola_akun.store') }}" method="POST">
-                        @csrf
-                        
-                        <!-- Personal Information -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Informasi Pribadi</h6>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="nama" class="form-label fw-bold">Nama Lengkap <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('nama') is-invalid @enderror" 
-                                       id="nama" name="nama" value="{{ old('nama') }}" 
-                                       placeholder="Masukkan nama lengkap" required>
-                                @error('nama')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="username" class="form-label fw-bold">Username <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('username') is-invalid @enderror" 
-                                       id="username" name="username" value="{{ old('username') }}" 
-                                       placeholder="Masukkan username" required>
-                                @error('username')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label fw-bold">Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                       id="email" name="email" value="{{ old('email') }}" 
-                                       placeholder="Masukkan email" required>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
 
-                        <!-- Security Information -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="text-primary mb-3"><i class="fas fa-lock me-2"></i>Informasi Keamanan</h6>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label fw-bold">Password <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                           id="password" name="password" placeholder="Masukkan password" required>
-                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="password_confirmation" class="form-label fw-bold">Konfirmasi Password <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" 
-                                           id="password_confirmation" name="password_confirmation" 
-                                           placeholder="Konfirmasi password" required>
-                                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                            </div>
+                <!-- Security Information -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3"><i class="fas fa-lock me-2"></i>Informasi Keamanan</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label fw-bold">Password <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                                   id="password" name="password" placeholder="Masukkan password" required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
                         </div>
-
-                        <!-- Role and Expertise -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="text-primary mb-3"><i class="fas fa-user-tag me-2"></i>Role dan Keahlian</h6>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="role_id" class="form-label fw-bold">Role <span class="text-danger">*</span></label>
-                                <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
-                                    <option value="">Pilih Role</option>
-                                    @foreach($roles as $role)
-                                        <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
-                                            {{ $role->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('role_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="keahlian" class="form-label fw-bold">Bidang Keahlian <span class="text-danger">*</span></label>
-                                <select class="form-select @error('keahlian') is-invalid @enderror" id="keahlian" name="keahlian[]" multiple required>
-                                    @foreach($jenisPekerja as $jp)
-                                        <option value="{{ $jp->id }}" {{ in_array($jp->id, old('keahlian', [])) ? 'selected' : '' }}>
-                                            {{ $jp->nama }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <small class="form-text text-muted">Tekan Ctrl (atau Cmd di Mac) untuk memilih multiple bidang</small>
-                                @error('keahlian')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="password_confirmation" class="form-label fw-bold">Konfirmasi Password <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" 
+                                   id="password_confirmation" name="password_confirmation" 
+                                   placeholder="Konfirmasi password" required>
+                            <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
                         </div>
-
-                        <!-- Professional Information -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="text-primary mb-3"><i class="fas fa-id-card me-2"></i>Informasi Profesional</h6>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="no_sib" class="form-label fw-bold">No. SIB <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('no_sib') is-invalid @enderror" 
-                                       id="no_sib" name="no_sib" value="{{ old('no_sib') }}" 
-                                       placeholder="Masukkan nomor SIB" required>
-                                @error('no_sib')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="npr" class="form-label fw-bold">NPR <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('npr') is-invalid @enderror" 
-                                       id="npr" name="npr" value="{{ old('npr') }}" 
-                                       placeholder="Masukkan nomor NPR" required>
-                                @error('npr')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="berlaku" class="form-label fw-bold">Tanggal Berlaku <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control @error('berlaku') is-invalid @enderror" 
-                                       id="berlaku" name="berlaku" value="{{ old('berlaku') }}" required>
-                                @error('berlaku')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Form Actions -->
-                        <div class="row">
-                            <div class="col-12">
-                                <hr class="my-4">
-                                <div class="d-flex justify-content-end gap-2">
-                                    <a href="{{ route('super_admin.kelola_akun') }}" class="btn btn-secondary">
-                                        <i class="fas fa-times me-2"></i>Batal
-                                    </a>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-2"></i>Simpan Akun
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+
+                <!-- Role and Expertise -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3"><i class="fas fa-user-tag me-2"></i>Role dan Keahlian</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="role_id" class="form-label fw-bold">Role <span class="text-danger">*</span></label>
+                        <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
+                            <option value="">Pilih Role</option>
+                            @foreach($roles as $role)
+                                <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
+                                    {{ $role->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('role_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="jenis_pekerja_selector" class="form-label fw-bold">Bidang <span class="text-danger">*</span></label>
+                        <select class="form-select" id="jenis_pekerja_selector">
+                            <option value="">Pilih Bidang...</option>
+                            @foreach($jenisPekerja as $jp)
+                                <option value="{{ $jp->id }}" data-name="{{ $jp->nama }}">{{ $jp->nama }}</option>
+                            @endforeach
+                        </select>
+                        <div id="selected_bidang_container" class="mt-2">
+                            {{-- Selected items will be populated here by JavaScript --}}
+                        </div>
+                        <select name="jenis_pekerja[]" id="jenis_pekerja_hidden" multiple class="d-none">
+                            @foreach($jenisPekerja as $jp)
+                                @if(in_array($jp->id, old('jenis_pekerja', [])))
+                                    <option value="{{ $jp->id }}" selected>{{ $jp->nama }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                        @error('jenis_pekerja')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="keahlian" class="form-label fw-bold">Keahlian</label>
+                        <input type="text" class="form-control @error('keahlian') is-invalid @enderror" id="keahlian" name="keahlian" value="{{ old('keahlian') }}" placeholder="Masukkan keahlian">
+                        @error('keahlian')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Professional Information -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3"><i class="fas fa-id-card me-2"></i>Informasi Profesional</h6>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="no_sib" class="form-label fw-bold">No. SIB <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('no_sib') is-invalid @enderror" 
+                               id="no_sib" name="no_sib" value="{{ old('no_sib') }}" 
+                               placeholder="Masukkan nomor SIB" required>
+                        @error('no_sib')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="npr" class="form-label fw-bold">NPR <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('npr') is-invalid @enderror" 
+                               id="npr" name="npr" value="{{ old('npr') }}" 
+                               placeholder="Masukkan nomor NPR" required>
+                        @error('npr')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="berlaku" class="form-label fw-bold">Tanggal Berlaku <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control @error('berlaku') is-invalid @enderror" 
+                               id="berlaku" name="berlaku" value="{{ old('berlaku') }}" required>
+                        @error('berlaku')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="row">
+                    <div class="col-12">
+                        <hr class="my-4">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ route('super_admin.kelola_akun') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Batal
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Simpan Akun
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -315,6 +377,32 @@
     .btn {
         border-radius: 8px;
         font-weight: 500;
+    }
+
+    .bidang-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5em 1em;
+        margin: 0.25em 0.5em 0.25em 0;
+        font-size: 1rem;
+        color: #fff;
+        background-color: #1e3a5f;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    .btn-close-tag {
+        background: none;
+        border: none;
+        color: #fff;
+        margin-left: 0.5em;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+    }
+    .btn-close-tag:hover {
+        color: #e0e0e0;
     }
 </style>
 

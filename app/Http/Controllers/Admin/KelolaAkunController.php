@@ -39,11 +39,13 @@ class KelolaAkunController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role_id' => 'required|exists:roles,id',
-            'keahlian' => 'required|array|min:1',
-            'keahlian.*' => 'exists:jenis_pekerja,id',
+            'jenis_pekerja' => 'required|array|min:1',
+            'jenis_pekerja.*' => 'exists:jenis_pekerja,id',
+            'keahlian' => 'required|string|max:255',
             'no_sib' => 'required|string|max:255',
             'npr' => 'required|string|max:255',
             'berlaku' => 'required|date',
+            'is_active' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -58,15 +60,16 @@ class KelolaAkunController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role_id' => $request->role_id,
+            'keahlian' => $request->keahlian,
             'npr' => $request->npr,
             'no_sib' => $request->no_sib,
             'berlaku' => $request->berlaku,
-            'is_active' => true,
+            'is_active' => $request->is_active,
         ]);
 
         // Attach jenis pekerja (many-to-many relationship)
-        if ($request->has('keahlian')) {
-            $user->jenisPekerja()->attach($request->keahlian);
+        if ($request->has('jenis_pekerja')) {
+            $user->jenisPekerja()->attach($request->jenis_pekerja);
         }
 
         return redirect()->route('admin.kelola_akun')
@@ -75,15 +78,13 @@ class KelolaAkunController extends Controller
 
     public function toggleStatus($id)
     {
-        $user = User::findOrFail($id);
-        $user->update([
-            'is_active' => !$user->is_active
-        ]);
-
-        $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
-        
-        return redirect()->route('admin.kelola_akun')
-            ->with('success', "Akun berhasil {$status}!");
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['success' => false, 'error' => 'User not found']);
+        }
+        $user->is_active = !$user->is_active;
+        $user->save();
+        return response()->json(['success' => true]);
     }
 
     public function edit($id)
@@ -102,11 +103,13 @@ class KelolaAkunController extends Controller
             'username' => 'required|string|max:255|unique:users,username,' . $id,
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'role_id' => 'required|exists:roles,id',
-            'keahlian' => 'required|array|min:1',
-            'keahlian.*' => 'exists:jenis_pekerja,id',
+            'jenis_pekerja' => 'required|array|min:1',
+            'jenis_pekerja.*' => 'exists:jenis_pekerja,id',
+            'keahlian' => 'required|string|max:255',
             'no_sib' => 'required|string|max:255',
             'npr' => 'required|string|max:255',
             'berlaku' => 'required|date',
+            'is_active' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -121,9 +124,11 @@ class KelolaAkunController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'role_id' => $request->role_id,
+            'keahlian' => $request->keahlian,
             'npr' => $request->npr,
             'no_sib' => $request->no_sib,
             'berlaku' => $request->berlaku,
+            'is_active' => $request->is_active,
         ]);
 
         // Update password if provided
@@ -143,7 +148,7 @@ class KelolaAkunController extends Controller
         }
 
         // Sync jenis pekerja
-        $user->jenisPekerja()->sync($request->keahlian);
+        $user->jenisPekerja()->sync($request->jenis_pekerja);
 
         return redirect()->route('admin.kelola_akun')
             ->with('success', 'Akun berhasil diperbarui!');

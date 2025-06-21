@@ -2,7 +2,7 @@
 
 @section('content')
 <!-- Breadcrumb Section -->
-<div class="breadcrumb-section mb-4">
+<div id="breadcrumb-container" class="breadcrumb-section mb-4 position-fixed" style="right: 30px; left: 280px; top: 85px; z-index: 999; transition: left 0.3s ease;">
     <div class="d-flex justify-content-between bg-dark-blue py-2 px-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
@@ -14,12 +14,19 @@
     </div>
 </div>
 
+<div style="margin-top: 50px;"></div>
+
 <div class="container-fluid">
+    <!-- Header and Back Button Row -->
+    <div class="d-flex align-items-center mb-4 justify-content-between">
+        <h2 class="fw-bold mb-0">Tambah Dokumen Baru</h2>
+        <a href="{{ route('admin.documents.index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Kembali
+        </a>
+    </div>
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-dark-blue text-white">
-            <h5 class="mb-0">Tambah Dokumen Baru</h5>
-        </div>
         <div class="card-body">
+            <div id="alert-container"></div>
             <form action="{{ route('admin.documents.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
@@ -210,8 +217,7 @@ $(document).ready(function() {
             `
         });
         
-        $('.container-fluid').prepend(alertDiv);
-        
+        $('#alert-container').html(alertDiv);
         // Auto remove after 5 seconds
         setTimeout(function() {
             alertDiv.remove();

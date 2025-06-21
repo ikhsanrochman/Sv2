@@ -8,7 +8,7 @@
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-white">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.projects.index') }}" class="text-decoration-none text-white">Kelola Project</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">Edit Data Project</li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Edit Project</li>
             </ol>
         </nav>
     </div>
@@ -39,10 +39,10 @@
 @endpush
 
 <div class="container-fluid">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Kelola Project</h2>
-        <a href="{{ route('admin.projects.index') }}" class="btn btn-dark-custom">
+    <!-- Header and Back Button Row -->
+    <div class="d-flex align-items-center mb-4 justify-content-between">
+        <h2 class="fw-bold mb-0">Edit Project</h2>
+        <a href="{{ route('admin.projects.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>
     </div>

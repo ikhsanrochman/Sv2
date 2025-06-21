@@ -18,10 +18,11 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar & breadcrumb logic (biarkan jika ada)
         const sidebar = document.querySelector('.sidebar');
         const breadcrumbContainer = document.getElementById('breadcrumb-container');
         const mainContentWrapper = document.getElementById('main-content-wrapper');
-        
+    if (sidebar && breadcrumbContainer) {
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
@@ -33,10 +34,131 @@
                 }
             });
         });
+        observer.observe(sidebar, { attributes: true });
+    }
 
-        observer.observe(sidebar, {
-            attributes: true
+    // Password toggle functionality
+    const toggleCurrentPassword = document.getElementById('toggleCurrentPassword');
+    if (toggleCurrentPassword) {
+        toggleCurrentPassword.addEventListener('click', function() {
+            const passwordField = document.getElementById('current_password');
+            const icon = this.querySelector('i');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
         });
+    }
+    const toggleNewPassword = document.getElementById('toggleNewPassword');
+    if (toggleNewPassword) {
+        toggleNewPassword.addEventListener('click', function() {
+            const passwordField = document.getElementById('new_password');
+            const icon = this.querySelector('i');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    }
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    if (toggleConfirmPassword) {
+        toggleConfirmPassword.addEventListener('click', function() {
+            const passwordField = document.getElementById('new_password_confirmation');
+            const icon = this.querySelector('i');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    }
+
+    // Password change form validation
+    const passwordForm = document.querySelector('form[action*="update_password"]');
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('new_password_confirmation').value;
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('Password baru dan konfirmasi password tidak cocok!');
+                return false;
+            }
+            if (newPassword.length < 8) {
+                e.preventDefault();
+                alert('Password baru minimal 8 karakter!');
+                return false;
+            }
+        });
+    }
+
+    // Bidang selection with tags
+    const selector = document.getElementById('jenis_pekerja_selector');
+    const hiddenSelect = document.getElementById('jenis_pekerja_hidden');
+    const container = document.getElementById('selected_bidang_container');
+    function addBidangTag(id, name) {
+        if (!id || container.querySelector(`.bidang-tag[data-id="${id}"]`)) {
+            return;
+        }
+        const tag = document.createElement('div');
+        tag.className = 'bidang-tag';
+        tag.dataset.id = id;
+        tag.innerHTML = `<span>${name}</span><button type="button" class="btn-close-tag">&times;</button>`;
+        container.appendChild(tag);
+        const optionInSelector = selector.querySelector(`option[value="${id}"]`);
+        if (optionInSelector) optionInSelector.style.display = 'none';
+        if (!hiddenSelect.querySelector(`option[value="${id}"]`)) {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = name;
+            option.selected = true;
+            hiddenSelect.appendChild(option);
+        }
+        selector.value = '';
+    }
+    function removeBidangTag(tagElement) {
+        const id = tagElement.dataset.id;
+        const optionToRemove = hiddenSelect.querySelector(`option[value="${id}"]`);
+        if (optionToRemove) optionToRemove.remove();
+        const optionInSelector = selector.querySelector(`option[value="${id}"]`);
+        if (optionInSelector) optionInSelector.style.display = 'block';
+        tagElement.remove();
+    }
+    if (selector) {
+        selector.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (!selectedOption.value) return;
+            addBidangTag(selectedOption.value, selectedOption.dataset.name);
+        });
+    }
+    if (container) {
+        container.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-close-tag')) {
+                removeBidangTag(e.target.parentElement);
+            }
+        });
+    }
+    if (hiddenSelect) {
+        Array.from(hiddenSelect.options).forEach(option => {
+            if (option.selected) {
+                addBidangTag(option.value, option.textContent);
+            }
+        });
+    }
     });
 </script>
 @endpush
@@ -147,15 +269,30 @@
                             <h6 class="text-primary mb-3"><i class="fas fa-user-tag me-2"></i>Keahlian</h6>
                         </div>
                         <div class="col-md-12 mb-3">
-                            <label for="keahlian" class="form-label fw-bold">Bidang Keahlian</label>
-                            <select class="form-select @error('keahlian') is-invalid @enderror" id="keahlian" name="keahlian[]" multiple>
+                            <label for="jenis_pekerja_selector" class="form-label fw-bold">Bidang <span class="text-danger">*</span></label>
+                            <select class="form-select" id="jenis_pekerja_selector">
+                                <option value="">Pilih Bidang...</option>
                                 @foreach($jenisPekerja as $jp)
-                                    <option value="{{ $jp->id }}" {{ in_array($jp->id, old('keahlian', $user->jenisPekerja->pluck('id')->toArray())) ? 'selected' : '' }}>
-                                        {{ $jp->nama }}
-                                    </option>
+                                    <option value="{{ $jp->id }}" data-name="{{ $jp->nama }}">{{ $jp->nama }}</option>
                                 @endforeach
                             </select>
-                            <small class="form-text text-muted">Tekan Ctrl (atau Cmd di Mac) untuk memilih multiple bidang</small>
+                            <div id="selected_bidang_container" class="mt-2">
+                                {{-- Selected items will be populated here by JavaScript --}}
+                            </div>
+                            <select name="jenis_pekerja[]" id="jenis_pekerja_hidden" multiple class="d-none">
+                                @foreach($jenisPekerja as $jp)
+                                    @if(in_array((int)$jp->id, array_map('intval', old('jenis_pekerja', $user->jenisPekerja->pluck('id')->toArray()))))
+                                        <option value="{{ $jp->id }}" selected>{{ $jp->nama }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            @error('jenis_pekerja')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="keahlian" class="form-label fw-bold">Keahlian</label>
+                            <input type="text" class="form-control @error('keahlian') is-invalid @enderror" id="keahlian" name="keahlian" value="{{ old('keahlian', $user->keahlian) }}" placeholder="Masukkan keahlian">
                             @error('keahlian')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -328,74 +465,32 @@
         border-radius: 8px;
         font-weight: 500;
     }
+
+    .bidang-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5em 1em;
+        margin: 0.25em 0.5em 0.25em 0;
+        font-size: 1rem;
+        color: #fff;
+        background-color: #1e3a5f;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    .btn-close-tag {
+        background: none;
+        border: none;
+        color: #fff;
+        margin-left: 0.5em;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+    }
+    .btn-close-tag:hover {
+        color: #e0e0e0;
+    }
 </style>
-
-@push('scripts')
-<script>
-    // Password toggle functionality
-    document.getElementById('toggleCurrentPassword').addEventListener('click', function() {
-        const passwordField = document.getElementById('current_password');
-        const icon = this.querySelector('i');
-        
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordField.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    });
-
-    document.getElementById('toggleNewPassword').addEventListener('click', function() {
-        const passwordField = document.getElementById('new_password');
-        const icon = this.querySelector('i');
-        
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordField.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    });
-
-    document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
-        const passwordField = document.getElementById('new_password_confirmation');
-        const icon = this.querySelector('i');
-        
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordField.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    });
-
-    // Password change form validation
-    document.querySelector('form[action*="update_password"]').addEventListener('submit', function(e) {
-        const newPassword = document.getElementById('new_password').value;
-        const confirmPassword = document.getElementById('new_password_confirmation').value;
-        
-        if (newPassword !== confirmPassword) {
-            e.preventDefault();
-            alert('Password baru dan konfirmasi password tidak cocok!');
-            return false;
-        }
-        
-        if (newPassword.length < 8) {
-            e.preventDefault();
-            alert('Password baru minimal 8 karakter!');
-            return false;
-        }
-    });
-</script>
-@endpush
 
 @endsection

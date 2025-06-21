@@ -197,9 +197,7 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
 // Jika user biasa mencoba akses, akan dapat pesan error
 // URL: http://example.com/admin/dashboard
 Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     // Kelola Akun
     Route::get('/kelola-akun', [App\Http\Controllers\Admin\KelolaAkunController::class, 'index'])->name('kelola_akun');
@@ -282,12 +280,15 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
     Route::get('/pendos/{project}', [App\Http\Controllers\Admin\PemantauanController::class, 'pendos'])->name('pendos.detail');
 
     // Detail user TLD & Pendos dengan URL baru
-    Route::get('/tld/{projectId}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'tldDetail'])->name('tld.user.detail');
-    Route::get('/pendos/{projectId}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosDetail'])->name('pendos.user.detail');
+    Route::get('/tld/{project}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'tldDetail'])->name('tld.user.detail');
+    Route::get('/pendos/{project}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosDetail'])->name('pendos.user.detail');
 
     // Create TLD & Pendos dengan URL baru
     Route::get('/tld/{project}/create', [App\Http\Controllers\Admin\PemantauanController::class, 'tldCreate'])->name('tld.create');
     Route::get('/pendos/{project}/create', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosCreate'])->name('pendos.create');
+
+    // Edit TLD admin
+    Route::get('/tld/{projectId}/{userId}/edit/{dosisId}', [App\Http\Controllers\Admin\PemantauanController::class, 'tldEdit'])->name('tld.edit');
 });
 
 // ==========================================

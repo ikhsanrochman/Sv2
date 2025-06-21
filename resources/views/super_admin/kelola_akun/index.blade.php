@@ -39,11 +39,8 @@
 <!-- Filter dan Tambah Akun -->
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex align-items-center">
-        <form action="{{ route('super_admin.kelola_akun') }}" method="GET" class="d-flex align-items-center">
-            <label for="search" class="me-2 mb-0">Apply filter</label>
-            <input type="text" name="search" id="search" class="form-control me-2" placeholder="Search by name or username" style="width: 250px;" value="{{ request('search') }}">
-            <button type="submit" class="btn btn-dark">Search</button>
-        </form>
+        <label for="search" class="me-2 mb-0">Cari</label>
+        <input type="text" id="search" class="form-control me-2" placeholder="Cari nama, username, role, atau bidang" style="width: 250px;">
     </div>
     <a href="{{ route('super_admin.kelola_akun.create') }}" class="btn btn-dark px-4 py-2 d-flex align-items-center" style="border-radius: 18px;">
         <span class="me-2">+</span> Tambah Akun
@@ -79,8 +76,8 @@
                     @endif
                 </td>
                 <td>
-                    <span class="badge {{ $user->status === 'active' ? 'bg-success' : 'bg-secondary' }}">
-                        {{ $user->status === 'active' ? 'Aktif' : 'Nonaktif' }}
+                    <span class="badge {{ $user->is_active ? 'bg-success' : 'bg-secondary' }}">
+                        {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
                     </span>
                 </td>
                 <td>
@@ -150,6 +147,57 @@
 
 @push('scripts')
 <script>
+// Client-side search filter (Nama, Username, Role, Bidang)
+const searchInput = document.getElementById('search');
+if (searchInput) {
+    searchInput.addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('table tbody tr');
+        rows.forEach(row => {
+            const nama = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+            const username = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
+            const role = row.querySelector('td:nth-child(4)')?.textContent.toLowerCase() || '';
+            const bidang = row.querySelector('td:nth-child(5)')?.textContent.toLowerCase() || '';
+            if (
+                nama.includes(filter) ||
+                username.includes(filter) ||
+                role.includes(filter) ||
+                bidang.includes(filter)
+            ) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+}
+
+// Client-side column search filter
+const columnInputs = document.querySelectorAll('.column-search');
+if (columnInputs.length) {
+    columnInputs.forEach(input => {
+        input.addEventListener('keyup', function() {
+            const col = parseInt(this.dataset.col);
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('table tbody tr');
+            rows.forEach(row => {
+                const cell = row.querySelector(`td:nth-child(${col})`);
+                const text = cell ? cell.textContent.toLowerCase() : '';
+                // Cek semua input kolom, semua harus match
+                let visible = true;
+                columnInputs.forEach(inp => {
+                    const c = parseInt(inp.dataset.col);
+                    const f = inp.value.toLowerCase();
+                    const cell2 = row.querySelector(`td:nth-child(${c})`);
+                    const t2 = cell2 ? cell2.textContent.toLowerCase() : '';
+                    if (f && !t2.includes(f)) visible = false;
+                });
+                row.style.display = visible ? '' : 'none';
+            });
+        });
+    });
+}
+
 function toggleUserStatus(userId) {
     if (confirm('Apakah Anda yakin ingin mengubah status pengguna ini?')) {
         fetch(`/super-admin/kelola-akun/toggle-status/${userId}`, {

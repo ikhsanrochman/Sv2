@@ -18,6 +18,13 @@
 <div style="margin-top: 50px;"></div>
 
 <div class="container-fluid">
+    <!-- Header and Back Button Row -->
+    <div class="d-flex align-items-center mb-4 justify-content-between">
+        <h2 class="fw-bold mb-0">Tambah Data Pendos</h2>
+        <a href="{{ route('admin.pemantauan.pendos', $project->id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Kembali
+        </a>
+    </div>
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             <h6 class="fw-bold mb-4">Tambah Data Dosis Pemantauan Pendos</h6>

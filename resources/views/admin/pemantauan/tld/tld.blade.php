@@ -16,7 +16,15 @@
 
 <div style="margin-top: 50px;"></div>
 
-<div class="container-fluid">    <!-- Informasi Project -->
+<div class="container-fluid">
+    <!-- Header and Back Button Row -->
+    <div class="d-flex align-items-center mb-4 justify-content-between">
+        <h2 class="fw-bold mb-0">Pemantauan TLD</h2>
+        <a href="{{ route('admin.pemantauan.index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Kembali
+        </a>
+    </div>
+    <!-- Informasi Project -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body bg-light">
             <h6 class="fw-bold mb-3">Informasi Project</h6>
@@ -271,7 +279,7 @@
                 detailButton.innerHTML = '<i class="fas fa-eye me-1"></i>Detail';
                 detailButton.addEventListener('click', function() {
                     const projectId = {{ $project->id }};
-                    window.location.href = `/admin/pemantauan/${projectId}/tld/${user.id}/detail`;
+                    window.location.href = `/admin/tld/${projectId}/${user.id}/detail`;
                 });
                 
                 buttonGroup.appendChild(detailButton);

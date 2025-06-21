@@ -38,10 +38,11 @@
 </script>
 @endpush
 
+<div class="main-content-align">
 <div class="container-fluid">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Tambah Perizinan</h2>
+    <!-- Header and Back Button Row -->
+    <div class="d-flex align-items-center mb-4 justify-content-between">
+        <h2 class="fw-bold mb-0">Tambah Perizinan</h2>
         <a href="{{ route('admin.perizinan.detail', $project->id) }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>
@@ -135,6 +136,7 @@
             </form>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Custom CSS -->

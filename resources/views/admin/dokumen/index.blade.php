@@ -10,17 +10,18 @@
                 <li class="breadcrumb-item active text-white" aria-current="page">Dokumen Instansi</li>
             </ol>
         </nav>
-        <div class="d-flex align-items-center">
-            <a href="{{ route('admin.documents.create') }}" class="btn btn-dark-blue btn-sm">
-                <i class="fas fa-plus me-1"></i>Tambah data
-            </a>
-        </div>
     </div>
 </div>
 
+<div style="margin-top: 50px;"></div>
+
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold mb-0">Dokumen Instansi</h5>
+    <!-- Header and Add Button Row -->
+    <div class="d-flex align-items-center mb-4 justify-content-between">
+        <h2 class="fw-bold mb-0">Dokumen Instansi</h2>
+        <a href="{{ route('admin.documents.create') }}" class="btn btn-dark-blue">
+            <i class="fas fa-plus me-2"></i>Tambah Data
+        </a>
     </div>
     <p class="text-muted mb-4">Menampilkan dokumen yang dapat diakses oleh pengguna aplikasi melalui halaman ini</p>
 
@@ -52,7 +53,7 @@
             <span class="me-2">Apply filter</span>
             <div class="input-group input-group-sm" style="width: 200px;">
                 <input type="text" class="form-control" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-secondary" type="button">to table</button>
+                <button class="btn btn-outline-secondary" type="button"></button>
             </div>
         </div>
     </div>

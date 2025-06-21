@@ -52,7 +52,7 @@
             <span class="me-2">Apply filter</span>
             <div class="input-group input-group-sm" style="width: 200px;">
                 <input type="text" class="form-control" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-secondary" type="button">to table</button>
+                <button class="btn btn-outline-secondary" type="button"></button>
             </div>
         </div>
     </div>

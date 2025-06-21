@@ -41,13 +41,13 @@
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('admin.tld.search') }}" class="menu-item {{ Request::routeIs('admin.tld.search') ? 'active' : '' }}">
+            <a href="{{ route('admin.tld.search') }}" class="menu-item {{ Request::routeIs(['admin.tld.search', 'admin.pemantauan.tld.*', 'admin.pemantauan.tld', 'admin.tld.*']) ? 'active' : '' }}">
                 <i class="fas fa-radiation me-2"></i>
                 <span>Pemantauan TLD</span>
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('admin.pendos.search') }}" class="menu-item {{ Request::routeIs('admin.pendos.search') ? 'active' : '' }}">
+            <a href="{{ route('admin.pendos.search') }}" class="menu-item {{ Request::routeIs(['admin.pendos.search', 'admin.pendos.*', 'admin.pemantauan.pendos.*', 'admin.pemantauan.pendos']) ? 'active' : '' }}">
                 <i class="fas fa-radiation-alt me-2"></i>
                 <span>Pemantauan Pendos</span>
             </a>
@@ -72,7 +72,7 @@
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('admin.laporan') }}" class="menu-item {{ Request::routeIs('admin.laporan.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.laporan') }}" class="menu-item {{ Request::routeIs(['admin.laporan', 'admin.laporan.*']) ? 'active' : '' }}">
                 <i class="fas fa-chart-bar me-2"></i>
                 <span>Laporan</span>
             </a>

@@ -18,6 +18,13 @@
 <div style="margin-top: 50px;"></div>
 
 <div class="container-fluid">
+    <!-- Header and Back Button Row -->
+    <div class="d-flex align-items-center mb-4 justify-content-between">
+        <h2 class="fw-bold mb-0">Detail Dosis TLD</h2>
+        <a href="{{ route('admin.pemantauan.tld', $project->id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Kembali
+        </a>
+    </div>
     <!-- Informasi Project -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body bg-light">
@@ -119,7 +126,7 @@
                                 <td class="text-center">{{ $dosisTld->tanggal_pemantauan }}</td>
                                 <td class="text-center">{{ $dosisTld->dosis }}</td>
                                 <td class="text-center">
-                                    <a href="{{ route('admin.pemantauan.tld.edit', ['projectId' => $project->id, 'userId' => $user->id, 'dosisId' => $dosisTld->id]) }}" class="btn btn-info btn-sm">
+                                    <a href="{{ route('admin.tld.edit', ['projectId' => $project->id, 'userId' => $user->id, 'dosisId' => $dosisTld->id]) }}" class="btn btn-info btn-sm">
                                         <i class="fas fa-edit me-1"></i>Edit
                                     </a>
                                     <form action="{{ route('admin.pemantauan.tld.destroy', ['projectId' => $project->id, 'userId' => $user->id, 'dosisId' => $dosisTld->id]) }}" method="POST" class="d-inline">

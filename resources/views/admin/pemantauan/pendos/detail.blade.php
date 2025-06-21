@@ -44,6 +44,13 @@
 @endpush
 
 <div class="container-fluid">
+    <!-- Header and Back Button Row -->
+    <div class="d-flex align-items-center mb-4 justify-content-between">
+        <h2 class="fw-bold mb-0">Detail Pemantauan Pendos</h2>
+        <a href="{{ route('admin.pemantauan.pendos', $project->id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Kembali
+        </a>
+    </div>
     <!-- Informasi Project -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body bg-light">
@@ -84,13 +91,6 @@
     <!-- Data Detail Pendos Section -->
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h6 class="fw-bold mb-0">Data Detail Pemantauan Pendos</h6>
-                <a href="{{ route('admin.pemantauan.pendos', $project->id) }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-2"></i>Kembali
-                </a>
-            </div>
-
             <!-- User Information -->
             <div class="card bg-light mb-4">
                 <div class="card-body">

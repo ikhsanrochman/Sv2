@@ -98,7 +98,7 @@
                                 <i class="fas fa-search"></i>
                             </span>
                         </div>
-                        <span class="ms-2 align-self-center">to table</span>
+                        <span class="ms-2 align-self-center"></span>
                     </div>
                 </div>
             </div>
@@ -132,7 +132,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center">Tidak ada data proyek</td>
+                            <td colspan="6" class="text-center">Tidak ada data proyek</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -297,21 +297,35 @@
 
         // Search functionality
         $('#search').on('keyup', function() {
-            const search = $(this).val();
-            
-            $.ajax({
-                url: '{{ route("super_admin.projects.search") }}',
-                type: 'GET',
-                data: {
-                    search: search
-                },
-                success: function(response) {
-                    $('#projectTableBody').html(response.html);
-                },
-                error: function(xhr) {
-                    console.error('Search error:', xhr);
+            const searchValue = $(this).val().toLowerCase();
+            let found = false;
+            const projectTableBody = $('#projectTableBody');
+
+            projectTableBody.find('tr').each(function() {
+                const row = $(this);
+                // This is to avoid matching the "no data" message row
+                if (row.find('td[colspan]').length > 0) {
+                    return;
+                }
+                const rowText = row.text().toLowerCase();
+
+                if (rowText.includes(searchValue)) {
+                    row.show();
+                    found = true;
+                } else {
+                    row.hide();
                 }
             });
+
+            // Handle "no results" message
+            const noResultsRow = projectTableBody.find('.no-results');
+            if (!found && searchValue !== "") {
+                if (noResultsRow.length === 0) {
+                    projectTableBody.append('<tr class="no-results"><td colspan="6" class="text-center">Tidak ada data yang cocok.</td></tr>');
+                }
+            } else {
+                noResultsRow.remove();
+            }
         });
     });
 </script>

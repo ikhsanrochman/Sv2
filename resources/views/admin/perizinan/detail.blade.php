@@ -39,12 +39,13 @@
 
 <div class="container-fluid">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Detail Perizinan :  {{ $project->nama_proyek }}</h2>
-        <a href="{{ route('admin.perizinan.index') }}" class="btn btn-secondary">
+    <div class="d-flex align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Detail Perizinan :  {{ $project->nama_proyek }}</h2>
+        <a href="{{ route('admin.perizinan.index') }}" class="btn btn-secondary ms-auto">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>
-    </div>    <!-- Detail Section -->
+    </div>
+    <!-- Detail Section -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-secondary text-white py-3">
             <h5 class="fw-bold mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Project</h5>

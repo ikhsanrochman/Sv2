@@ -20,9 +20,10 @@ return new class extends Migration
             $table->string('npr')->nullable();
             $table->date('berlaku')->nullable();
             $table->string('keahlian')->nullable();
+            $table->string('foto_profil')->nullable();
             $table->string('username');
             $table->string('password');
-            $table->string('status')->default('active');
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

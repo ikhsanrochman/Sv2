@@ -33,6 +33,8 @@
             margin-left: 280px;
             margin-top: 71px;
             transition: margin-left 0.3s;
+            padding-left: 20px;
+            padding-right: 20px;
         }
         .content-wrapper.full-width {
             margin-left: 0;

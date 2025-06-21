@@ -88,7 +88,7 @@
         <div class="menu-wrap">
             <a href="#" class="menu-item" onclick="event.preventDefault(); showLogoutConfirmation();">
                 <i class="fas fa-sign-out-alt me-2"></i>
-                <span>Log out</span>
+                <span>Sign out</span>
             </a>
         </div>
     </div>

@@ -24,6 +24,6 @@
 </tr>
 @empty
 <tr>
-    <td colspan="7" class="text-center">Tidak ada data proyek</td>
+    <td colspan="6" class="text-center">Tidak ada data proyek</td>
 </tr>
 @endforelse

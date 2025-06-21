@@ -16,13 +16,12 @@
                     <i class="fas fa-radiation-alt me-1"></i> Pendos
                 </a>
             @endif
-            <a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-primary btn-sm">Edit</a>
-            <button class="btn btn-danger btn-sm delete-project" data-id="{{ $project->id }}">Hapus</button>
+            
         </div>
     </td>
 </tr>
 @empty
 <tr>
-    <td colspan="7" class="text-center">Tidak ada data proyek</td>
+    <td colspan="6" class="text-center">Tidak ada data proyek</td>
 </tr>
 @endforelse 

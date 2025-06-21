@@ -97,7 +97,7 @@
                                 <i class="fas fa-search"></i>
                             </span>
                         </div>
-                        <span class="ms-2 align-self-center">to table</span>
+                        <span class="ms-2 align-self-center"></span>
                     </div>
                 </div>
             </div>
@@ -129,7 +129,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center">Tidak ada data proyek</td>
+                            <td colspan="6" class="text-center">Tidak ada data proyek</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -246,76 +246,37 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        let searchTimer;
-        const searchInput = $('#search');
-        const projectTableBody = $('#projectTableBody');
+        // Search functionality
+        $('#search').on('keyup', function() {
+            const searchValue = $(this).val().toLowerCase();
+            let found = false;
+            const projectTableBody = $('#projectTableBody');
 
-        searchInput.on('keyup', function() {
-            clearTimeout(searchTimer);
-            const searchValue = $(this).val();
+            projectTableBody.find('tr').each(function() {
+                const row = $(this);
+                // This is to avoid matching the "no data" message row
+                if (row.find('td[colspan]').length > 0) {
+                    return;
+                }
+                const rowText = row.text().toLowerCase();
 
-            searchTimer = setTimeout(function() {
-                $.ajax({
-                    url: '{{ route("super_admin.sdm.search") }}',
-                    type: 'GET',
-                    data: {
-                        search: searchValue
-                    },
-                    beforeSend: function() {
-                        projectTableBody.html('<tr><td colspan="7" class="text-center">Mencari...</td></tr>');
-                    },
-                    success: function(response) {
-    projectTableBody.html(response);
-},
-                    error: function(xhr) {
-                        console.error('Error:', xhr);
-                        projectTableBody.html('<tr><td colspan="7" class="text-center">Terjadi kesalahan saat mencari data</td></tr>');
-                    }
-                });
-            }, 500);
-        });
-
-        // Delete confirmation with SweetAlert2
-        $(document).on('click', '.delete-project', function() {
-            const projectId = $(this).data('id');
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Data proyek ini akan dihapus secara permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/super-admin/projects/${projectId}`,
-                        type: 'POST',
-                        data: {
-                            _method: 'DELETE',
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
-                            Swal.fire(
-                                'Dihapus!',
-                                'Proyek berhasil dihapus.',
-                                'success'
-                            ).then(() => {
-                                location.reload(); // Reload page to update table
-                            });
-                        },
-                        error: function(xhr) {
-                            console.error('Error:', xhr);
-                            Swal.fire(
-                                'Gagal!',
-                                'Terjadi kesalahan saat menghapus proyek.',
-                                'error'
-                            );
-                        }
-                    });
+                if (rowText.includes(searchValue)) {
+                    row.show();
+                    found = true;
+                } else {
+                    row.hide();
                 }
             });
+
+            // Handle "no results" message
+            const noResultsRow = projectTableBody.find('.no-results');
+            if (!found && searchValue !== "") {
+                if (noResultsRow.length === 0) {
+                    projectTableBody.append('<tr class="no-results"><td colspan="6" class="text-center">Tidak ada data yang cocok.</td></tr>');
+                }
+            } else {
+                noResultsRow.remove();
+            }
         });
     });
 </script>

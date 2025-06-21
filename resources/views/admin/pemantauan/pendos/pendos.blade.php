@@ -8,7 +8,7 @@
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.pemantauan.index') }}" class="text-decoration-none text-white">Pemantauan</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">Pendos</li>
+                <li class="breadcrumb-item active text-white" aria-current="page">AAPendos</li>
             </ol>
         </nav>
     </div>
@@ -17,6 +17,13 @@
 <div style="margin-top: 50px;"></div>
 
 <div class="container-fluid">
+    <!-- Header and Back Button Row -->
+    <div class="d-flex align-items-center mb-4 justify-content-between">
+        <h2 class="fw-bold mb-0">Data Pemantauan Pendos</h2>
+        <a href="{{ route('admin.pemantauan.index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Kembali
+        </a>
+    </div>
     <!-- Informasi Project -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body bg-light">
@@ -273,7 +280,7 @@
                 detailButton.innerHTML = '<i class="fas fa-eye me-1"></i>Detail';
                 detailButton.addEventListener('click', function() {
                     const projectId = {{ $project->id }};
-                    window.location.href = `/admin/pemantauan/${projectId}/pendos/${user.id}/detail`;
+                    window.location.href = `/admin/pendos/${projectId}/${user.id}/detail`;
                 });
                 
                 buttonGroup.appendChild(detailButton);

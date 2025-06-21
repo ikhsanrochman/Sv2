@@ -30,20 +30,18 @@
                             <div class="d-flex align-items-center mb-3">
                                 <i class="bi bi-exclamation-triangle-fill text-danger me-2" style="font-size: 1.3rem;"></i>
                                 <span class="fw-bold" style="font-size: 1.2rem;">Peringatan</span>
-                    </div>
-                    <div>
-                                <div class="d-flex align-items-center justify-content-between mb-2" style="background: #ffb84d; border-radius: 8px; padding: 6px 12px;">
-                                    <span style="font-size: 0.98rem;">Asep Binti Jarwo</span>
-                                    <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.95rem; min-width: 70px;">1.000 µSv</span>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between mb-2" style="background: #ffb84d; border-radius: 8px; padding: 6px 12px;">
-                                    <span style="font-size: 0.98rem;">Amar Putra Oksi</span>
-                                    <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.95rem; min-width: 70px;">3.000 µSv</span>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between" style="background: #ffb84d; border-radius: 8px; padding: 6px 12px;">
-                                    <span style="font-size: 0.98rem;">Fedi Putri</span>
-                                    <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.95rem; min-width: 70px;">9.999 µSv</span>
-                                </div>
+                            </div>
+                            <div>
+                                @if(isset($peringatanPendos) && $peringatanPendos->count())
+                                    @foreach($peringatanPendos as $pendos)
+                                        <div class="d-flex align-items-center justify-content-between mb-2" style="background: #ffb84d; border-radius: 8px; padding: 6px 12px;">
+                                            <span style="font-size: 0.98rem;">{{ $pendos->user->nama ?? '-' }}</span>
+                                            <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.95rem; min-width: 70px;">{{ number_format($pendos->hasil_pengukuran, 3) }} µSv</span>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-muted text-center" style="font-size: 0.98rem;">Tidak ada peringatan dosis tinggi bulan ini.</div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -54,16 +52,20 @@
 
     <div class="row mb-3">
         <div class="col-md-3 mb-3 mb-md-0">
-            <div class="d-flex align-items-center justify-content-center" style="background: #0d2c54; color: #fff; border-radius: 15px; min-height: 70px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-                <i class="bi bi-person" style="font-size: 2rem;"></i>
-                <span class="fw-bold ms-3" style="font-size: 1.1rem;">Daftar Pekerja</span>
-            </div>
+            <a href="{{ route('admin.kelola_akun') }}" class="text-decoration-none">
+                <div class="d-flex align-items-center justify-content-center" style="background: #0d2c54; color: #fff; border-radius: 15px; min-height: 70px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; transition: box-shadow 0.2s;">
+                    <i class="bi bi-person" style="font-size: 2rem;"></i>
+                    <span class="fw-bold ms-3" style="font-size: 1.1rem;">Daftar Pekerja</span>
+                </div>
+            </a>
         </div>
         <div class="col-md-3 mb-3 mb-md-0">
-            <div class="d-flex align-items-center justify-content-center" style="background: #0d2c54; color: #fff; border-radius: 15px; min-height: 70px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-                <i class="bi bi-radioactive" style="font-size: 2rem;"></i>
-                <span class="fw-bold ms-3" style="font-size: 1.1rem;">Daftar Sumber</span>
-            </div>
+            <a href="{{ route('admin.perizinan.index') }}" class="text-decoration-none">
+                <div class="d-flex align-items-center justify-content-center" style="background: #0d2c54; color: #fff; border-radius: 15px; min-height: 70px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; transition: box-shadow 0.2s;">
+                    <i class="bi bi-radioactive" style="font-size: 2rem;"></i>
+                    <span class="fw-bold ms-3" style="font-size: 1.1rem;">Daftar Sumber</span>
+                </div>
+            </a>
         </div>
         <div class="col-md-3 mb-3 mb-md-0">
             <div class="d-flex flex-column align-items-center justify-content-center" style="background: #fff; color: #0d2c54; border-radius: 15px; min-height: 70px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
@@ -80,7 +82,7 @@
                     <i class="bi bi-people-fill" style="font-size: 1.5rem;"></i>
                     <span class="fw-bold ms-2" style="font-size: 1rem;">Total Pekerja Radiasi</span>
                 </div>
-                <span class="fw-bold" style="font-size: 1.2rem;">10.000</span>
+                <span class="fw-bold" style="font-size: 1.2rem;">{{ number_format($totalPekerja) }}</span>
             </div>
         </div>
     </div>
@@ -173,6 +175,12 @@
     width: 160px;
     height: 160px;
     margin: 0 auto;
+}
+
+.d-flex.align-items-center.justify-content-center:hover {
+    box-shadow: 0 4px 16px rgba(13,44,84,0.15);
+    background: #143d6b;
+    color: #fff;
 }
 </style>
 

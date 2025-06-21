@@ -99,7 +99,7 @@
                                 <i class="fas fa-search"></i>
                             </span>
                         </div>
-                        <span class="ms-2 align-self-center">to table</span>
+                        <span class="ms-2 align-self-center"></span>
                     </div>
                 </div>
             </div>
@@ -235,37 +235,38 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        let searchTimer;
         const searchInput = $('#search');
         const projectTableBody = $('#projectTableBody');
 
         searchInput.on('keyup', function() {
-            clearTimeout(searchTimer);
-            const searchValue = $(this).val();
+            const searchValue = $(this).val().toLowerCase();
+            let found = false;
 
-            searchTimer = setTimeout(function() {
-                $.ajax({
-                    url: '{{ route("super_admin.pemantauan.search") }}',
-                    type: 'GET',
-                    data: {
-                        search: searchValue
-                    },
-                    beforeSend: function() {
-                        projectTableBody.html('<tr><td colspan="6" class="text-center">Mencari...</td></tr>');
-                    },
-                    success: function(response) {
-                        if (response.html) {
-                            projectTableBody.html(response.html);
-                        } else {
-                            projectTableBody.html('<tr><td colspan="6" class="text-center">Tidak ada data proyek</td></tr>');
-                        }
-                    },
-                    error: function(xhr) {
-                        console.error('Error:', xhr);
-                        projectTableBody.html('<tr><td colspan="6" class="text-center">Terjadi kesalahan saat mencari data</td></tr>');
-                    }
-                });
-            }, 500);
+            projectTableBody.find('tr').each(function() {
+                const row = $(this);
+                // This is to avoid matching the "no data" message row
+                if (row.find('td[colspan]').length > 0) {
+                    return;
+                }
+                const rowText = row.text().toLowerCase();
+
+                if (rowText.includes(searchValue)) {
+                    row.show();
+                    found = true;
+                } else {
+                    row.hide();
+                }
+            });
+
+            // Handle "no results" message
+            const noResultsRow = projectTableBody.find('.no-results');
+            if (!found && searchValue !== "") {
+                if (noResultsRow.length === 0) {
+                    projectTableBody.append('<tr class="no-results"><td colspan="6" class="text-center">Tidak ada data yang cocok.</td></tr>');
+                }
+            } else {
+                noResultsRow.remove();
+            }
         });
     });
 </script>

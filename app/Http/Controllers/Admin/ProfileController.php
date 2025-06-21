@@ -14,7 +14,7 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = \App\Models\User::with('jenisPekerja')->findOrFail(Auth::id());
         $jenisPekerja = JenisPekerja::all();
         
         return view('admin.profile.index', compact('user', 'jenisPekerja'));

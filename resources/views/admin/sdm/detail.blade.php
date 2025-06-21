@@ -6,8 +6,8 @@
     <div class="d-flex justify-content-between bg-dark-blue py-2 px-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('admin.perizinan.index') }}" class="text-decoration-none text-white">Perizinan</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">Detail Perizinan</li>
+                <li class="breadcrumb-item"><a href="{{ route('admin.perizinan.index') }}" class="text-decoration-none text-white">SDM</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Detail SDM</li>
             </ol>
         </nav>
     </div>
@@ -37,14 +37,16 @@
 </script>
 @endpush
 
-<div class="container-fluid">
+<div class="main-content-align">
+  <div class="container-fluid">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Detail Perizinan :  {{ $project->nama_proyek }}</h2>
+        <h2 class="fw-bold">Detail SDM :  {{ $project->nama_proyek }}</h2>
         <a href="{{ route('admin.perizinan.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>
-    </div>    <!-- Detail Section -->
+    </div>
+    <!-- Card Informasi Project -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-secondary text-white py-3">
             <h5 class="fw-bold mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Project</h5>
@@ -61,10 +63,8 @@
                 </div>
             </div>
         </div>
-    </div>    <!-- Data Perizinan Sumber Radiasi Pengion Section -->    
     </div>
-
-    <!-- Data Pekerja Radiasi Section -->
+    <!-- Card Data Pekerja Radiasi -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-secondary text-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0">
@@ -111,9 +111,7 @@
                                 <button class="btn btn-danger btn-sm delete-worker" data-id="{{ $user->id }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <button class="btn btn-primary btn-sm edit-worker" data-id="{{ $user->id }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
+                                
                             </td>
                         </tr>
                         @empty
@@ -126,6 +124,7 @@
             </div>
         </div>
     </div>
+  </div>
 </div>
 
 <!-- Custom CSS -->

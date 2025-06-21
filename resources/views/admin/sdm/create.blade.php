@@ -6,9 +6,9 @@
     <div class="d-flex justify-content-between bg-dark-blue py-2 px-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('admin.perizinan.index') }}" class="text-decoration-none text-white">Perizinan</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.sdm.detail', $project->id) }}" class="text-decoration-none text-white">Detail Perizinan</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page">Tambah Pekerja Radiasi</li>
+                <li class="breadcrumb-item"><a href="{{ route('admin.perizinan.index') }}" class="text-decoration-none text-white">SDM</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('admin.sdm.detail', $project->id) }}" class="text-decoration-none text-white">Detail SDM</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Tambah SDM</li>
             </ol>
         </nav>
     </div>
@@ -171,6 +171,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon: 'error'
             });
         });
+    });
+
+    const sidebar = document.querySelector('.sidebar');
+    const breadcrumbContainer = document.getElementById('breadcrumb-container');
+    
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'class') {
+                const isSidebarCollapsed = sidebar.classList.contains('collapsed');
+                breadcrumbContainer.style.left = isSidebarCollapsed ? '20px' : '280px';
+            }
+        });
+    });
+
+    observer.observe(sidebar, {
+        attributes: true
     });
 });
 </script>
