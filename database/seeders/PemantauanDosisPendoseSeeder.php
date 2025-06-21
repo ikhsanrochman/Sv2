@@ -25,7 +25,7 @@ class PemantauanDosisPendoseSeeder extends Seeder
                         'user_id' => $user->id,
                         'npr' => $user->npr,
                         'jenis_alat_pemantauan' => $jenisAlat[array_rand($jenisAlat)],
-                        'hasil_pengukuran' => rand(1, 100) / 10, // Random measurement between 0.1 and 10
+                        'hasil_pengukuran' => rand(1000, 20000),
                         'tanggal_pengukuran' => Carbon::create(2024, $month, 15), // Set to 15th of each month
                         'kartu_dosis' => rand(0, 1), // Random boolean
                         'created_at' => now(),

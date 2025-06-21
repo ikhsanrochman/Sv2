@@ -29,19 +29,21 @@
                         <div class="card-body p-3">
                             <div class="d-flex align-items-center mb-3">
                                 <i class="bi bi-exclamation-triangle-fill text-danger me-2" style="font-size: 1.3rem;"></i>
-                                <span class="fw-bold" style="font-size: 1.2rem;">Peringatan</span>
+                                <span class="fw-bold" style="font-size: 1.2rem;">Peringatan Dosis</span>
                             </div>
-                            <div>
-                                @if(isset($peringatanPendos) && $peringatanPendos->count())
-                                    @foreach($peringatanPendos as $pendos)
-                                        <div class="d-flex align-items-center justify-content-between mb-2" style="background: #ffb84d; border-radius: 8px; padding: 6px 12px;">
-                                            <span style="font-size: 0.98rem;">{{ $pendos->user->nama ?? '-' }}</span>
-                                            <span class="badge bg-light text-dark fw-semibold" style="font-size: 0.95rem; min-width: 70px;">{{ number_format($pendos->hasil_pengukuran, 3) }} µSv</span>
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <div class="text-muted text-center" style="font-size: 0.98rem;">Tidak ada peringatan dosis tinggi bulan ini.</div>
-                                @endif
+                            <div class="dosis-warning-list">
+                                @forelse($peringatanDosis as $peringatan)
+                                    <div class="d-flex align-items-center justify-content-between mb-2" style="background: #ffebee; border-radius: 8px; padding: 6px 12px;">
+                                        <span class="text-danger" style="font-size: 0.98rem;">{{ $peringatan->nama }}</span>
+                                        <span class="badge bg-danger text-white fw-semibold" style="font-size: 0.95rem; min-width: 90px;">
+                                            {{ number_format($peringatan->totalDosis / 1000, 3) }} mSv
+                                        </span>
+                                    </div>
+                                @empty
+                                    <div class="text-muted text-center py-3" style="font-size: 0.98rem;">
+                                        <i class="bi bi-check-circle-fill text-success me-1"></i> Semua dosis pekerja dalam batas aman.
+                                    </div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
@@ -139,6 +141,20 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+.dosis-warning-list {
+    max-height: 120px;
+    overflow-y: auto;
+}
+.dosis-warning-list::-webkit-scrollbar {
+    width: 5px;
+}
+.dosis-warning-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.dosis-warning-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 5px;
+}
 .bg-dark-blue {
     background-color: #0d2c54;
 }

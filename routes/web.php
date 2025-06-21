@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\SdmController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
 use App\Http\Controllers\SuperAdmin\KelolaAkunController;
 use App\Http\Controllers\SuperAdmin\ProjectController as SuperAdminProjectController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
@@ -56,39 +57,7 @@ Auth::routes();
 // Hanya bisa diakses oleh super admin (role 1)
 Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.')->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        $totalPekerja = \App\Models\User::count();
-        // Ambil data user dan dosis pendos bulan ini yang lebih dari 20
-        $peringatanPendos = \App\Models\PemantauanDosisPendose::with('user')
-            ->whereMonth('tanggal_pengukuran', now()->month)
-            ->whereYear('tanggal_pengukuran', now()->year)
-            ->where('hasil_pengukuran', '>', 20)
-            ->get();
-
-        // Kirim email notifikasi jika ada peringatan (tanpa cache, kirim setiap saat)
-        if ($peringatanPendos->count()) {
-            $adminEmails = \App\Http\Controllers\Auth\LoginController::getAdminEmails();
-            foreach ($peringatanPendos as $pendos) {
-                $userEmail = $pendos->user->email;
-                $userName = $pendos->user->nama;
-                $dosis = $pendos->hasil_pengukuran;
-                $tanggal = $pendos->tanggal_pengukuran->format('d-m-Y');
-                // Kirim ke admin/superadmin
-                Mail::raw("Peringatan: Dosis pendos atas nama $userName melebihi batas (hasil: $dosis µSv, tanggal: $tanggal)", function($msg) use ($adminEmails) {
-                    $msg->to($adminEmails)
-                        ->subject('Peringatan Dosis Pendos Melebihi Batas');
-                });
-                // Kirim ke user bersangkutan
-                if ($userEmail) {
-                    Mail::raw("Peringatan: Dosis Anda pada $tanggal tercatat $dosis µSv dan melebihi batas aman. Harap segera lapor ke admin.", function($msg) use ($userEmail) {
-                        $msg->to($userEmail)
-                            ->subject('Peringatan Dosis Anda Melebihi Batas');
-                    });
-                }
-            }
-        }
-        return view('super_admin.dashboard', compact('totalPekerja', 'peringatanPendos'));
-    })->name('dashboard');
+    Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
 
     // Ketersediaan SDM
     Route::get('/ketersediaan-sdm', [App\Http\Controllers\SuperAdmin\SdmController::class, 'index'])->name('ketersediaan_sdm');
@@ -248,58 +217,28 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
 
     // Projects
     Route::get('/projects/search', [ProjectController::class, 'search'])->name('projects.search');
-    Route::resource('projects', ProjectController::class);
+    Route::resource('projects', ProjectController::class)->except(['show']);
 
-    // Laporan
-    Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('laporan');
-    Route::get('/laporan/{id}', [App\Http\Controllers\Admin\LaporanController::class, 'projectDetail'])->name('laporan.project_detail');
-    Route::get('/laporan/{id}/download', [App\Http\Controllers\Admin\LaporanController::class, 'downloadProjectReport'])->name('laporan.project.download');
+    // Reports
+    Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/project/{id}', [App\Http\Controllers\Admin\LaporanController::class, 'projectDetail'])->name('laporan.project_detail');
+    Route::get('/laporan/project/{id}/pdf', [App\Http\Controllers\Admin\LaporanController::class, 'downloadProjectDetail'])->name('laporan.project_detail.pdf');
 
-    // Dokumen
-    Route::resource('documents', App\Http\Controllers\Admin\DocumentController::class);
-    Route::get('documents/{document}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('documents.download');
-
-    // Document Categories for AJAX
-    Route::post('document_categories', [App\Http\Controllers\SuperAdmin\DocumentCategoryController::class, 'store'])->name('document_categories.store');
-
-    // Pendos routes
-    Route::get('/pemantauan/{project}/pendos', [PemantauanController::class, 'pendos'])->name('pemantauan.pendos');
-    Route::get('/pemantauan/{projectId}/pendos/create', [PemantauanController::class, 'pendosCreate'])->name('pemantauan.pendos.create');
-    Route::post('/pemantauan/{projectId}/pendos/store', [PemantauanController::class, 'pendosStore'])->name('pemantauan.pendos.store');
-    Route::get('/pemantauan/{project}/pendos/{userId}/detail', [PemantauanController::class, 'pendosDetail'])->name('pemantauan.pendos.detail');
-    Route::get('/pemantauan/{projectId}/pendos/{userId}/edit/{dosisId}', [PemantauanController::class, 'pendosEdit'])->name('pemantauan.pendos.edit');
-    Route::put('/pemantauan/{projectId}/pendos/{userId}/update/{dosisId}', [PemantauanController::class, 'pendosUpdate'])->name('pemantauan.pendos.update');
-    Route::delete('/pemantauan/{projectId}/pendos/{userId}/destroy/{dosisId}', [PemantauanController::class, 'pendosDestroy'])->name('pemantauan.pendos.destroy');
-
-    // Pemantauan TLD & Pendos sebagai menu terpisah
-    Route::get('/tld', [App\Http\Controllers\Admin\PemantauanController::class, 'search'])->name('tld.search');
-    Route::get('/pendos', [App\Http\Controllers\Admin\PemantauanController::class, 'search'])->name('pendos.search');
-
-    // Detail TLD & Pendos dengan URL baru
-    Route::get('/tld/{project}', [App\Http\Controllers\Admin\PemantauanController::class, 'tld'])->name('tld.detail');
-    Route::get('/pendos/{project}', [App\Http\Controllers\Admin\PemantauanController::class, 'pendos'])->name('pendos.detail');
-
-    // Detail user TLD & Pendos dengan URL baru
-    Route::get('/tld/{project}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'tldDetail'])->name('tld.user.detail');
-    Route::get('/pendos/{project}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosDetail'])->name('pendos.user.detail');
-
-    // Create TLD & Pendos dengan URL baru
-    Route::get('/tld/{project}/create', [App\Http\Controllers\Admin\PemantauanController::class, 'tldCreate'])->name('tld.create');
-    Route::get('/pendos/{project}/create', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosCreate'])->name('pendos.create');
-
-    // Edit TLD admin
-    Route::get('/tld/{projectId}/{userId}/edit/{dosisId}', [App\Http\Controllers\Admin\PemantauanController::class, 'tldEdit'])->name('tld.edit');
+    // Documents
+    Route::get('/dokumen', [App\Http\Controllers\Admin\DocumentController::class, 'index'])->name('dokumen.index');
+    Route::get('/dokumen/create', [App\Http\Controllers\Admin\DocumentController::class, 'create'])->name('dokumen.create');
+    Route::post('/dokumen', [App\Http\Controllers\Admin\DocumentController::class, 'store'])->name('dokumen.store');
+    Route::get('/dokumen/{document}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('dokumen.download');
 });
 
 // ==========================================
-// ROUTE UNTUK HALAMAN USER
+// ROUTE UNTUK HALAMAN USER BIASA
 // ==========================================
-// Hanya bisa diakses oleh user (role 3)
+// Hanya bisa diakses oleh user biasa (role 3)
 // Jika admin mencoba akses, akan dapat pesan error
 // URL: http://example.com/user/dashboard
 Route::middleware(['auth', 'role:3'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
-    Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.update_password');
+    Route::put('/profile/update', [UserProfileController::class, 'update'])->name('profile.update');
 });

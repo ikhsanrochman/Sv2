@@ -1,26 +1,66 @@
 <!-- resources/views/layouts/navbar-user.blade.php -->
-<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm position-fixed" style="height: 71px; right: 0; left: 280px; z-index: 1000; top: 0;">
-    <div class="container">
-       
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <!-- Left Side Of Navbar -->
-            <ul class="navbar-nav me-auto">
-                
-            </ul>
-
-            <!-- Right Side Of Navbar -->
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-person me-1"></i>
-                        {{ Auth::user()->nama}}
-                    </a>
-                </li>
-            </ul>
+<nav class="navbar navbar-expand-md navbar-light bg-white shadow-lg position-fixed rounded-4" style="height: 71px; right: 30px; left: 280px; z-index: 1000; top: 0;">
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-end align-items-center w-100">
+            <!-- Right Side Of Navbar - Always Visible -->
+            <div class="d-flex align-items-center">
+                <a href="{{ route('user.profile.index') }}" class="d-flex align-items-center text-decoration-none text-dark" style="padding-right: 20px;">
+                    <i class="bi bi-person me-1"></i>
+                    {{ Auth::user()->nama}}
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
+            </div>
         </div>
     </div>
-</nav> 
+</nav>
+
+<style>
+.swal2-logout-popup {
+    border-radius: 25px !important;
+    padding-bottom: 2rem !important;
+}
+.swal2-logout-yes {
+    background: #d32d2f !important;
+    color: #fff !important;
+    border-radius: 2rem !important;
+    font-size: 1.2rem !important;
+    width: 100px !important;
+    height: 50px !important;
+    margin-right: 1.5rem;
+}
+.swal2-logout-no {
+    background: #444 !important;
+    color: #fff !important;
+    border-radius: 2rem !important;
+    font-size: 1.2rem !important;
+    width: 100px !important;
+    height: 50px !important;
+}
+</style>
+
+@push('scripts')
+<script>
+    function showLogoutConfirmation() {
+        Swal.fire({
+            title: '<span style="font-size:2.5rem;font-weight:bold;color:#fff;">Sign Out</span>',
+            html: '<span style="color:#fff;font-size:1.2rem;">Apakah anda yakin?</span>',
+            background: '#0a2a47',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            customClass: {
+                popup: 'swal2-logout-popup',
+                confirmButton: 'swal2-logout-yes',
+                cancelButton: 'swal2-logout-no'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logout-form').submit();
+            }
+        });
+    }
+</script>
+@endpush 

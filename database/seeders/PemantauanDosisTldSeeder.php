@@ -27,7 +27,7 @@ class PemantauanDosisTldSeeder extends Seeder
                     PemantauanDosisTld::create([
                         'project_id' => $project->id,
                         'user_id' => $user->id,
-                        'dosis' => rand(1, 100) / 10, // Random dose between 0.1 and 10
+                        'dosis' => rand(1000, 20000), // Random dose
                         'tanggal_pemantauan' => Carbon::create(2024, $month, 1, 0, 0, 0, 'Asia/Jakarta')->format('Y-m-d'),
                         'created_at' => now(),
                         'updated_at' => now(),
