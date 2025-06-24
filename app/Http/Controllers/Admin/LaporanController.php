@@ -16,36 +16,22 @@ class LaporanController extends Controller
 {
     public function index()
     {
-        // Get all projects with their related data
         $projects = Project::with([
             'perizinanSumberRadiasiPengion',
-            'ketersediaanSdm',
+            'ketersediaanSdm.users',
             'pemantauanDosisTld',
             'pemantauanDosisPendose'
         ])->get();
 
-        // Calculate statistics
         $totalProjects = $projects->count();
-        $activeProjects = $projects->where('status', 'active')->count();
-        $completedProjects = $projects->where('status', 'completed')->count();
-        
-        // Count total perizinan
         $totalPerizinan = PerizinanSumberRadiasiPengion::count();
-        
-        // Count total SDM
         $totalSdm = KetersediaanSdm::count();
-        
-        // Count total pemantauan TLD
         $totalTld = PemantauanDosisTld::count();
-        
-        // Count total pemantauan Pendose
         $totalPendose = PemantauanDosisPendose::count();
 
         return view('admin.laporan.index', compact(
             'projects',
             'totalProjects',
-            'activeProjects',
-            'completedProjects',
             'totalPerizinan',
             'totalSdm',
             'totalTld',

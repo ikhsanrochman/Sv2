@@ -9,6 +9,7 @@ use App\Models\JenisPekerja;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -31,14 +32,24 @@ class ProfileController extends Controller
             'npr' => 'nullable|string|max:255',
             'no_sib' => 'nullable|string|max:255',
             'berlaku' => 'nullable|date',
-            'keahlian' => 'nullable|array',
-            'keahlian.*' => 'exists:jenis_pekerja,id',
+            'keahlian' => 'nullable|string|max:255',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
+        }
+
+        // Handle foto profil upload
+        $fotoProfilPath = $user->foto_profil;
+        if ($request->hasFile('foto_profil')) {
+            // Delete old file if exists
+            if ($fotoProfilPath && Storage::disk('public')->exists($fotoProfilPath)) {
+                Storage::disk('public')->delete($fotoProfilPath);
+            }
+            $fotoProfilPath = $request->file('foto_profil')->store('foto_profil', 'public');
         }
 
         $user->update([
@@ -48,11 +59,13 @@ class ProfileController extends Controller
             'npr' => $request->npr,
             'no_sib' => $request->no_sib,
             'berlaku' => $request->berlaku,
+            'keahlian' => $request->keahlian,
+            'foto_profil' => $fotoProfilPath,
         ]);
 
         // Update jenis pekerja relationship
-        if ($request->has('keahlian')) {
-            $user->jenisPekerja()->sync($request->keahlian);
+        if ($request->has('jenis_pekerja')) {
+            $user->jenisPekerja()->sync($request->jenis_pekerja);
         } else {
             $user->jenisPekerja()->detach();
         }

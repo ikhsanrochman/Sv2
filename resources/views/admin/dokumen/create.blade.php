@@ -7,7 +7,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.documents.index') }}" class="text-decoration-none text-white">Dokumen Instansi</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('admin.dokumen.index') }}" class="text-decoration-none text-white">Dokumen Instansi</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page">Tambah Dokumen</li>
             </ol>
         </nav>
@@ -20,14 +20,14 @@
     <!-- Header and Back Button Row -->
     <div class="d-flex align-items-center mb-4 justify-content-between">
         <h2 class="fw-bold mb-0">Tambah Dokumen Baru</h2>
-        <a href="{{ route('admin.documents.index') }}" class="btn btn-secondary">
+        <a href="{{ route('admin.dokumen.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>
     </div>
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             <div id="alert-container"></div>
-            <form action="{{ route('admin.documents.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.dokumen.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
                     <label for="judul_dokumen" class="form-label">Judul Dokumen</label>
@@ -75,7 +75,7 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-dark-blue">Simpan Dokumen</button>
-                <a href="{{ route('admin.documents.index') }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ route('admin.dokumen.index') }}" class="btn btn-secondary">Batal</a>
             </form>
         </div>
     </div>
@@ -135,7 +135,7 @@ $(document).ready(function() {
 
         // Send AJAX request
         $.ajax({
-            url: '{{ route("admin.document_categories.store") }}',
+            url: '{{ route("admin.dokumen_categories.store") }}',
             method: 'POST',
             data: JSON.stringify({
                 name: categoryName

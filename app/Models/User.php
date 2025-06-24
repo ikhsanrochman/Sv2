@@ -30,6 +30,7 @@ class User extends Authenticatable
         'npr',
         'is_active',
         'keahlian',
+        'foto_profil',
     ];
 
     /**

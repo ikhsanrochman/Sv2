@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between bg-dark-blue py-2 px-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{{ route('admin.laporan') }}" class="text-decoration-none text-white">Home / Laporan</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('admin.laporan.index') }}" class="text-decoration-none text-white">Home / Laporan</a></li>
                 <li class="breadcrumb-item active text-white">Detail Proyek</li>
             </ol>
         </nav>
@@ -53,7 +53,7 @@
                 <a href="{{ route('admin.laporan.project.download', $project->id) }}" class="btn btn-success">
                     <i class="fas fa-download me-2"></i>Download Laporan
                 </a>
-                <a href="{{ route('admin.laporan') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.laporan.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Kembali
                 </a>
             </div>

@@ -70,10 +70,26 @@
                 <h5 class="mb-0"><i class="fas fa-user me-2"></i>Informasi Profile</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('user.profile.update') }}" method="POST">
+                <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     
+                    <!-- Foto Profil -->
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="{{ $user->foto_profil ? asset('storage/' . $user->foto_profil) : asset('img/user.png') }}"
+                             alt="Foto Profil"
+                             class="rounded-circle"
+                             id="preview-foto-profil"
+                             style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #1e3a5f;">
+                        <div class="ms-3">
+                            <label for="foto_profil" class="form-label fw-bold mb-1">Ubah Foto Profil</label>
+                            <input type="file" class="form-control" id="foto_profil" name="foto_profil" accept="image/*">
+                            @error('foto_profil')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
                     <!-- Personal Information -->
                     <div class="row mb-4">
                         <div class="col-12">
@@ -158,6 +174,12 @@
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
+                        <ul id="user-password-requirements" class="mt-2 mb-0 ps-3" style="list-style: disc; font-size: 0.95em;">
+                            <li id="user-pw-length" class="text-danger">Minimal 8 karakter</li>
+                            <li id="user-pw-uppercase" class="text-danger">Mengandung huruf kapital</li>
+                            <li id="user-pw-number" class="text-danger">Mengandung angka</li>
+                            <li id="user-pw-symbol" class="text-danger">Mengandung simbol</li>
+                        </ul>
                         @error('new_password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -277,71 +299,95 @@
 </style>
 
 @push('scripts')
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script>
-    // Password toggle functionality
-    document.getElementById('toggleCurrentPassword').addEventListener('click', function() {
-        const passwordField = document.getElementById('current_password');
-        const icon = this.querySelector('i');
-        
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordField.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    const fotoInput = document.getElementById('foto_profil');
+    const cropModal = document.getElementById('cropperModal');
+    const cropImage = document.getElementById('cropperImage');
+    const cropBtn = document.getElementById('cropBtn');
+    const closeCropBtn = document.getElementById('closeCropBtn');
+    const previewImg = document.getElementById('preview-foto-profil');
+    let cropper;
 
-    document.getElementById('toggleNewPassword').addEventListener('click', function() {
-        const passwordField = document.getElementById('new_password');
-        const icon = this.querySelector('i');
-        
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordField.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    });
+    if (fotoInput && cropModal && cropImage && cropBtn && closeCropBtn && previewImg) {
+        fotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && /^image\/.*/.test(file.type)) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    cropImage.src = evt.target.result;
+                    cropModal.style.display = 'flex';
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(cropImage, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        movable: true,
+                        zoomable: true,
+                        rotatable: false,
+                        scalable: false,
+                        cropBoxResizable: true,
+                        minContainerWidth: 200,
+                        minContainerHeight: 200,
+                        minCropBoxWidth: 100,
+                        minCropBoxHeight: 100,
+                        autoCropArea: 1
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-    document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
-        const passwordField = document.getElementById('new_password_confirmation');
-        const icon = this.querySelector('i');
-        
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordField.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    });
+        cropBtn.addEventListener('click', function() {
+            if (cropper) {
+                cropper.getCroppedCanvas({
+                    width: 250,
+                    height: 250,
+                    imageSmoothingQuality: 'high'
+                }).toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    previewImg.src = url;
+                    const dataTransfer = new DataTransfer();
+                    const file = new File([blob], 'cropped_profile.png', { type: 'image/png' });
+                    dataTransfer.items.add(file);
+                    fotoInput.files = dataTransfer.files;
+                    cropModal.style.display = 'none';
+                    cropper.destroy();
+                }, 'image/png');
+            }
+        });
 
-    // Password change form validation
-    document.querySelector('form[action*="update_password"]').addEventListener('submit', function(e) {
-        const newPassword = document.getElementById('new_password').value;
-        const confirmPassword = document.getElementById('new_password_confirmation').value;
-        
-        if (newPassword !== confirmPassword) {
-            e.preventDefault();
-            alert('Password baru dan konfirmasi password tidak cocok!');
-            return false;
-        }
-        
-        if (newPassword.length < 8) {
-            e.preventDefault();
-            alert('Password baru minimal 8 karakter!');
-            return false;
-        }
-    });
+        closeCropBtn.addEventListener('click', function() {
+            cropModal.style.display = 'none';
+            if (cropper) cropper.destroy();
+        });
+    }
+
+    // Real-time password requirements check (user profile)
+    const newPasswordInput = document.getElementById('new_password');
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', function() {
+            const value = newPasswordInput.value;
+            document.getElementById('user-pw-length').className = value.length >= 8 ? 'text-success' : 'text-danger';
+            document.getElementById('user-pw-uppercase').className = /[A-Z]/.test(value) ? 'text-success' : 'text-danger';
+            document.getElementById('user-pw-number').className = /\d/.test(value) ? 'text-success' : 'text-danger';
+            document.getElementById('user-pw-symbol').className = /[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?]/.test(value) ? 'text-success' : 'text-danger';
+        });
+    }
+});
 </script>
+<!-- Modal Cropper -->
+<div id="cropperModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:24px 18px 18px 18px; border-radius:14px; max-width:340px; width:95vw; max-height:95vh; box-shadow:0 8px 32px rgba(30,58,95,0.18); display:flex; flex-direction:column; align-items:center;">
+        <div style="font-weight:600; font-size:1.1rem; margin-bottom:10px; color:#1e3a5f;">Atur & Crop Foto Profil</div>
+        <img id="cropperImage" src="" style="max-width:250px; max-height:250px; width:100%; height:auto; border-radius:8px; border:1px solid #eee; background:#f8f9fa; display:block; margin:auto;">
+        <div class="mt-3 d-flex justify-content-center gap-2" style="width:100%;">
+            <button type="button" class="btn btn-primary flex-fill" id="cropBtn">Crop & Simpan</button>
+            <button type="button" class="btn btn-secondary flex-fill" id="closeCropBtn">Batal</button>
+        </div>
+    </div>
+</div>
 @endpush
 
 @endsection

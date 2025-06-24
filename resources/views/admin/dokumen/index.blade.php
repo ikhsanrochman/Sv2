@@ -19,7 +19,7 @@
     <!-- Header and Add Button Row -->
     <div class="d-flex align-items-center mb-4 justify-content-between">
         <h2 class="fw-bold mb-0">Dokumen Instansi</h2>
-        <a href="{{ route('admin.documents.create') }}" class="btn btn-dark-blue">
+        <a href="{{ route('admin.dokumen.create') }}" class="btn btn-dark-blue">
             <i class="fas fa-plus me-2"></i>Tambah Data
         </a>
     </div>
@@ -83,7 +83,7 @@
                                 @if ($document->file_path && Storage::disk('public')->exists($document->file_path))
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-file me-2 text-primary"></i>
-                                        <a href="{{ route('admin.documents.download', $document->id) }}" 
+                                        <a href="{{ route('admin.dokumen.download', $document->id) }}" 
                                            class="btn btn-sm btn-outline-primary" 
                                            title="Download {{ basename($document->file_path) }}">
                                             <i class="fas fa-download me-1"></i>Download
@@ -102,9 +102,9 @@
                             <td>{{ Str::limit($document->deskripsi, 50) }}</td>
                             <td>
                                 <div class="d-flex">
-                                    <a href="{{ route('admin.documents.show', $document->id) }}" class="btn btn-info btn-sm me-2">Detail</a>
-                                    <a href="{{ route('admin.documents.edit', $document->id) }}" class="btn btn-warning btn-sm me-2">Edit</a>
-                                    <form action="{{ route('admin.documents.destroy', $document->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this document?');">
+                                    <a href="{{ route('admin.dokumen.show', $document->id) }}" class="btn btn-info btn-sm me-2">Detail</a>
+                                    <a href="{{ route('admin.dokumen.edit', $document->id) }}" class="btn btn-warning btn-sm me-2">Edit</a>
+                                    <form action="{{ route('admin.dokumen.destroy', $document->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this document?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>

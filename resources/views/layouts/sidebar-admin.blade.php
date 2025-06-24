@@ -72,13 +72,13 @@
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('admin.laporan') }}" class="menu-item {{ Request::routeIs(['admin.laporan', 'admin.laporan.*']) ? 'active' : '' }}">
+            <a href="{{ route('admin.laporan.index') }}" class="menu-item {{ Request::routeIs(['admin.laporan', 'admin.laporan.*']) ? 'active' : '' }}">
                 <i class="fas fa-chart-bar me-2"></i>
                 <span>Laporan</span>
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('admin.documents.index') }}" class="menu-item {{ Request::routeIs('admin.documents.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.dokumen.index') }}" class="menu-item {{ Request::routeIs('admin.documents.*') ? 'active' : '' }}">
                 <div class="menu-icon">
                     <i class="fas fa-file-alt"></i>
                 </div>

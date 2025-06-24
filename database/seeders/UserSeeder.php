@@ -29,6 +29,7 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'npr' => 'NPR001',
                 'is_active' => true,
+                'kartu_dosis' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -44,6 +45,7 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'npr' => 'NPR002',
                 'is_active' => true,
+                'kartu_dosis' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -59,6 +61,7 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'npr' => 'NPR003',
                 'is_active' => true,
+                'kartu_dosis' => false,
                 'created_at' => now(),
                 'updated_at' => now()
             ]

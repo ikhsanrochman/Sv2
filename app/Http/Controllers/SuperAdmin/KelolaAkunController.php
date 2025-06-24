@@ -37,15 +37,22 @@ class KelolaAkunController extends Controller
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role_id' => 'required|exists:roles,id',
-            'keahlian' => 'required|array',
-            'keahlian.*' => 'exists:jenis_pekerja,id',
+            'keahlian' => 'nullable|string|max:255',
+            'jenis_pekerja' => 'required|array',
+            'jenis_pekerja.*' => 'exists:jenis_pekerja,id',
             'no_sib' => 'required|string|max:255',
             'npr' => 'required|string|max:255',
             'berlaku' => 'required|date',
+            'foto_profil' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         try {
             DB::beginTransaction();
+
+            $fotoProfilPath = null;
+            if ($request->hasFile('foto_profil')) {
+                $fotoProfilPath = $request->file('foto_profil')->store('foto_profil', 'public');
+            }
 
             $user = User::create([
                 'nama' => $request->nama,
@@ -53,13 +60,15 @@ class KelolaAkunController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role_id' => $request->role_id,
+                'keahlian' => $request->keahlian,
                 'no_sib' => $request->no_sib,
                 'npr' => $request->npr,
                 'berlaku' => $request->berlaku,
-                'status' => 'active'
+                'is_active' => true,
+                'foto_profil' => $fotoProfilPath,
             ]);
 
-            $user->jenisPekerja()->attach($request->keahlian);
+            $user->jenisPekerja()->attach($request->jenis_pekerja);
 
             DB::commit();
 
@@ -102,25 +111,40 @@ class KelolaAkunController extends Controller
             'username' => 'required|string|max:255|unique:users,username,' . $id,
             'email' => 'required|email|max:255|unique:users,email,' . $id,
             'role_id' => 'required|exists:roles,id',
-            'keahlian' => 'required|array',
-            'keahlian.*' => 'exists:jenis_pekerja,id',
+            'keahlian' => 'nullable|string|max:255',
+            'jenis_pekerja' => 'required|array',
+            'jenis_pekerja.*' => 'exists:jenis_pekerja,id',
             'no_sib' => 'required|string|max:255',
             'npr' => 'required|string|max:255',
             'berlaku' => 'required|date',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         try {
             DB::beginTransaction();
 
             $user = User::findOrFail($id);
+
+            // Handle foto_profil update
+            $fotoProfilPath = $user->foto_profil;
+            if ($request->hasFile('foto_profil')) {
+                // Hapus file lama jika ada
+                if ($fotoProfilPath && \Storage::disk('public')->exists($fotoProfilPath)) {
+                    \Storage::disk('public')->delete($fotoProfilPath);
+                }
+                $fotoProfilPath = $request->file('foto_profil')->store('foto_profil', 'public');
+            }
+
             $user->update([
                 'nama' => $request->nama,
                 'username' => $request->username,
                 'email' => $request->email,
                 'role_id' => $request->role_id,
+                'keahlian' => $request->keahlian,
                 'no_sib' => $request->no_sib,
                 'npr' => $request->npr,
                 'berlaku' => $request->berlaku,
+                'foto_profil' => $fotoProfilPath,
             ]);
 
             // Update password if provided
@@ -133,7 +157,7 @@ class KelolaAkunController extends Controller
             }
 
             // Sync jenis pekerja
-            $user->jenisPekerja()->sync($request->keahlian);
+            $user->jenisPekerja()->sync($request->jenis_pekerja);
 
             DB::commit();
 

@@ -71,10 +71,34 @@
     @endif
 
     <!-- Form Card -->
-    <form action="{{ route('admin.kelola_akun.update', $user->id) }}" method="POST">
+    <form action="{{ route('admin.kelola_akun.update', $user->id) }}" method="POST" enctype="multipart/form-data" class="p-4 bg-white rounded-3 shadow-sm">
         @csrf
         @method('PUT')
         
+        <!-- Foto Profil -->
+        <div class="d-flex align-items-center mb-4">
+            <img src="{{ $user->foto_profil ? asset('storage/' . $user->foto_profil) : asset('img/user.png') }}" alt="Foto Profil" class="rounded-circle" id="preview-foto-profil" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #1e3a5f;">
+            <div class="ms-3">
+                <label for="foto_profil" class="form-label fw-bold mb-1">Foto Profil</label>
+                <input type="file" class="form-control" id="foto_profil" name="foto_profil" accept="image/*">
+                @error('foto_profil')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+
+        <!-- Modal Cropper -->
+        <div id="cropperModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+            <div style="background:#fff; padding:24px 18px 18px 18px; border-radius:14px; max-width:340px; width:95vw; max-height:95vh; box-shadow:0 8px 32px rgba(30,58,95,0.18); display:flex; flex-direction:column; align-items:center;">
+                <div style="font-weight:600; font-size:1.1rem; margin-bottom:10px; color:#1e3a5f;">Atur & Crop Foto Profil</div>
+                <img id="cropperImage" src="" style="max-width:250px; max-height:250px; width:100%; height:auto; border-radius:8px; border:1px solid #eee; background:#f8f9fa; display:block; margin:auto;">
+                <div class="mt-3 d-flex justify-content-center gap-2" style="width:100%;">
+                    <button type="button" class="btn btn-primary flex-fill" id="cropBtn">Crop & Simpan</button>
+                    <button type="button" class="btn btn-secondary flex-fill" id="closeCropBtn">Batal</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Personal Information -->
         <div class="row mb-4">
             <div class="col-12">
@@ -123,6 +147,12 @@
                         <i class="fas fa-eye"></i>
                     </button>
                 </div>
+                <ul id="edit-password-requirements" class="mt-2 mb-0 ps-3" style="list-style: disc; font-size: 0.95em;">
+                    <li id="edit-pw-length" class="text-danger">Minimal 8 karakter</li>
+                    <li id="edit-pw-uppercase" class="text-danger">Mengandung huruf kapital</li>
+                    <li id="edit-pw-number" class="text-danger">Mengandung angka</li>
+                    <li id="edit-pw-symbol" class="text-danger">Mengandung simbol</li>
+                </ul>
                 <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah password</small>
                 @error('password')
                     <div class="invalid-feedback">{{ $message }}</div>
@@ -492,8 +522,89 @@
             });
         }
 
-        // All Keahlian tag logic is removed.
+        // Real-time password requirements check (edit akun)
+        const passwordInput = document.getElementById('password');
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const value = passwordInput.value;
+                document.getElementById('edit-pw-length').className = value.length >= 8 ? 'text-success' : 'text-danger';
+                document.getElementById('edit-pw-uppercase').className = /[A-Z]/.test(value) ? 'text-success' : 'text-danger';
+                document.getElementById('edit-pw-number').className = /\d/.test(value) ? 'text-success' : 'text-danger';
+                document.getElementById('edit-pw-symbol').className = /[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?]/.test(value) ? 'text-success' : 'text-danger';
+            });
+        }
     });
+</script>
+
+<!-- Cropper.js CSS & JS -->
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let cropper;
+    const fotoInput = document.getElementById('foto_profil');
+    const cropModal = document.getElementById('cropperModal');
+    const cropImage = document.getElementById('cropperImage');
+    const cropBtn = document.getElementById('cropBtn');
+    const closeCropBtn = document.getElementById('closeCropBtn');
+    const previewImg = document.getElementById('preview-foto-profil');
+
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && /^image\/.*/.test(file.type)) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    cropImage.src = evt.target.result;
+                    cropModal.style.display = 'flex';
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(cropImage, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        movable: true,
+                        zoomable: true,
+                        rotatable: false,
+                        scalable: false,
+                        cropBoxResizable: true,
+                        minContainerWidth: 200,
+                        minContainerHeight: 200,
+                        minCropBoxWidth: 100,
+                        minCropBoxHeight: 100,
+                        autoCropArea: 1
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    if (cropBtn) {
+        cropBtn.addEventListener('click', function() {
+            if (cropper) {
+                cropper.getCroppedCanvas({
+                    width: 250,
+                    height: 250,
+                    imageSmoothingQuality: 'high'
+                }).toBlob(function(blob) {
+                    const uniqueName = 'profile_' + Date.now() + '.png';
+                    const file = new File([blob], uniqueName, { type: 'image/png' });
+                    const url = URL.createObjectURL(file);
+                    previewImg.src = url;
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fotoInput.files = dataTransfer.files;
+                    cropModal.style.display = 'none';
+                    cropper.destroy();
+                }, 'image/png');
+            }
+        });
+    }
+    if (closeCropBtn) {
+        closeCropBtn.addEventListener('click', function() {
+            cropModal.style.display = 'none';
+            if (cropper) cropper.destroy();
+        });
+    }
+});
 </script>
 @endpush
 

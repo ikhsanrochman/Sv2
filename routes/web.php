@@ -157,6 +157,12 @@ Route::middleware(['auth', 'role:1'])->prefix('super-admin')->name('super_admin.
     // Create TLD & Pendos dengan URL baru
     Route::get('/tld/{project}/create', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'tldCreate'])->name('tld.create');
     Route::get('/pendos/{project}/create', [App\Http\Controllers\SuperAdmin\PemantauanController::class, 'pendosCreate'])->name('pendos.create');
+
+    // Jenis Pekerja (Bidang) CRUD untuk modal
+    Route::get('/jenis-pekerja/list', [App\Http\Controllers\SuperAdmin\JenisPekerjaController::class, 'list'])->name('jenis_pekerja.list');
+    Route::post('/jenis-pekerja/store', [App\Http\Controllers\SuperAdmin\JenisPekerjaController::class, 'store'])->name('jenis_pekerja.store');
+    Route::put('/jenis-pekerja/update/{id}', [App\Http\Controllers\SuperAdmin\JenisPekerjaController::class, 'update'])->name('jenis_pekerja.update');
+    Route::delete('/jenis-pekerja/destroy/{id}', [App\Http\Controllers\SuperAdmin\JenisPekerjaController::class, 'destroy'])->name('jenis_pekerja.destroy');
 });
 
 // ==========================================
@@ -222,13 +228,32 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
     // Reports
     Route::get('/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/project/{id}', [App\Http\Controllers\Admin\LaporanController::class, 'projectDetail'])->name('laporan.project_detail');
-    Route::get('/laporan/project/{id}/pdf', [App\Http\Controllers\Admin\LaporanController::class, 'downloadProjectDetail'])->name('laporan.project_detail.pdf');
+    Route::get('/laporan/project/{id}/download', [App\Http\Controllers\Admin\LaporanController::class, 'downloadProjectDetail'])->name('laporan.project.download');
 
     // Documents
     Route::get('/dokumen', [App\Http\Controllers\Admin\DocumentController::class, 'index'])->name('dokumen.index');
     Route::get('/dokumen/create', [App\Http\Controllers\Admin\DocumentController::class, 'create'])->name('dokumen.create');
     Route::post('/dokumen', [App\Http\Controllers\Admin\DocumentController::class, 'store'])->name('dokumen.store');
     Route::get('/dokumen/{document}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('dokumen.download');
+
+    // Pemantauan TLD & Pendos sebagai menu terpisah (ADMIN)
+    Route::get('/tld', [PemantauanController::class, 'search'])->name('tld.search');
+    Route::get('/pendos', [PemantauanController::class, 'search'])->name('pendos.search');
+
+    // Document Categories for AJAX
+    Route::post('document_categories', [App\Http\Controllers\Admin\DocumentCategoryController::class, 'store'])->name('dokumen_categories.store');
+
+    // Detail TLD & Pendos dengan URL baru
+    Route::get('/tld/{project}', [App\Http\Controllers\Admin\PemantauanController::class, 'tld'])->name('tld.detail');
+    Route::get('/tld/{projectId}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'tldDetail'])->name('tld.user.detail');
+    Route::get('/tld/{projectId}/{userId}/edit/{dosisId}', [App\Http\Controllers\Admin\PemantauanController::class, 'tldEdit'])->name('tld.edit');
+    Route::get('/pendos/{project}', [App\Http\Controllers\Admin\PemantauanController::class, 'pendos'])->name('pendos.detail');
+    Route::get('/pemantauan/{projectId}/pendos/create', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosCreate'])->name('pemantauan.pendos.create');
+    Route::post('/pemantauan/{projectId}/pendos/store', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosStore'])->name('pemantauan.pendos.store');
+    Route::get('/pendos/{projectId}/{userId}/detail', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosDetail'])->name('pendos.user.detail');
+    Route::get('/pemantauan/{projectId}/pendos/{userId}/edit/{dosisId}', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosEdit'])->name('pemantauan.pendos.edit');
+    Route::delete('/pemantauan/{projectId}/pendos/{userId}/destroy/{dosisId}', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosDestroy'])->name('pemantauan.pendos.destroy');
+    Route::put('/pemantauan/{projectId}/pendos/{userId}/update/{dosisId}', [App\Http\Controllers\Admin\PemantauanController::class, 'pendosUpdate'])->name('pemantauan.pendos.update');
 });
 
 // ==========================================
@@ -241,4 +266,5 @@ Route::middleware(['auth', 'role:3'])->prefix('user')->name('user.')->group(func
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [UserProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile/update', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/update-password', [UserProfileController::class, 'updatePassword'])->name('profile.update_password');
 });

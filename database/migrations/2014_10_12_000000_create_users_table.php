@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
+            $table->boolean('kartu_dosis')->default(false);
             $table->timestamps();
         });
     }

@@ -9,7 +9,7 @@
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-white">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.pemantauan.index') }}" class="text-decoration-none text-white">Pemantauan</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.pemantauan.tld', $project->id) }}" class="text-decoration-none text-white">TLD</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.tld.user.detail', ['project' => $project->id, 'userId' => $user->id]) }}" class="text-decoration-none text-white">Detail</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('admin.tld.user.detail', ['projectId' => $project->id, 'userId' => $user->id]) }}" class="text-decoration-none text-white">Detail</a></li>
                 <li class="breadcrumb-item active text-white" aria-current="page">Edit Data</li>
             </ol>
         </nav>
@@ -22,7 +22,7 @@
     <!-- Header and Back Button Row -->
     <div class="d-flex align-items-center mb-4 justify-content-between">
         <h2 class="fw-bold mb-0">Edit Data Dosis TLD</h2>
-        <a href="{{ route('admin.tld.user.detail', ['project' => $project->id, 'userId' => $user->id]) }}" class="btn btn-secondary">
+        <a href="{{ route('admin.tld.user.detail', ['projectId' => $project->id, 'userId' => $user->id]) }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left me-2"></i>Kembali
         </a>
     </div>
@@ -77,7 +77,7 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2 justify-content-end mt-4">
-                    <a href="{{ route('admin.tld.user.detail', ['project' => $project->id, 'userId' => $user->id]) }}" class="btn btn-secondary">
+                    <a href="{{ route('admin.tld.user.detail', ['projectId' => $project->id, 'userId' => $user->id]) }}" class="btn btn-secondary">
                         <i class="fas fa-times me-1"></i>Batal
                     </a>
                     <button type="submit" class="btn btn-primary">

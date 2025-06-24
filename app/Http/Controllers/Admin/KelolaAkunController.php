@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\JenisPekerja;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class KelolaAkunController extends Controller
 {
@@ -46,12 +47,19 @@ class KelolaAkunController extends Controller
             'npr' => 'required|string|max:255',
             'berlaku' => 'required|date',
             'is_active' => 'required|boolean',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
+        }
+
+        // Handle foto profil upload
+        $fotoProfilPath = null;
+        if ($request->hasFile('foto_profil')) {
+            $fotoProfilPath = $request->file('foto_profil')->store('foto_profil', 'public');
         }
 
         $user = User::create([
@@ -65,6 +73,7 @@ class KelolaAkunController extends Controller
             'no_sib' => $request->no_sib,
             'berlaku' => $request->berlaku,
             'is_active' => $request->is_active,
+            'foto_profil' => $fotoProfilPath,
         ]);
 
         // Attach jenis pekerja (many-to-many relationship)
@@ -110,6 +119,7 @@ class KelolaAkunController extends Controller
             'npr' => 'required|string|max:255',
             'berlaku' => 'required|date',
             'is_active' => 'required|boolean',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -119,6 +129,17 @@ class KelolaAkunController extends Controller
         }
 
         $user = User::findOrFail($id);
+
+        // Handle foto profil update
+        $fotoProfilPath = $user->foto_profil;
+        if ($request->hasFile('foto_profil')) {
+            // Delete old file if exists
+            if ($fotoProfilPath && Storage::disk('public')->exists($fotoProfilPath)) {
+                Storage::disk('public')->delete($fotoProfilPath);
+            }
+            $fotoProfilPath = $request->file('foto_profil')->store('foto_profil', 'public');
+        }
+
         $user->update([
             'nama' => $request->nama,
             'username' => $request->username,
@@ -129,6 +150,7 @@ class KelolaAkunController extends Controller
             'no_sib' => $request->no_sib,
             'berlaku' => $request->berlaku,
             'is_active' => $request->is_active,
+            'foto_profil' => $fotoProfilPath,
         ]);
 
         // Update password if provided

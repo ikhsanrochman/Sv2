@@ -124,15 +124,37 @@
     </div>
     @endif
 
-    <!-- Form Card -->
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <form action="{{ route('super_admin.kelola_akun.store') }}" method="POST">
-                @csrf
-                
-                <!-- Personal Information -->
+    <!-- Foto Profil -->
+    <form action="{{ route('super_admin.kelola_akun.store') }}" method="POST" enctype="multipart/form-data" class="p-4 bg-white rounded-3 shadow-sm">
+        @csrf
+        <div class="d-flex align-items-center mb-4">
+            <img src="{{ asset('img/user.png') }}" alt="Foto Profil" class="rounded-circle" id="preview-foto-profil" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #1e3a5f;">
+            <div class="ms-3">
+                <label for="foto_profil" class="form-label fw-bold mb-1">Foto Profil</label>
+                <input type="file" class="form-control" id="foto_profil" name="foto_profil" accept="image/*">
+                @error('foto_profil')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+
+        <!-- Modal Cropper -->
+        <div id="cropperModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+            <div style="background:#fff; padding:24px 18px 18px 18px; border-radius:14px; max-width:340px; width:95vw; max-height:95vh; box-shadow:0 8px 32px rgba(30,58,95,0.18); display:flex; flex-direction:column; align-items:center;">
+                <div style="font-weight:600; font-size:1.1rem; margin-bottom:10px; color:#1e3a5f;">Atur & Crop Foto Profil</div>
+                <img id="cropperImage" src="" style="max-width:250px; max-height:250px; width:100%; height:auto; border-radius:8px; border:1px solid #eee; background:#f8f9fa; display:block; margin:auto;">
+                <div class="mt-3 d-flex justify-content-center gap-2" style="width:100%;">
+                    <button type="button" class="btn btn-primary flex-fill" id="cropBtn">Crop & Simpan</button>
+                    <button type="button" class="btn btn-secondary flex-fill" id="closeCropBtn">Batal</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="row justify-content-center mt-3">
+            <div class="col-lg-8">
                 <div class="row mb-4">
-                    <div class="col-12">
+                    <div class="col-12 mb-2">
                         <h6 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Informasi Pribadi</h6>
                     </div>
                     <div class="col-md-6 mb-3">
@@ -166,7 +188,7 @@
 
                 <!-- Security Information -->
                 <div class="row mb-4">
-                    <div class="col-12">
+                    <div class="col-12 mb-2">
                         <h6 class="text-primary mb-3"><i class="fas fa-lock me-2"></i>Informasi Keamanan</h6>
                     </div>
                     <div class="col-md-6 mb-3">
@@ -178,6 +200,13 @@
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
+                        <!-- Password requirements -->
+                        <ul id="password-requirements" class="mt-2 mb-0 ps-3" style="list-style: disc; font-size: 0.95em;">
+                            <li id="pw-length" class="text-danger">Minimal 8 karakter</li>
+                            <li id="pw-uppercase" class="text-danger">Mengandung huruf kapital</li>
+                            <li id="pw-number" class="text-danger">Mengandung angka</li>
+                            <li id="pw-symbol" class="text-danger">Mengandung simbol</li>
+                        </ul>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -197,7 +226,7 @@
 
                 <!-- Role and Expertise -->
                 <div class="row mb-4">
-                    <div class="col-12">
+                    <div class="col-12 mb-2">
                         <h6 class="text-primary mb-3"><i class="fas fa-user-tag me-2"></i>Role dan Keahlian</h6>
                     </div>
                     <div class="col-md-6 mb-3">
@@ -215,13 +244,28 @@
                         @enderror
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="jenis_pekerja_selector" class="form-label fw-bold">Bidang <span class="text-danger">*</span></label>
-                        <select class="form-select" id="jenis_pekerja_selector">
-                            <option value="">Pilih Bidang...</option>
-                            @foreach($jenisPekerja as $jp)
-                                <option value="{{ $jp->id }}" data-name="{{ $jp->nama }}">{{ $jp->nama }}</option>
-                            @endforeach
+                        <label for="is_active" class="form-label fw-bold">Status <span class="text-danger">*</span></label>
+                        <select class="form-select @error('is_active') is-invalid @enderror" id="is_active" name="is_active" required>
+                            <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ old('is_active') !== null && old('is_active') == 0 ? 'selected' : '' }}>Tidak Aktif</option>
                         </select>
+                        @error('is_active')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="jenis_pekerja_selector" class="form-label fw-bold">Bidang <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <select class="form-select" id="jenis_pekerja_selector">
+                                <option value="">Pilih Bidang...</option>
+                                @foreach($jenisPekerja as $jp)
+                                    <option value="{{ $jp->id }}" data-name="{{ $jp->nama }}">{{ $jp->nama }}</option>
+                                @endforeach
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" id="btn-tambah-bidang" data-bs-toggle="modal" data-bs-target="#modalBidang">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                         <div id="selected_bidang_container" class="mt-2">
                             {{-- Selected items will be populated here by JavaScript --}}
                         </div>
@@ -247,7 +291,7 @@
 
                 <!-- Professional Information -->
                 <div class="row mb-4">
-                    <div class="col-12">
+                    <div class="col-12 mb-2">
                         <h6 class="text-primary mb-3"><i class="fas fa-id-card me-2"></i>Informasi Profesional</h6>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -292,9 +336,9 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 
 <!-- Custom CSS -->
@@ -306,6 +350,8 @@
     .container-fluid {
         overflow-x: auto;
         max-width: 100vw;
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .breadcrumb-item {
@@ -404,6 +450,21 @@
     .btn-close-tag:hover {
         color: #e0e0e0;
     }
+
+    form.bg-white {
+        padding: 2rem 2rem 1.5rem 2rem;
+        margin-top: 0.5rem;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(30,58,95,0.08);
+    }
+
+    .row.mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+
+    h6.text-primary {
+        margin-bottom: 1rem !important;
+    }
 </style>
 
 @push('scripts')
@@ -439,10 +500,26 @@
         }
     });
 
+    // Password requirements live check
+    document.getElementById('password').addEventListener('input', function() {
+        const value = this.value;
+        // Checks
+        const lengthCheck = value.length >= 8;
+        const uppercaseCheck = /[A-Z]/.test(value);
+        const numberCheck = /\d/.test(value);
+        const symbolCheck = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(value);
+        // Update UI
+        document.getElementById('pw-length').className = lengthCheck ? 'text-success' : 'text-danger';
+        document.getElementById('pw-uppercase').className = uppercaseCheck ? 'text-success' : 'text-danger';
+        document.getElementById('pw-number').className = numberCheck ? 'text-success' : 'text-danger';
+        document.getElementById('pw-symbol').className = symbolCheck ? 'text-success' : 'text-danger';
+    });
+
     // Form validation
     document.querySelector('form').addEventListener('submit', function(e) {
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('password_confirmation').value;
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
         
         if (password !== confirmPassword) {
             e.preventDefault();
@@ -450,13 +527,170 @@
             return false;
         }
         
-        if (password.length < 6) {
+        if (!passwordRegex.test(password)) {
             e.preventDefault();
-            alert('Password minimal 6 karakter!');
+            alert('Password minimal 8 karakter, mengandung huruf kapital, angka, dan simbol!');
             return false;
         }
     });
+
+    // ========== BIDANG CRUD MODAL ==========
+    function loadBidangList() {
+        fetch('/super-admin/jenis-pekerja/list')
+            .then(res => res.json())
+            .then(data => {
+                let html = '<table class="table table-bordered"><thead><tr><th>Nama Bidang</th><th style="width:120px">Aksi</th></tr></thead><tbody>';
+                data.forEach(bidang => {
+                    html += `<tr>
+                        <td><span class="nama-bidang" data-id="${bidang.id}">${bidang.nama}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning btn-edit-bidang" data-id="${bidang.id}" data-nama="${bidang.nama}"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-danger btn-delete-bidang" data-id="${bidang.id}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                document.getElementById('list-bidang-container').innerHTML = html;
+            });
+    }
+
+    // Fungsi untuk refresh isi dropdown bidang
+    function refreshDropdownBidang(selectedId = null) {
+        fetch('/super-admin/jenis-pekerja/list')
+            .then(res => res.json())
+            .then(data => {
+                const selector = document.getElementById('jenis_pekerja_selector');
+                selector.innerHTML = '<option value="">Pilih Bidang...</option>';
+                data.forEach(bidang => {
+                    const option = document.createElement('option');
+                    option.value = bidang.id;
+                    option.textContent = bidang.nama;
+                    if (selectedId && bidang.id == selectedId) option.selected = true;
+                    selector.appendChild(option);
+                });
+            });
+    }
+
+    document.getElementById('modalBidang').addEventListener('show.bs.modal', loadBidangList);
+
+    document.getElementById('form-tambah-bidang').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const nama = document.getElementById('input-nama-bidang').value;
+        fetch('/super-admin/jenis-pekerja/store', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name=_token]').value
+            },
+            body: JSON.stringify({ nama })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('input-nama-bidang').value = '';
+                loadBidangList();
+                refreshDropdownBidang(data.bidang.id); // update dropdown dan auto-select bidang baru
+            } else {
+                alert('Gagal menambah bidang');
+            }
+        });
+    });
+    // TODO: Tambahkan event edit dan delete bidang, lalu panggil refreshDropdownBidang() setelah sukses
 </script>
 @endpush
+
+<!-- Modal Bidang -->
+<div class="modal fade" id="modalBidang" tabindex="-1" aria-labelledby="modalBidangLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalBidangLabel">Kelola Bidang</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <form id="form-tambah-bidang" class="d-flex gap-2">
+            <input type="text" class="form-control" id="input-nama-bidang" placeholder="Nama bidang baru" required>
+            <button type="submit" class="btn btn-primary">Tambah</button>
+          </form>
+        </div>
+        <div id="list-bidang-container">
+          <!-- Daftar bidang akan dimuat di sini via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cropper.js CSS & JS -->
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let cropper;
+    const fotoInput = document.getElementById('foto_profil');
+    const cropModal = document.getElementById('cropperModal');
+    const cropImage = document.getElementById('cropperImage');
+    const cropBtn = document.getElementById('cropBtn');
+    const closeCropBtn = document.getElementById('closeCropBtn');
+    const previewImg = document.getElementById('preview-foto-profil');
+
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && /^image\/.*/.test(file.type)) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    cropImage.src = evt.target.result;
+                    cropModal.style.display = 'flex';
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(cropImage, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        movable: true,
+                        zoomable: true,
+                        rotatable: false,
+                        scalable: false,
+                        cropBoxResizable: true,
+                        minContainerWidth: 200,
+                        minContainerHeight: 200,
+                        minCropBoxWidth: 100,
+                        minCropBoxHeight: 100,
+                        autoCropArea: 1
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    if (cropBtn) {
+        cropBtn.addEventListener('click', function() {
+            if (cropper) {
+                cropper.getCroppedCanvas({
+                    width: 250,
+                    height: 250,
+                    imageSmoothingQuality: 'high'
+                }).toBlob(function(blob) {
+                    const uniqueName = 'profile_' + Date.now() + '.png';
+                    const file = new File([blob], uniqueName, { type: 'image/png' });
+                    const url = URL.createObjectURL(file);
+                    previewImg.src = url;
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fotoInput.files = dataTransfer.files;
+                    cropModal.style.display = 'none';
+                    cropper.destroy();
+                }, 'image/png');
+            }
+        });
+    }
+    if (closeCropBtn) {
+        closeCropBtn.addEventListener('click', function() {
+            cropModal.style.display = 'none';
+            if (cropper) cropper.destroy();
+        });
+    }
+});
+</script>
 
 @endsection 

@@ -70,171 +70,192 @@
     </div>
     @endif
 
-    <!-- Form Card -->
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-user-edit me-2"></i>Form Edit Akun</h5>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('super_admin.kelola_akun.update', $user->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        
-                        <!-- Personal Information -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Informasi Pribadi</h6>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="nama" class="form-label fw-bold">Nama Lengkap <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('nama') is-invalid @enderror" 
-                                       id="nama" name="nama" value="{{ old('nama', $user->nama) }}" 
-                                       placeholder="Masukkan nama lengkap" required>
-                                @error('nama')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="username" class="form-label fw-bold">Username <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('username') is-invalid @enderror" 
-                                       id="username" name="username" value="{{ old('username', $user->username) }}" 
-                                       placeholder="Masukkan username" required>
-                                @error('username')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label fw-bold">Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                       id="email" name="email" value="{{ old('email', $user->email) }}" 
-                                       placeholder="Masukkan email" required>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Security Information -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="text-primary mb-3"><i class="fas fa-lock me-2"></i>Informasi Keamanan</h6>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label fw-bold">Password Baru <span class="text-muted">(Opsional)</span></label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                           id="password" name="password" placeholder="Kosongkan jika tidak ingin mengubah password">
-                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                                <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah password</small>
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="password_confirmation" class="form-label fw-bold">Konfirmasi Password Baru <span class="text-muted">(Opsional)</span></label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" 
-                                           id="password_confirmation" name="password_confirmation" 
-                                           placeholder="Konfirmasi password baru">
-                                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Role and Expertise -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="text-primary mb-3"><i class="fas fa-user-tag me-2"></i>Role dan Keahlian</h6>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="role_id" class="form-label fw-bold">Role <span class="text-danger">*</span></label>
-                                <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
-                                    <option value="">Pilih Role</option>
-                                    @foreach($roles as $role)
-                                        <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
-                                            {{ $role->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('role_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="keahlian" class="form-label fw-bold">Bidang Keahlian <span class="text-danger">*</span></label>
-                                <select class="form-select @error('keahlian') is-invalid @enderror" id="keahlian" name="keahlian[]" multiple required>
-                                    @foreach($jenisPekerja as $jp)
-                                        <option value="{{ $jp->id }}" {{ in_array($jp->id, old('keahlian', $user->jenisPekerja->pluck('id')->toArray())) ? 'selected' : '' }}>
-                                            {{ $jp->nama }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <small class="form-text text-muted">Tekan Ctrl (atau Cmd di Mac) untuk memilih multiple bidang</small>
-                                @error('keahlian')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Professional Information -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="text-primary mb-3"><i class="fas fa-id-card me-2"></i>Informasi Profesional</h6>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="no_sib" class="form-label fw-bold">No. SIB <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('no_sib') is-invalid @enderror" 
-                                       id="no_sib" name="no_sib" value="{{ old('no_sib', $user->no_sib) }}" 
-                                       placeholder="Masukkan nomor SIB" required>
-                                @error('no_sib')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="npr" class="form-label fw-bold">NPR <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('npr') is-invalid @enderror" 
-                                       id="npr" name="npr" value="{{ old('npr', $user->npr) }}" 
-                                       placeholder="Masukkan nomor NPR" required>
-                                @error('npr')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="berlaku" class="form-label fw-bold">Tanggal Berlaku <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control @error('berlaku') is-invalid @enderror" 
-                                       id="berlaku" name="berlaku" value="{{ old('berlaku', $user->berlaku) }}" required>
-                                @error('berlaku')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Form Actions -->
-                        <div class="row">
-                            <div class="col-12">
-                                <hr class="my-4">
-                                <div class="d-flex justify-content-end gap-2">
-                                    <a href="{{ route('super_admin.kelola_akun') }}" class="btn btn-secondary">
-                                        <i class="fas fa-times me-2"></i>Batal
-                                    </a>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-2"></i>Update Akun
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+    <form action="{{ route('super_admin.kelola_akun.update', $user->id) }}" method="POST" enctype="multipart/form-data" class="p-4 bg-white rounded-3 shadow-sm">
+        @csrf
+        @method('PUT')
+        <div class="d-flex align-items-center mb-4">
+            <img src="{{ $user->foto_profil ? asset('storage/' . $user->foto_profil) : asset('img/user.png') }}" alt="Foto Profil" class="rounded-circle" id="preview-foto-profil" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #1e3a5f;">
+            <div class="ms-3">
+                <label for="foto_profil" class="form-label fw-bold mb-1">Foto Profil</label>
+                <input type="file" class="form-control" id="foto_profil" name="foto_profil" accept="image/*">
+                @error('foto_profil')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+        <div id="cropperModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+            <div style="background:#fff; padding:24px 18px 18px 18px; border-radius:14px; max-width:340px; width:95vw; max-height:95vh; box-shadow:0 8px 32px rgba(30,58,95,0.18); display:flex; flex-direction:column; align-items:center;">
+                <div style="font-weight:600; font-size:1.1rem; margin-bottom:10px; color:#1e3a5f;">Atur & Crop Foto Profil</div>
+                <img id="cropperImage" src="" style="max-width:250px; max-height:250px; width:100%; height:auto; border-radius:8px; border:1px solid #eee; background:#f8f9fa; display:block; margin:auto;">
+                <div class="mt-3 d-flex justify-content-center gap-2" style="width:100%;">
+                    <button type="button" class="btn btn-primary flex-fill" id="cropBtn">Crop & Simpan</button>
+                    <button type="button" class="btn btn-secondary flex-fill" id="closeCropBtn">Batal</button>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="row justify-content-center mt-3">
+            <div class="col-lg-8">
+                <!-- Personal Information -->
+                <div class="row mb-4">
+                    <div class="col-12 mb-2">
+                        <h6 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Informasi Pribadi</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="nama" class="form-label fw-bold">Nama Lengkap <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama', $user->nama) }}" placeholder="Masukkan nama lengkap" required>
+                        @error('nama')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="username" class="form-label fw-bold">Username <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" value="{{ old('username', $user->username) }}" placeholder="Masukkan username" required>
+                        @error('username')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label fw-bold">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}" placeholder="Masukkan email" required>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <!-- Security Information -->
+                <div class="row mb-4">
+                    <div class="col-12 mb-2">
+                        <h6 class="text-primary mb-3"><i class="fas fa-lock me-2"></i>Informasi Keamanan</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label fw-bold">Password Baru <span class="text-muted">(Opsional)</span></label>
+                        <div class="input-group">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Kosongkan jika tidak ingin mengubah password">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah password</small>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="password_confirmation" class="form-label fw-bold">Konfirmasi Password Baru <span class="text-muted">(Opsional)</span></label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Konfirmasi password baru">
+                            <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Role and Expertise -->
+                <div class="row mb-4">
+                    <div class="col-12 mb-2">
+                        <h6 class="text-primary mb-3"><i class="fas fa-user-tag me-2"></i>Role dan Keahlian</h6>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="role_id" class="form-label fw-bold">Role <span class="text-danger">*</span></label>
+                        <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
+                            <option value="">Pilih Role</option>
+                            @foreach($roles as $role)
+                                <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('role_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="is_active" class="form-label fw-bold">Status <span class="text-danger">*</span></label>
+                        <select class="form-select @error('is_active') is-invalid @enderror" id="is_active" name="is_active" required>
+                            <option value="1" {{ old('is_active', $user->is_active) == 1 ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ old('is_active', $user->is_active) == 0 ? 'selected' : '' }}>Tidak Aktif</option>
+                        </select>
+                        @error('is_active')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="jenis_pekerja_selector" class="form-label fw-bold">Bidang <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <select class="form-select" id="jenis_pekerja_selector">
+                                <option value="">Pilih Bidang...</option>
+                                @foreach($jenisPekerja as $jp)
+                                    <option value="{{ $jp->id }}" data-name="{{ $jp->nama }}">{{ $jp->nama }}</option>
+                                @endforeach
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" id="btn-tambah-bidang" data-bs-toggle="modal" data-bs-target="#modalBidang">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div id="selected_bidang_container" class="mt-2">
+                            {{-- Selected items will be populated here by JavaScript --}}
+                        </div>
+                        <select name="jenis_pekerja[]" id="jenis_pekerja_hidden" multiple class="d-none">
+                            @foreach($jenisPekerja as $jp)
+                                @if(in_array($jp->id, old('jenis_pekerja', $user->jenisPekerja->pluck('id')->toArray())))
+                                    <option value="{{ $jp->id }}" selected>{{ $jp->nama }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                        @error('jenis_pekerja')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="keahlian" class="form-label fw-bold">Keahlian</label>
+                        <input type="text" class="form-control @error('keahlian') is-invalid @enderror" id="keahlian" name="keahlian" value="{{ old('keahlian', $user->keahlian) }}" placeholder="Masukkan keahlian">
+                        @error('keahlian')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <!-- Professional Information -->
+                <div class="row mb-4">
+                    <div class="col-12 mb-2">
+                        <h6 class="text-primary mb-3"><i class="fas fa-id-card me-2"></i>Informasi Profesional</h6>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="no_sib" class="form-label fw-bold">No. SIB <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('no_sib') is-invalid @enderror" id="no_sib" name="no_sib" value="{{ old('no_sib', $user->no_sib) }}" placeholder="Masukkan nomor SIB" required>
+                        @error('no_sib')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="npr" class="form-label fw-bold">NPR <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('npr') is-invalid @enderror" id="npr" name="npr" value="{{ old('npr', $user->npr) }}" placeholder="Masukkan nomor NPR" required>
+                        @error('npr')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="berlaku" class="form-label fw-bold">Tanggal Berlaku <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control @error('berlaku') is-invalid @enderror" id="berlaku" name="berlaku" value="{{ old('berlaku', $user->berlaku) }}" required>
+                        @error('berlaku')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <!-- Form Actions -->
+                <div class="row">
+                    <div class="col-12">
+                        <hr class="my-4">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ route('super_admin.kelola_akun') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Batal
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Akun
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 <!-- Custom CSS -->
@@ -357,20 +378,88 @@
     document.querySelector('form').addEventListener('submit', function(e) {
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('password_confirmation').value;
-        
-        if (password && confirmPassword && password !== confirmPassword) {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+        if (password !== confirmPassword) {
             e.preventDefault();
             alert('Password dan konfirmasi password tidak cocok!');
             return false;
         }
-        
-        if (password && password.length < 6) {
+        if (!passwordRegex.test(password)) {
             e.preventDefault();
-            alert('Password minimal 6 karakter!');
+            alert('Password minimal 8 karakter, mengandung huruf kapital, angka, dan simbol!');
             return false;
         }
     });
+
+    // Cropper.js CSS & JS
+    document.addEventListener('DOMContentLoaded', function() {
+        let cropper;
+        const fotoInput = document.getElementById('foto_profil');
+        const cropModal = document.getElementById('cropperModal');
+        const cropImage = document.getElementById('cropperImage');
+        const cropBtn = document.getElementById('cropBtn');
+        const closeCropBtn = document.getElementById('closeCropBtn');
+        const previewImg = document.getElementById('preview-foto-profil');
+
+        if (fotoInput) {
+            fotoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file && /^image\/.*/.test(file.type)) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        cropImage.src = evt.target.result;
+                        cropModal.style.display = 'flex';
+                        if (cropper) cropper.destroy();
+                        cropper = new Cropper(cropImage, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            movable: true,
+                            zoomable: true,
+                            rotatable: false,
+                            scalable: false,
+                            cropBoxResizable: true,
+                            minContainerWidth: 200,
+                            minContainerHeight: 200,
+                            minCropBoxWidth: 100,
+                            minCropBoxHeight: 100,
+                            autoCropArea: 1
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        if (cropBtn) {
+            cropBtn.addEventListener('click', function() {
+                if (cropper) {
+                    cropper.getCroppedCanvas({
+                        width: 250,
+                        height: 250,
+                        imageSmoothingQuality: 'high'
+                    }).toBlob(function(blob) {
+                        const uniqueName = 'profile_' + Date.now() + '.png';
+                        const file = new File([blob], uniqueName, { type: 'image/png' });
+                        const url = URL.createObjectURL(file);
+                        previewImg.src = url;
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        fotoInput.files = dataTransfer.files;
+                        cropModal.style.display = 'none';
+                        cropper.destroy();
+                    }, 'image/png');
+                }
+            });
+        }
+        if (closeCropBtn) {
+            closeCropBtn.addEventListener('click', function() {
+                cropModal.style.display = 'none';
+                if (cropper) cropper.destroy();
+            });
+        }
+    });
 </script>
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 @endpush
 
 @endsection

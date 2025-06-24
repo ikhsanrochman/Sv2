@@ -25,13 +25,22 @@ class UserProfileController extends Controller
             'nama' => 'required|string|max:255',
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user->update([
-            'nama' => $request->nama,
-            'username' => $request->username,
-            'email' => $request->email,
-        ]);
+        $user->nama = $request->nama;
+        $user->username = $request->username;
+        $user->email = $request->email;
+
+        if ($request->hasFile('foto_profil')) {
+            if ($user->foto_profil && \Storage::disk('public')->exists($user->foto_profil)) {
+                \Storage::disk('public')->delete($user->foto_profil);
+            }
+            $path = $request->file('foto_profil')->store('img', 'public');
+            $user->foto_profil = $path;
+        }
+
+        $user->save();
 
         return redirect()->route('user.profile.index')
             ->with('success', 'Profile berhasil diperbarui!');

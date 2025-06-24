@@ -109,7 +109,7 @@
                 </div>
 
                 <div class="d-flex gap-2 justify-content-end mt-4">
-                    <a href="{{ route('admin.pemantauan.pendos.detail', ['project' => $project->id, 'userId' => $user->id]) }}" class="btn btn-secondary">
+                    <a href="{{ route('admin.pendos.user.detail', ['projectId' => $project->id, 'userId' => $user->id]) }}" class="btn btn-secondary">
                         <i class="fas fa-times me-1"></i>Batal
                     </a>
                     <button type="submit" class="btn btn-primary">

@@ -16,6 +16,9 @@
 <div style="margin-top: 50px;"></div>
 
 @push('scripts')
+<!-- Cropper.js CSS & JS -->
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     // Sidebar & breadcrumb logic (biarkan jika ada)
@@ -98,11 +101,29 @@
                 alert('Password baru dan konfirmasi password tidak cocok!');
                 return false;
             }
-            if (newPassword.length < 8) {
+            // Validasi password: minimal 8 karakter, ada huruf kapital, angka, dan simbol
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+            if (!passwordRegex.test(newPassword)) {
                 e.preventDefault();
-                alert('Password baru minimal 8 karakter!');
+                alert('Password baru minimal 8 karakter, mengandung huruf kapital, angka, dan simbol!');
                 return false;
             }
+        });
+    }
+
+    // Real-time password requirements check (profile only)
+    const newPasswordInput = document.getElementById('new_password');
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', function() {
+            const value = newPasswordInput.value;
+            const pwLength = document.getElementById('profile-pw-length');
+            const pwUpper = document.getElementById('profile-pw-uppercase');
+            const pwNumber = document.getElementById('profile-pw-number');
+            const pwSymbol = document.getElementById('profile-pw-symbol');
+            if (pwLength) pwLength.className = value.length >= 8 ? 'text-success' : 'text-danger';
+            if (pwUpper) pwUpper.className = /[A-Z]/.test(value) ? 'text-success' : 'text-danger';
+            if (pwNumber) pwNumber.className = /\d/.test(value) ? 'text-success' : 'text-danger';
+            if (pwSymbol) pwSymbol.className = /[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?]/.test(value) ? 'text-success' : 'text-danger';
         });
     }
 
@@ -159,6 +180,76 @@
             }
         });
     }
+
+    // === Cropper.js logic ===
+    let cropper;
+    const fotoInput = document.getElementById('foto_profil');
+    const cropModal = document.getElementById('cropperModal');
+    const cropImage = document.getElementById('cropperImage');
+    const cropBtn = document.getElementById('cropBtn');
+    const closeCropBtn = document.getElementById('closeCropBtn');
+    const previewImg = document.querySelector('img[alt="Foto Profil"]');
+
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && /^image\/.*/.test(file.type)) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    cropImage.src = evt.target.result;
+                    // Show modal
+                    cropModal.style.display = 'flex'; // flex agar align center
+                    // Init cropper
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(cropImage, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        movable: true,
+                        zoomable: true,
+                        rotatable: false,
+                        scalable: false,
+                        cropBoxResizable: true,
+                        minContainerWidth: 200,
+                        minContainerHeight: 200,
+                        minCropBoxWidth: 100,
+                        minCropBoxHeight: 100,
+                        autoCropArea: 1
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (cropBtn) {
+        cropBtn.addEventListener('click', function() {
+            if (cropper) {
+                cropper.getCroppedCanvas({
+                    width: 250,
+                    height: 250,
+                    imageSmoothingQuality: 'high'
+                }).toBlob(function(blob) {
+                    // Update preview
+                    const url = URL.createObjectURL(blob);
+                    previewImg.src = url;
+                    // Replace file input with cropped blob
+                    const dataTransfer = new DataTransfer();
+                    const file = new File([blob], 'cropped_profile.png', { type: 'image/png' });
+                    dataTransfer.items.add(file);
+                    fotoInput.files = dataTransfer.files;
+                    // Hide modal
+                    cropModal.style.display = 'none';
+                    cropper.destroy();
+                }, 'image/png');
+            }
+        });
+    }
+    if (closeCropBtn) {
+        closeCropBtn.addEventListener('click', function() {
+            cropModal.style.display = 'none';
+            if (cropper) cropper.destroy();
+        });
+    }
     });
 </script>
 @endpush
@@ -192,9 +283,24 @@
                 <h5 class="mb-0"><i class="fas fa-user me-2"></i>Informasi Profile</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('super_admin.profile.update') }}" method="POST">
+                <form action="{{ route('super_admin.profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
+                    
+                    <!-- Foto Profil -->
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="{{ $user->foto_profil ? asset('storage/' . $user->foto_profil) : asset('img/user.png') }}"
+                             alt="Foto Profil"
+                             class="rounded-circle"
+                             style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #1e3a5f;">
+                        <div class="ms-3">
+                            <label for="foto_profil" class="form-label fw-bold mb-1">Ubah Foto Profil</label>
+                            <input type="file" class="form-control" id="foto_profil" name="foto_profil" accept="image/*">
+                            @error('foto_profil')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
                     
                     <!-- Personal Information -->
                     <div class="row mb-4">
@@ -349,6 +455,12 @@
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
+                        <ul id="profile-password-requirements" class="mt-2 mb-0 ps-3" style="list-style: disc; font-size: 0.95em;">
+                            <li id="profile-pw-length" class="text-danger">Minimal 8 karakter</li>
+                            <li id="profile-pw-uppercase" class="text-danger">Mengandung huruf kapital</li>
+                            <li id="profile-pw-number" class="text-danger">Mengandung angka</li>
+                            <li id="profile-pw-symbol" class="text-danger">Mengandung simbol</li>
+                        </ul>
                         @error('new_password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -373,6 +485,18 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cropper -->
+<div id="cropperModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:24px 18px 18px 18px; border-radius:14px; max-width:340px; width:95vw; max-height:95vh; box-shadow:0 8px 32px rgba(30,58,95,0.18); display:flex; flex-direction:column; align-items:center;">
+        <div style="font-weight:600; font-size:1.1rem; margin-bottom:10px; color:#1e3a5f;">Atur & Crop Foto Profil</div>
+        <img id="cropperImage" src="" style="max-width:250px; max-height:250px; width:100%; height:auto; border-radius:8px; border:1px solid #eee; background:#f8f9fa; display:block; margin:auto;">
+        <div class="mt-3 d-flex justify-content-center gap-2" style="width:100%;">
+            <button type="button" class="btn btn-primary flex-fill" id="cropBtn">Crop & Simpan</button>
+            <button type="button" class="btn btn-secondary flex-fill" id="closeCropBtn">Batal</button>
         </div>
     </div>
 </div>

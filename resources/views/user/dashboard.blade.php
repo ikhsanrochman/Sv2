@@ -8,7 +8,7 @@
             <div class="card shadow-sm" style="border-radius:18px;">
                 <div class="card-body d-flex align-items-center" style="min-height:180px;">
                     <div class="me-4">
-                        <img src="{{ asset('img/orang.png') }}" alt="Profile" style="width:90px; height:90px; object-fit:cover; border-radius:50%;">
+                        <img src="{{ Auth::user()->foto_profil ? asset('storage/' . Auth::user()->foto_profil) : asset('img/orang.png') }}" alt="Profile" style="width:90px; height:90px; object-fit:cover; border-radius:50%;">
                     </div>
                     <div class="flex-grow-1">
                         <h2 class="fw-bold mb-1" style="font-size:2rem;">Hello, {{ Auth::user()->nama }}!</h2>

@@ -9,7 +9,7 @@
                 <!-- Left: Profile Image -->
                 <div class="d-flex flex-column align-items-center" style="min-width: 140px;">
                     <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; background: #f3f3f3; display: flex; align-items: center; justify-content: center;">
-                        <img src="{{ asset('img/orang.png') }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                        <img src="{{ Auth::user()->foto_profil ? asset('storage/' . Auth::user()->foto_profil) : asset('img/orang.png') }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
                     </div>
                 </div>
                 <!-- Center: Greeting -->
