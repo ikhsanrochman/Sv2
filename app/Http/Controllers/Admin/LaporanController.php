@@ -72,4 +72,20 @@ class LaporanController extends Controller
         // Download the PDF
         return $pdf->download($filename);
     }
+
+    public function downloadProjectDetail($id)
+    {
+        $project = Project::with([
+            'perizinanSumberRadiasiPengion',
+            'ketersediaanSdm.users',
+            'pemantauanDosisTld.user',
+            'pemantauanDosisPendose'
+        ])->findOrFail($id);
+
+        // Generate PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.laporan.project_detail_pdf', compact('project'));
+        $pdf->setPaper('A4', 'portrait');
+        $filename = 'Laporan_Detail_Proyek_' . str_replace(' ', '_', $project->nama_proyek) . '_' . date('Y-m-d_H-i-s') . '.pdf';
+        return $pdf->download($filename);
+    }
 } 

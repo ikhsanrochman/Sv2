@@ -52,7 +52,7 @@ class DocumentController extends Controller
             'topik' => $request->topik ?? $request->judul_dokumen, // Use topik if provided, otherwise use judul_dokumen
         ]);
 
-        return redirect()->route('admin.documents.index')
+        return redirect()->route('admin.dokumen.index')
             ->with('success', 'Dokumen berhasil ditambahkan!');
     }
 
@@ -104,7 +104,7 @@ class DocumentController extends Controller
 
         $document->update($data);
 
-        return redirect()->route('admin.documents.index')
+        return redirect()->route('admin.dokumen.index')
             ->with('success', 'Dokumen berhasil diperbarui!');
     }
 
@@ -127,5 +127,22 @@ class DocumentController extends Controller
         }
 
         return Storage::disk('public')->download($document->file_path, basename($document->file_path));
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        $documents = \App\Models\Document::with('documentCategory')
+            ->when($query, function($qB) use ($query) {
+                $qB->where('judul_dokumen', 'like', "%$query%")
+                    ->orWhere('topik', 'like', "%$query%")
+                    ->orWhere('deskripsi', 'like', "%$query%")
+                    ;
+            })
+            ->latest()
+            ->paginate(10);
+
+        $view = view('admin.dokumen.table', compact('documents'))->render();
+        return response()->json(['html' => $view]);
     }
 } 

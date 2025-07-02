@@ -16,7 +16,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalPekerja = User::where('role_id', '!=', 1)->where('role_id', '!=', 2)->count(); // Exclude admin/superadmin
+        $totalPekerja = User::count(); // Semua user termasuk admin dan superadmin
 
         $users = User::with(['pemantauanDosisTld', 'pemantauanDosisPendose'])->get();
 

@@ -7,8 +7,7 @@
     <td>{{ $project->tanggal_selesai->format('d/m/Y') }}</td>
     
     <td class="text-center">
-        <button class="btn btn-danger btn-sm me-1">Hapus</button>
-        <button class="btn btn-primary btn-sm">Edit</button>
+        <a href="{{ route('admin.sdm.detail', $project->id) }}" class="btn btn-info btn-sm">Detail</a>
     </td>
 </tr>
 @empty

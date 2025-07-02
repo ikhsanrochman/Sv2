@@ -400,9 +400,9 @@
                                         <td>{{ $pendose->tanggal_pengukuran ? $pendose->tanggal_pengukuran->format('d/m/Y') : '-' }}</td>
                                         <td>
                                             @if($pendose->kartu_dosis)
-                                                <span class="badge bg-success">Ya</span>
+                                                <span class="badge bg-success">Ada</span>
                                             @else
-                                                <span class="badge bg-secondary">Tidak</span>
+                                                <span class="badge bg-secondary">Tidak Ada</span>
                                             @endif
                                         </td>
                                     </tr>

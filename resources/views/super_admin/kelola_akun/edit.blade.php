@@ -379,15 +379,17 @@
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('password_confirmation').value;
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
-        if (password !== confirmPassword) {
-            e.preventDefault();
-            alert('Password dan konfirmasi password tidak cocok!');
-            return false;
-        }
-        if (!passwordRegex.test(password)) {
-            e.preventDefault();
-            alert('Password minimal 8 karakter, mengandung huruf kapital, angka, dan simbol!');
-            return false;
+        if (password) {
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Password dan konfirmasi password tidak cocok!');
+                return false;
+            }
+            if (!passwordRegex.test(password)) {
+                e.preventDefault();
+                alert('Password minimal 8 karakter, mengandung huruf kapital, angka, dan simbol!');
+                return false;
+            }
         }
     });
 

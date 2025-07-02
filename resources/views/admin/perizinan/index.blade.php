@@ -76,12 +76,12 @@
                 <div class="col-md-6">
                     <div class="d-flex align-items-center">
                         <span class="me-2">Menampilkan</span>
-                        <select class="form-select form-select-sm me-2" style="width: auto;">
-                            <option>5</option>
-                            <option>10</option>
-                            <option>25</option>
-                            <option>50</option>
-                            <option>100</option>
+                        <select class="form-select form-select-sm me-2" style="width: auto;" id="perPage">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
                         <span>data per halaman</span>
                     </div>
@@ -121,9 +121,9 @@
             <!-- Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-4">
                 <div>
-                    <span class="text-muted">Menampilkan {{ $projects->firstItem() ?? 0 }} sampai {{ $projects->lastItem() ?? 0 }} dari {{ $projects->total() }} data</span>
+                    <span class="text-muted" id="pagination-info">Menampilkan {{ $projects->firstItem() ?? 0 }} sampai {{ $projects->lastItem() ?? 0 }} dari {{ $projects->total() }} data</span>
                 </div>
-                <nav aria-label="Page navigation">
+                <nav aria-label="Page navigation" id="pagination-links">
                     {{ $projects->links() }}
                 </nav>
             </div>
@@ -228,37 +228,45 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // Search functionality
-        $('#search').on('keyup', function() {
-            const searchValue = $(this).val().toLowerCase();
-            let found = false;
-            const projectTableBody = $('#projectTableBody');
-
-            projectTableBody.find('tr').each(function() {
-                const row = $(this);
-                // This is to avoid matching the "no data" message row
-                if (row.find('td[colspan]').length > 0) {
-                    return;
-                }
-                const rowText = row.text().toLowerCase();
-
-                if (rowText.includes(searchValue)) {
-                    row.show();
-                    found = true;
-                } else {
-                    row.hide();
+        function fetchProjects(page = 1, search = '', perPage = 10) {
+            $.ajax({
+                url: '{{ route('admin.perizinan.search') }}',
+                type: 'GET',
+                data: {
+                    page: page,
+                    search: search,
+                    perPage: perPage
+                },
+                success: function(response) {
+                    $('#projectTableBody').html(response.html.table);
+                    $('#pagination-links').html(response.html.pagination);
+                    $('#pagination-info').text(response.html.info);
+                },
+                error: function() {
+                    alert('Gagal memuat data.');
                 }
             });
-
-            // Handle "no results" message
-            const noResultsRow = projectTableBody.find('.no-results');
-            if (!found && searchValue !== "") {
-                if (noResultsRow.length === 0) {
-                    projectTableBody.append('<tr class="no-results"><td colspan="6" class="text-center">Tidak ada data yang cocok.</td></tr>');
-                }
-            } else {
-                noResultsRow.remove();
-            }
+        }
+        let searchTimeout;
+        function getPerPage() {
+            return $('#perPage').val();
+        }
+        $('#search').on('keyup', function() {
+            clearTimeout(searchTimeout);
+            const searchValue = $(this).val();
+            searchTimeout = setTimeout(function() {
+                fetchProjects(1, searchValue, getPerPage());
+            }, 300);
+        });
+        $('#perPage').on('change', function() {
+            fetchProjects(1, $('#search').val(), getPerPage());
+        });
+        $(document).on('click', '#pagination-links .pagination a', function(e) {
+            e.preventDefault();
+            const url = $(this).attr('href');
+            const page = url.split('page=')[1];
+            const searchValue = $('#search').val();
+            fetchProjects(page, searchValue, getPerPage());
         });
     });
 </script>

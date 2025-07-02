@@ -41,13 +41,13 @@
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('admin.tld.search') }}" class="menu-item {{ Request::routeIs(['admin.tld.search', 'admin.pemantauan.tld.*', 'admin.pemantauan.tld', 'admin.tld.*']) ? 'active' : '' }}">
+            <a href="{{ route('admin.tld.search') }}" class="menu-item {{ Request::routeIs(['admin.tld.search', 'admin.tld.*', 'admin.pemantauan.tld', 'admin.pemantauan.tld.*']) ? 'active' : '' }}">
                 <i class="fas fa-radiation me-2"></i>
                 <span>Pemantauan TLD</span>
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('admin.pendos.search') }}" class="menu-item {{ Request::routeIs(['admin.pendos.search', 'admin.pendos.*', 'admin.pemantauan.pendos.*', 'admin.pemantauan.pendos']) ? 'active' : '' }}">
+            <a href="{{ route('admin.pendos.search') }}" class="menu-item {{ Request::routeIs(['admin.pendos.search', 'admin.pendos.*', 'admin.pemantauan.pendos', 'admin.pemantauan.pendos.*']) ? 'active' : '' }}">
                 <i class="fas fa-radiation-alt me-2"></i>
                 <span>Pemantauan Pendos</span>
             </a>
@@ -78,7 +78,7 @@
             </a>
         </div>
         <div class="menu-wrap">
-            <a href="{{ route('admin.dokumen.index') }}" class="menu-item {{ Request::routeIs('admin.documents.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.dokumen.index') }}" class="menu-item {{ Request::routeIs(['admin.dokumen.*', 'admin.documents.*']) ? 'active' : '' }}">
                 <div class="menu-icon">
                     <i class="fas fa-file-alt"></i>
                 </div>

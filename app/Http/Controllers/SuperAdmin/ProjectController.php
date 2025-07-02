@@ -8,9 +8,30 @@ use App\Models\Project;
 
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::latest()->paginate(10);
+        if ($request->has('per_page')) {
+            $perPage = (int) $request->input('per_page');
+            session(['projects_per_page' => $perPage]);
+        } else {
+            $perPage = session('projects_per_page', 10);
+        }
+
+        $query = Project::latest();
+
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_proyek', 'like', "%{$search}%")
+                  ->orWhere('keterangan', 'like', "%{$search}%");
+            });
+        }
+
+        $projects = $query->paginate($perPage);
+
+        if ($request->ajax()) {
+            return view('super_admin.projects.table-data', compact('projects'))->render();
+        }
         return view('super_admin.projects.index', compact('projects'));
     }
 

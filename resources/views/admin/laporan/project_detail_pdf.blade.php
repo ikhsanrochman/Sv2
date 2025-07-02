@@ -364,7 +364,7 @@
                                 <td>{{ $pendose->jenis_alat_pemantauan ?? '-' }}</td>
                                 <td>{{ $pendose->hasil_pengukuran ?? '-' }}</td>
                                 <td>{{ $pendose->tanggal_pengukuran ? $pendose->tanggal_pengukuran->format('d/m/Y') : '-' }}</td>
-                                <td>{{ $pendose->kartu_dosis ? 'Ya' : 'Tidak' }}</td>
+                                <td>{{ $pendose->kartu_dosis ? 'Ada' : 'Tidak Ada' }}</td>
                             </tr>
                             @endforeach
                         </tbody>

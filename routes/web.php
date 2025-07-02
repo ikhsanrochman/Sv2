@@ -201,6 +201,7 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
 
     // SDM Management routes
     Route::get('/sdm', [App\Http\Controllers\Admin\SdmController::class, 'index'])->name('sdm.index');
+    Route::get('/sdm/search', [App\Http\Controllers\Admin\SdmController::class, 'search'])->name('sdm.search');
     Route::get('/sdm/{id}/detail', [App\Http\Controllers\Admin\SdmController::class, 'detail'])->name('sdm.detail');
     Route::get('/sdm/{id}/create', [App\Http\Controllers\Admin\SdmController::class, 'create'])->name('sdm.create');
     Route::post('/sdm/{id}/store', [App\Http\Controllers\Admin\SdmController::class, 'store'])->name('sdm.store');
@@ -235,6 +236,11 @@ Route::middleware(['auth', 'role:2'])->prefix('admin')->name('admin.')->group(fu
     Route::get('/dokumen/create', [App\Http\Controllers\Admin\DocumentController::class, 'create'])->name('dokumen.create');
     Route::post('/dokumen', [App\Http\Controllers\Admin\DocumentController::class, 'store'])->name('dokumen.store');
     Route::get('/dokumen/{document}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('dokumen.download');
+    Route::get('/dokumen/{document}', [App\Http\Controllers\Admin\DocumentController::class, 'show'])->name('dokumen.show');
+    Route::get('/dokumen/{document}/edit', [App\Http\Controllers\Admin\DocumentController::class, 'edit'])->name('dokumen.edit');
+    Route::delete('/dokumen/{document}', [App\Http\Controllers\Admin\DocumentController::class, 'destroy'])->name('dokumen.destroy');
+    Route::put('/dokumen/{document}', [App\Http\Controllers\Admin\DocumentController::class, 'update'])->name('dokumen.update');
+    Route::get('/dokumen/search', [App\Http\Controllers\Admin\DocumentController::class, 'search'])->name('dokumen.search');
 
     // Pemantauan TLD & Pendos sebagai menu terpisah (ADMIN)
     Route::get('/tld', [PemantauanController::class, 'search'])->name('tld.search');

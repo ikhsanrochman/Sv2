@@ -397,21 +397,34 @@
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     alert('Data dosis berhasil dihapus');
                     location.reload(); // Reload page to update table
                 } else {
-                    alert('Terjadi kesalahan: ' + data.error);
+                    alert('Terjadi kesalahan: ' + (data.error || 'Unknown error'));
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Terjadi kesalahan saat menghapus data.');
+                // Jika data berhasil dihapus tapi ada error parsing response, reload halaman
+                if (error.message.includes('JSON')) {
+                    alert('Data dosis berhasil dihapus');
+                    location.reload();
+                } else {
+                    alert('Terjadi kesalahan saat menghapus data: ' + error.message);
+                }
             });
         }
     }

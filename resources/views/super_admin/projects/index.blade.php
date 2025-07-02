@@ -80,12 +80,10 @@
                 <div class="col-md-6">
                     <div class="d-flex align-items-center">
                         <span class="me-2">Menampilkan</span>
-                        <select class="form-select form-select-sm me-2" style="width: auto;">
-                            <option>5</option>
-                            <option>10</option>
-                            <option>25</option>
-                            <option>50</option>
-                            <option>100</option>
+                        <select name="per_page" class="form-select form-select-sm me-2" style="width: auto;">
+                            @foreach([5, 10, 25, 50, 100] as $size)
+                                <option value="{{ $size }}" {{ session('projects_per_page', 10) == $size ? 'selected' : '' }}>{{ $size }}</option>
+                            @endforeach
                         </select>
                         <span>data per halaman</span>
                     </div>
@@ -103,50 +101,9 @@
                 </div>
             </div>
 
-            <!-- Table -->
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col" class="text-center">No</th>
-                            <th scope="col">Nama Proyek</th>
-                            <th scope="col">Keterangan</th>
-                            <th scope="col">Tanggal Mulai</th>
-                            <th scope="col">Tanggal Selesai</th>
-                            <th scope="col" class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="projectTableBody">
-                        @forelse($projects as $project)
-                        <tr>
-                            <td class="text-center">{{ $loop->iteration }}</td>
-                            <td>{{ $project->nama_proyek }}</td>
-                            <td>{{ $project->keterangan }}</td>
-                            <td>{{ $project->tanggal_mulai->format('d/m/Y') }}</td>
-                            <td>{{ $project->tanggal_selesai->format('d/m/Y') }}</td>
-                            
-                            <td class="text-center">
-                                <button class="btn btn-danger btn-sm me-1 delete-project" data-id="{{ $project->id }}">Hapus</button>
-                                <a href="{{ route('super_admin.projects.edit', $project->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="text-center">Tidak ada data proyek</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="d-flex justify-content-between align-items-center mt-4">
-                <div>
-                    <span class="text-muted">Menampilkan {{ $projects->firstItem() ?? 0 }} sampai {{ $projects->lastItem() ?? 0 }} dari {{ $projects->total() }} data</span>
-                </div>
-                <nav aria-label="Page navigation">
-                    {{ $projects->links() }}
-                </nav>
+            <!-- Table & Pagination (AJAX loaded) -->
+            <div id="table-data-wrapper">
+                @include('super_admin.projects.table-data')
             </div>
         </div>
     </div>
@@ -295,37 +252,99 @@
             });
         });
 
-        // Search functionality
-        $('#search').on('keyup', function() {
-            const searchValue = $(this).val().toLowerCase();
-            let found = false;
-            const projectTableBody = $('#projectTableBody');
-
-            projectTableBody.find('tr').each(function() {
-                const row = $(this);
-                // This is to avoid matching the "no data" message row
-                if (row.find('td[colspan]').length > 0) {
-                    return;
-                }
-                const rowText = row.text().toLowerCase();
-
-                if (rowText.includes(searchValue)) {
-                    row.show();
-                    found = true;
-                } else {
-                    row.hide();
+        // AJAX for search
+        $(document).on('keyup', '#search', function() {
+            const search = $(this).val();
+            const url = window.location.pathname;
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { search: search },
+                dataType: 'html',
+                success: function(response) {
+                    $('#table-data-wrapper').html(response);
+                },
+                error: function() {
+                    alert('Gagal memuat data.');
                 }
             });
+        });
 
-            // Handle "no results" message
-            const noResultsRow = projectTableBody.find('.no-results');
-            if (!found && searchValue !== "") {
-                if (noResultsRow.length === 0) {
-                    projectTableBody.append('<tr class="no-results"><td colspan="6" class="text-center">Tidak ada data yang cocok.</td></tr>');
+        // AJAX for per_page dropdown
+        $(document).on('change', 'select[name="per_page"]', function(e) {
+            e.preventDefault();
+            const perPage = $(this).val();
+            const url = window.location.pathname; // URL tanpa query string
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { per_page: perPage },
+                dataType: 'html',
+                success: function(response) {
+                    $('#table-data-wrapper').html(response);
+                },
+                error: function() {
+                    alert('Gagal memuat data.');
                 }
-            } else {
-                noResultsRow.remove();
-            }
+            });
+        });
+
+        // Re-bind delete button after AJAX load
+        $(document).on('click', '.delete-project', function() {
+            const projectId = $(this).data('id');
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/super-admin/projects/${projectId}`,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            Swal.fire(
+                                'Terhapus!',
+                                'Data proyek berhasil dihapus.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            Swal.fire(
+                                'Error!',
+                                'Terjadi kesalahan saat menghapus data.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+
+        // AJAX for pagination
+        $(document).on('click', '#table-data-wrapper .pagination a', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'html',
+                success: function(response) {
+                    $('#table-data-wrapper').html(response);
+                },
+                error: function() {
+                    alert('Gagal memuat data.');
+                }
+            });
         });
     });
 </script>

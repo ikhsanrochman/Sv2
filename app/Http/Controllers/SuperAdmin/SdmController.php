@@ -18,11 +18,25 @@ class SdmController extends Controller
 
     public function search(Request $request)
     {
-        $search = $request->search;
-        $projects = Project::where('nama_proyek', 'like', "%{$search}%")
-            ->orWhere('keterangan', 'like', "%{$search}%")
-            ->paginate(10);
-        return view('super_admin.sdm.search', compact('projects'));
+        $search = $request->input('search');
+        $perPage = $request->input('perPage', 10);
+        $page = $request->input('page', 1);
+        $projects = Project::when($search, function($q) use ($search) {
+                $q->where('nama_proyek', 'like', "%{$search}%")
+                  ->orWhere('keterangan', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate($perPage, ['*'], 'page', $page);
+        $table = view('super_admin.sdm.search', compact('projects'))->render();
+        $pagination = $projects->links()->render();
+        $info = 'Menampilkan ' . ($projects->firstItem() ?? 0) . ' sampai ' . ($projects->lastItem() ?? 0) . ' dari ' . $projects->total() . ' data';
+        return response()->json([
+            'html' => [
+                'table' => $table,
+                'pagination' => $pagination,
+                'info' => $info,
+            ]
+        ]);
     }
 
     public function detail($id)

@@ -9,7 +9,17 @@ class DocumentCategoryController extends Controller
 {
     public function store(Request $request)
     {
-        // Untuk sementara, hanya return response sukses
-        return response()->json(['success' => true, 'message' => 'Kategori dokumen berhasil ditambahkan (dummy).']);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:document_categories,name',
+        ]);
+
+        $category = \App\Models\DocumentCategory::create([
+            'name' => $validated['name'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'category' => $category
+        ]);
     }
 } 

@@ -61,22 +61,25 @@ class ProjectController extends Controller
 
     public function search(Request $request)
     {
-        \Log::info('ProjectController@search: User ID: ' . (auth()->id() ?? 'N/A') . ', Role: ' . (auth()->user()->role_id ?? 'N/A'));
-        try {
-            $search = $request->search;
-            $projects = Project::where(function($query) use ($search) {
+        $search = $request->input('search');
+        $perPage = $request->input('perPage', 10);
+        $page = $request->input('page', 1);
+        $projects = Project::when($search, function($query) use ($search) {
                 $query->where('nama_proyek', 'like', "%{$search}%")
                     ->orWhere('keterangan', 'like', "%{$search}%");
             })
             ->latest()
-            ->paginate(10);
-
-            $view = view('admin.projects.search', compact('projects'))->render();
-            return response()->json(['html' => $view]);
-        } catch (\Exception $e) {
-            \Log::error('Project search error: ' . $e->getMessage());
-            return response()->json(['error' => 'Terjadi kesalahan saat mencari data'], 500);
-        }
+            ->paginate($perPage, ['*'], 'page', $page);
+        $table = view('admin.projects.search', compact('projects'))->render();
+        $pagination = $projects->links()->render();
+        $info = 'Menampilkan ' . ($projects->firstItem() ?? 0) . ' sampai ' . ($projects->lastItem() ?? 0) . ' dari ' . $projects->total() . ' data';
+        return response()->json([
+            'html' => [
+                'table' => $table,
+                'pagination' => $pagination,
+                'info' => $info,
+            ]
+        ]);
     }
 
     public function show(Project $project)

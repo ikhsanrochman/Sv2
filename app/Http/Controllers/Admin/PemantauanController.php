@@ -63,9 +63,8 @@ class PemantauanController extends Controller
 
     public function pendos(Project $project)
     {
-        $users = $project->users()->with(['pemantauanDosisPendose' => function($query) {
-            $query->orderBy('tanggal_pengukuran', 'asc');
-        }])->get();
+        // Ambil semua user yang terlibat di project melalui ketersediaanSdm
+        $users = $project->ketersediaanSdm->flatMap->users->unique('id');
 
         // Pre-process the data for easier JS access
         $projectUsers = $users->map(function($user) {
@@ -315,7 +314,10 @@ class PemantauanController extends Controller
     public function pendosDetail($projectId, $userId)
     {
         $project = Project::findOrFail($projectId);
-        $user = $project->users()->findOrFail($userId);
+        $user = $project->ketersediaanSdm->flatMap->users->where('id', $userId)->first();
+        if (!$user) {
+            abort(404, 'User tidak ditemukan dalam project ini');
+        }
         $dosisData = $user->pemantauanDosisPendose()
             ->where('project_id', $project->id)
             ->orderBy('tanggal_pengukuran', 'desc')
@@ -327,7 +329,10 @@ class PemantauanController extends Controller
     public function pendosEdit($projectId, $userId, $dosisId)
     {
         $project = Project::findOrFail($projectId);
-        $user = $project->users()->findOrFail($userId);
+        $user = $project->ketersediaanSdm->flatMap->users->where('id', $userId)->first();
+        if (!$user) {
+            abort(404, 'User tidak ditemukan dalam project ini');
+        }
         $dosisPendos = PemantauanDosisPendose::findOrFail($dosisId);
 
         return view('admin.pemantauan.pendos.edit', compact('project', 'user', 'dosisPendos'));
@@ -366,7 +371,7 @@ class PemantauanController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('admin.tld.user.detail', ['projectId' => $projectId, 'userId' => $userId])
+                ->route('admin.pendos.user.detail', ['projectId' => $projectId, 'userId' => $userId])
                 ->with('success', 'Data dosis berhasil diperbarui');
 
         } catch (\Exception $e) {
@@ -391,7 +396,7 @@ class PemantauanController extends Controller
             }
 
             return redirect()
-                ->route('admin.tld.user.detail', ['projectId' => $projectId, 'userId' => $userId])
+                ->route('admin.pendos.user.detail', ['projectId' => $projectId, 'userId' => $userId])
                 ->with('success', 'Data dosis berhasil dihapus');
 
         } catch (\Exception $e) {

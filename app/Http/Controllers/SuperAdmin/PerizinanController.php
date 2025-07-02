@@ -137,14 +137,26 @@ class PerizinanController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('search');
+        $perPage = $request->input('perPage', 10);
+        $page = $request->input('page', 1);
 
-        $projects = Project::where('nama_proyek', 'like', '%' . $query . '%')
-                           ->orWhere('keterangan', 'like', '%' . $query . '%')
-                           ->latest()
-                           ->paginate(10);
+        $projects = Project::when($query, function($q) use ($query) {
+                $q->where('nama_proyek', 'like', '%' . $query . '%')
+                  ->orWhere('keterangan', 'like', '%' . $query . '%');
+            })
+            ->latest()
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        $table = view('super_admin.perizinan.search', compact('projects'))->render();
+        $pagination = $projects->links()->render();
+        $info = 'Menampilkan ' . ($projects->firstItem() ?? 0) . ' sampai ' . ($projects->lastItem() ?? 0) . ' dari ' . $projects->total() . ' data';
 
         return response()->json([
-            'html' => view('super_admin.perizinan.search', compact('projects'))->render()
+            'html' => [
+                'table' => $table,
+                'pagination' => $pagination,
+                'info' => $info,
+            ]
         ]);
     }
 } 
