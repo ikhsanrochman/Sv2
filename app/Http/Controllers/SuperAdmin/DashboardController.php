@@ -16,7 +16,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalPekerja = User::count(); // Semua user termasuk admin dan superadmin
+        $totalPekerja = User::count(); 
 
         $users = User::with(['pemantauanDosisTld', 'pemantauanDosisPendose'])->get();
 
@@ -26,7 +26,7 @@ class DashboardController extends Controller
             $user->totalDosis = $totalDosisTld + $totalDosisPendose;
             return $user;
         })->filter(function ($user) {
-            return $user->totalDosis > 20000; // Ambang batas 20,000 µSv (20 mSv)
+            return $user->totalDosis > 20000; 
         })->sortByDesc('totalDosis');
 
         // Kirim notifikasi email jika ada peringatan
